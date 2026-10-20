@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meditação Interativa - Salmo 19</title>
+<style>
+  :root {
+    --azul: #1e3a5f;
+    --azul-claro: #2c5282;
+    --dourado: #b7791f;
+    --verde: #276749;
+    --verde-logo: #2d7a6e;
+    --vermelho: #9b2c2c;
+    --fundo: #f7fafc;
+    --card: #ffffff;
+    --texto: #1a202c;
+    --borda: #cbd5e0;
+    --creme: #fffaf0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1.7;
+    background: var(--fundo);
+    color: var(--texto);
+    margin: 0;
+    padding: 0 12px 100px;
+  }
+  header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    color: #fff;
+    padding: 26px 16px 22px;
+    text-align: center;
+    border-radius: 0 0 20px 20px;
+    margin: 0 -12px 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+  header h1 { margin: 0 0 8px; font-size: 30px; letter-spacing: .5px; }
+  header p { margin: 4px 0; font-size: 18px; opacity: .95; }
+
+  .abas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 22px;
+    position: sticky;
+    top: 0;
+    background: var(--fundo);
+    padding: 10px 0;
+    z-index: 50;
+  }
+  .aba {
+    background: #fff;
+    border: 3px solid var(--azul-claro);
+    color: var(--azul);
+    padding: 12px 18px;
+    font-size: 17px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .2s;
+  }
+  .aba:hover { background: #ebf4ff; transform: translateY(-2px); }
+  .aba.ativa { background: var(--azul-claro); color: #fff; }
+
+  .dia { display: none; animation: fade .3s; }
+  .dia.ativo { display: block; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    border-left: 8px solid var(--dourado);
+  }
+  .card.destaque { border-left-color: var(--verde-logo); background: #f0fdf9; }
+  .card h2 {
+    font-size: 25px;
+    color: var(--azul);
+    margin: 0 0 14px;
+    border-bottom: 3px solid var(--borda);
+    padding-bottom: 10px;
+  }
+  .versiculo-chave {
+    font-style: italic;
+    background: var(--creme);
+    border-left: 6px solid var(--dourado);
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin: 14px 0;
+    font-size: 20px;
+    color: #744210;
+    font-weight: 500;
+  }
+  .secao-titulo {
+    font-weight: bold;
+    color: var(--verde);
+    font-size: 22px;
+    margin: 24px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .secao-titulo::before { content: "➔"; color: var(--dourado); font-size: 20px; }
+
+  .contexto {
+    background: #ebf8ff;
+    border-left: 5px solid var(--azul-claro);
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 18px;
+  }
+  .contexto strong { color: var(--azul-claro); }
+
+  .grego {
+    background: #faf5ff;
+    border-left: 5px solid #805ad5;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 18px;
+  }
+  .grego strong { color: #553c9a; }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 19px;
+    padding: 14px;
+    border: 2px solid var(--borda);
+    border-radius: 10px;
+    background: #fff;
+    resize: vertical;
+    min-height: 80px;
+    margin-top: 6px;
+  }
+  textarea:focus, input:focus {
+    outline: 3px solid var(--dourado);
+    border-color: var(--dourado);
+  }
+  .salvo-aviso {
+    font-size: 15px;
+    color: var(--verde);
+    margin-top: 4px;
+    height: 20px;
+    font-weight: bold;
+  }
+
+  .versiculo-btn {
+    display: inline-block;
+    background: #ebf8ff;
+    color: var(--azul-claro);
+    border: 2px solid var(--azul-claro);
+    padding: 11px 18px;
+    margin: 6px 6px 6px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: .2s;
+  }
+  .versiculo-btn:hover { background: var(--azul-claro); color: #fff; }
+
+  .memoriza-area {
+    background: #f0fff4;
+    border: 3px dashed var(--verde);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 14px 0;
+  }
+  .memoriza-frase {
+    font-size: 20px;
+    line-height: 2.5;
+    margin-bottom: 14px;
+  }
+  .lacuna {
+    display: inline-block;
+    width: 130px;
+    border: none;
+    border-bottom: 3px solid var(--dourado);
+    background: #fffdf5;
+    font-size: 19px;
+    padding: 4px 6px;
+    margin: 0 4px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--azul);
+  }
+  .lacuna.correta { border-bottom-color: var(--verde); background: #c6f6d5; }
+  .lacuna.errada { border-bottom-color: var(--vermelho); background: #fed7d7; }
+
+  .btn {
+    background: var(--azul-claro);
+    color: #fff;
+    border: none;
+    padding: 14px 26px;
+    font-size: 19px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 8px 8px 8px 0;
+    transition: .2s;
+  }
+  .btn:hover { background: var(--azul); transform: translateY(-2px); }
+  .btn-verde { background: var(--verde); }
+  .btn-verde:hover { background: #22543d; }
+  .btn-limpar { background: #718096; }
+  .btn-limpar:hover { background: #4a5568; }
+  .btn-ouro { background: var(--dourado); }
+  .btn-ouro:hover { background: #975a16; }
+
+  .feedback {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 12px;
+    min-height: 30px;
+  }
+  .feedback.ok { color: var(--verde); }
+  .feedback.erro { color: var(--vermelho); }
+
+  .placar {
+    background: var(--dourado);
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 22px;
+    font-weight: bold;
+    display: inline-block;
+    margin: 12px 0;
+  }
+
+  .aplicacao {
+    background: #fff5f5;
+    border-left: 5px solid var(--vermelho);
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 18px;
+  }
+  .aplicacao strong { color: var(--vermelho); }
+
+  .oracao {
+    background: linear-gradient(135deg, #fefcbf 0%, #faf089 100%);
+    border-left: 6px solid var(--dourado);
+    padding: 18px 22px;
+    border-radius: 12px;
+    margin: 16px 0;
+    font-size: 19px;
+    color: #744210;
+    font-style: italic;
+  }
+
+  .diario {
+    background: #f0f4ff;
+    border: 2px solid var(--azul-claro);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 14px 0;
+  }
+  .diario h4 {
+    margin: 0 0 10px;
+    color: var(--azul-claro);
+    font-size: 19px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+  }
+  .modal-overlay.aberto { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 720px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 28px;
+    box-shadow: 0 10px 40px rgba(0,0,0,.3);
+  }
+  .modal h3 {
+    margin-top: 0;
+    color: var(--azul);
+    font-size: 24px;
+    border-bottom: 3px solid var(--dourado);
+    padding-bottom: 10px;
+  }
+  .modal .texto-nvi {
+    font-size: 21px;
+    line-height: 1.8;
+    color: #2d3748;
+  }
+  .modal .ref {
+    font-weight: bold;
+    color: var(--dourado);
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .modal .btn-fechar {
+    background: var(--vermelho);
+    margin-top: 16px;
+  }
+
+  .lista-decisoes {
+    list-style: none;
+    padding: 0;
+  }
+  .lista-decisoes li {
+    background: var(--creme);
+    border-left: 6px solid var(--dourado);
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    font-size: 18px;
+  }
+
+  footer {
+    text-align: center;
+    color: #718096;
+    font-size: 15px;
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 2px solid var(--borda);
+  }
+
+  @media (max-width: 600px) {
+    body { font-size: 18px; }
+    header h1 { font-size: 24px; }
+    .aba { font-size: 15px; padding: 10px 12px; }
+    .lacuna { width: 90px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🙏 Meditação Interativa</h1>
+  <p><strong>A Mensagem dos Céus e a Perfeição da Palavra</strong></p>
+  <p>Salmo 19</p>
+</header>
+
+<div class="abas">
+  <button class="aba ativa" onclick="mostrarDia(0, this)">Segunda</button>
+  <button class="aba" onclick="mostrarDia(1, this)">Terça</button>
+  <button class="aba" onclick="mostrarDia(2, this)">Quarta</button>
+  <button class="aba" onclick="mostrarDia(3, this)">Quinta</button>
+  <button class="aba" onclick="mostrarDia(4, this)">Sexta</button>
+  <button class="aba" onclick="mostrarDia(5, this)">📋 Decisões</button>
+</div>
+
+<!-- ============ SEGUNDA ============ -->
+<div class="dia ativo" id="dia-0">
+  <div class="card destaque">
+    <h2>Segunda – A Voz da Criação</h2>
+    <div class="versiculo-chave">
+      “Os céus proclamam a glória de Deus, e o firmamento anuncia as obras das suas mãos.” (Sl 19.1)
+    </div>
+
+    <div class="contexto">
+      <strong>📜 Contexto:</strong> O Salmo 19 é um dos mais belos poemas de Davi. Ele foi escrito provavelmente enquanto Davi contemplava o céu noturno nos campos de Belém, onde cuidava das ovelhas. Nessa época, sem poluição luminosa, o céu era um espetáculo impressionante. Davi, um pastor-poeta, une duas revelações: a criação (versos 1-6) e a Palavra (versos 7-14).
+    </div>
+
+    <div class="grego">
+      <strong>📖 Palavra original (hebraico):</strong> "Proclamam" vem de <em>saphar</em> (סָפַר), que significa "contar, narrar, enumerar". É a mesma raiz de "escriba" e "livro". Ou seja, o céu é um <strong>livro aberto</strong> que Deus escreveu para toda a humanidade ler — sem precisar de tradução!
+    </div>
+
+    <div class="secao-titulo">1) ENTENDENDO</div>
+    <p>O salmista começa olhando para cima. Ele observa o céu, o sol, as estrelas e percebe que toda a criação é um grande palco que aponta para o Criador. Não há palavras audíveis, mas a "mensagem" da criação é tão clara que alcança o mundo inteiro, em todas as línguas e culturas. Deus se revela a todos através do que fez — ninguém pode dizer que nunca ouviu falar dEle.</p>
+    <p><strong>➔ Por que, mesmo sem palavras, a criação consegue "proclamar" a glória de Deus? O que isso nos ensina sobre a responsabilidade de quem já conhece a Palavra escrita?</strong></p>
+    <textarea id="resp-seg-1" placeholder="Escreva sua resposta aqui..." oninput="salvarAuto('resp-seg-1')"></textarea>
+    <div class="salvo-aviso" id="aviso-resp-seg-1"></div>
+
+    <div class="secao-titulo">2) MEMORIZANDO</div>
+    <p>Complete as palavras que faltam. Ao clicar em "Verificar", você ganha pontos pelas respostas corretas!</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “Os <input class="lacuna" data-resp="céus" id="lac-seg-1"> proclamam a <input class="lacuna" data-resp="glória" id="lac-seg-2"> de Deus, e o <input class="lacuna" data-resp="firmamento" id="lac-seg-3"> anuncia as <input class="lacuna" data-resp="obras" id="lac-seg-4"> das suas <input class="lacuna" data-resp="mãos" id="lac-seg-5">.”
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('seg', 5)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('seg')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-seg"></div>
+      <div class="placar" id="placar-seg">Pontos: 0 / 5</div>
+    </div>
+
+    <div class="secao-titulo">3) TIRANDO A LIÇÃO</div>
+    <p>Clique nos versículos para ler o texto na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Romanos 1.20')">📖 Romanos 1.20</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Atos 14.17')">📖 Atos 14.17</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Jó 12.7-9')">📖 Jó 12.7-9</button>
+    <p style="margin-top:14px;"><strong>➔ O que esses versículos nos ensinam sobre a revelação de Deus na natureza? E como isso se conecta com a nossa missão de pregar o evangelho?</strong></p>
+    <textarea id="resp-seg-2" placeholder="Escreva o que você aprendeu..." oninput="salvarAuto('resp-seg-2')"></textarea>
+    <div class="salvo-aviso" id="aviso-resp-seg-2"></div>
+
+    <div class="aplicacao">
+      <strong>💡 Aplicação prática:</strong> Antes de dormir hoje, saia de casa ou vá até uma janela e contemple o céu por 5 minutos. Não peça nada. Apenas olhe e diga: "Deus, o Senhor é grande". Faça disso um hábito semanal.
+    </div>
+
+    <div class="secao-titulo">4) FAZENDO UMA DECISÃO</div>
+    <p>Dedique hoje 10 minutos para observar a criação. Escreva abaixo como foi essa experiência e o que Deus falou ao seu coração:</p>
+    <textarea id="decisao-seg" placeholder="Escreva sua decisão e experiência de hoje..." oninput="salvarAuto('decisao-seg')"></textarea>
+    <div class="salvo-aviso" id="aviso-decisao-seg"></div>
+
+    <div class="oracao">
+      <strong>🙏 Oração guiada:</strong> "Pai celestial, obrigado porque mesmo sem palavras o Senhor se revela a todos através da criação. Abre os meus olhos para ver a Tua glória no céu, nas árvores, no mar, nos pássaros. Que a minha vida também seja um 'livro aberto' que aponta para Ti. Em nome de Jesus, amém."
+    </div>
+
+    <div class="secao-titulo">5) COMPARTILHANDO</div>
+    <p>Louve a Deus pelo Seu poder criador. Compartilhe com alguém hoje a beleza de uma paisagem que te chamou a atenção. Conte o que você aprendeu sobre a criação como revelação de Deus.</p>
+  </div>
+</div>
+
+<!-- ============ TERÇA ============ -->
+<div class="dia" id="dia-1">
+  <div class="card destaque">
+    <h2>Terça – A Perfeição da Palavra</h2>
+    <div class="versiculo-chave">
+      “A lei do Senhor é perfeita, e refrigera a alma; o testemunho do Senhor é fiel, e dá sabedoria aos simples.” (Sl 19.7)
+    </div>
+
+    <div class="contexto">
+      <strong>📜 Contexto:</strong> Nos versos 7-9, Davi usa <strong>seis nomes diferentes</strong> para a Palavra de Deus (lei, testemunho, preceitos, mandamentos, temor, juízos) e para cada um dá uma <strong>característica</strong> e um <strong>benefício</strong>. É como se ele dissesse: "A Palavra de Deus é tudo o que você precisa — em todas as áreas da vida".
+    </div>
+
+    <div class="grego">
+      <strong>📖 Palavra original (hebraico):</strong> "Perfeita" é <em>tamim</em> (תָּמִים), que significa "completa, íntegra, sem defeito". É a mesma palavra usada para os <strong>sacrifícios</strong> que deviam ser sem defeito (Lv 22.21). A Palavra de Deus é um sacrifício perfeito que nos alimenta.
+    </div>
+
+    <div class="secao-titulo">1) ENTENDENDO</div>
+    <p>Davi usa seis sinônimos para descrever a Bíblia. Para cada um, ele dá uma característica (perfeita, fiel, reta, pura, verdadeira) e um benefício (refrigera a alma, dá sabedoria, alegra o coração, ilumina os olhos). A Palavra de Deus não é um livro de regras — é um presente que restaura, ensina e ilumina.</p>
+    <p><strong>➔ Qual desses benefícios (refrigério, sabedoria, alegria, iluminação) você mais precisa experimentar hoje? Por quê?</strong></p>
+    <textarea id="resp-ter-1" placeholder="Escreva sua resposta aqui..." oninput="salvarAuto('resp-ter-1')"></textarea>
+    <div class="salvo-aviso" id="aviso-resp-ter-1"></div>
+
+    <div class="secao-titulo">2) MEMORIZANDO</div>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “A <input class="lacuna" data-resp="lei" id="lac-ter-1"> do Senhor é <input class="lacuna" data-resp="perfeita" id="lac-ter-2">, e <input class="lacuna" data-resp="refrigera" id="lac-ter-3"> a alma; o <input class="lacuna" data-resp="testemunho" id="lac-ter-4"> do Senhor é <input class="lacuna" data-resp="fiel" id="lac-ter-5">, e dá <input class="lacuna" data-resp="sabedoria" id="lac-ter-6"> aos <input class="lacuna" data-resp="simples" id="lac-ter-7">.”
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('ter', 7)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('ter')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-ter"></div>
+      <div class="placar" id="placar-ter">Pontos: 0 / 7</div>
+    </div>
+
+    <div class="secao-titulo">3) TIRANDO A LIÇÃO</div>
+    <button class="versiculo-btn" onclick="abrirVersiculo('2 Timóteo 3.16-17')">📖 2 Timóteo 3.16-17</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Hebreus 4.12')">📖 Hebreus 4.12</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Josué 1.8')">📖 Josué 1.8</button>
+    <p style="margin-top:14px;"><strong>➔ Você tem permitido que a Palavra de Deus examine e transforme as suas atitudes e pensamentos? Dê exemplos concretos.</strong></p>
+    <textarea id="resp-ter-2" placeholder="Escreva sua reflexão..." oninput="salvarAuto('resp-ter-2')"></textarea>
+    <div class="salvo-aviso" id="aviso-resp-ter-2"></div>
+
+    <div class="aplicacao">
+      <strong>💡 Aplicação prática:</strong> Escolha um dos benefícios citados (refrigério, sabedoria, alegria, iluminação) e ore especificamente por ele hoje. Se você está ansioso, peça refrigério. Se está confuso, peça sabedoria. Se está triste, peça alegria. Se está perdido, peça iluminação.
+    </div>
+
+    <div class="secao-titulo">4) FAZENDO UMA DECISÃO</div>
+    <p>Decida memorizar um dos versículos lidos hoje. Comprometa-se a ler a Bíblia todos os dias, mesmo que seja um capítulo. Escreva sua decisão:</p>
+    <textarea id="decisao-ter" placeholder="Escreva sua decisão de hoje..." oninput="salvarAuto('decisao-ter')"></textarea>
+    <div class="salvo-aviso" id="aviso-decisao-ter"></div>
+
+    <div class="oracao">
+      <strong>🙏 Oração guiada:</strong> "Senhor, obrigado porque a Tua Palavra é perfeita e refrigera a minha alma. Eu reconheço que muitas vezes busco outras coisas para me satisfazer, mas só Tu podes me dar o que eu preciso. Ajuda-me a amar a Tua Palavra mais do que qualquer outra coisa. Em nome de Jesus, amém."
+    </div>
+
+    <div class="secao-titulo">5) COMPARTILHANDO</div>
+    <p>Agradeça a Deus pelo privilégio de ter a Sua Palavra. Compartilhe com alguém o versículo que decidiu memorizar e o motivo pelo qual ele é importante para você.</p>
+  </div>
+</div>
+
+<!-- ============ QUARTA ============ -->
+<div class="dia" id="dia-2">
+  <div class="card destaque">
+    <h2>Quarta – O Valor Inestimável</h2>
+    <div class="versiculo-chave">
+      “São mais desejáveis do que o ouro, sim, do que muito ouro puro; e são mais doces do que o mel, do que as gotas do favo.” (Sl 19.10)
+    </div>
+
+    <div class="contexto">
+      <strong>📜 Contexto:</strong> Na época de Davi, o ouro era o bem mais valioso que existia, e o mel era o alimento mais doce e raro (não havia açúcar refinado). Davi usa essas duas imagens para dizer: <em>"A Palavra de Deus vale mais do que a coisa mais cara e é mais prazerosa do que a coisa mais doce que você conhece."</em>
+    </div>
+
+    <div class="grego">
+      <strong>📖 Palavra original (hebraico):</strong> "Desejáveis" é <em>chamad</em> (חָמַד), que significa "cobiçar, desejar intensamente". É o mesmo verbo usado no <strong>10º mandamento</strong>: "Não cobiçarás" (Êx 20.17). Davi está dizendo: "É <em>certo</em> cobiçar a Palavra de Deus!"
+    </div>
+
+    <div class="secao-titulo">1) ENTENDENDO</div>
+    <p>Davi usa duas metáforas: ouro e mel. O ouro representa riqueza e segurança; o mel representa doçura e prazer. A Palavra de Deus é mais valiosa que a maior riqueza e mais prazerosa que a comida mais doce.</p>
+    <p><strong>➔ Se a Palavra é tão valiosa, por que muitas vezes preferimos passar horas no celular, em séries ou em compras, em vez de meditar nela? O que isso revela sobre o nosso coração?</strong></p>
+    <textarea id="resp-qua-1" placeholder="Escreva sua resposta..." oninput="salvarAuto('resp-qua-1')"></textarea>
+    <div class="salvo-aviso" id="aviso-resp-qua-1"></div>
+
+    <div class="secao-titulo">2) MEMORIZANDO</div>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “São mais <input class="lacuna" data-resp="desejáveis" id="lac-qua-1"> do que o <input class="lacuna" data-resp="ouro" id="lac-qua-2">, sim, do que muito ouro <input class="lacuna" data-resp="puro" id="lac-qua-3">; e são mais <input class="lacuna" data-resp="doces" id="lac-qua-4"> do que o <input class="lacuna" data-resp="mel" id="lac-qua-5">, do que as gotas do <input class="lacuna" data-resp="favo" id="lac-qua-6">.”
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('qua', 6)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('qua')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-qua"></div>
+      <div class="placar" id="placar-qua">Pontos: 0 / 6</div>
+    </div>
+
+    <div class="secao-titulo">3) TIRANDO A LIÇÃO</div>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 3.13-15')">📖 Provérbios 3.13-15</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmo 119.72')">📖 Salmo 119.72</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 24.13-14')">📖 Provérbios 24.13-14</button>
+    <p style="margin-top:14px;"><strong>➔ O que você tem buscado com mais afinco: estabilidade financeira, prazer, reconhecimento ou a sabedoria que vem de Deus? Como você pode reorganizar suas prioridades esta semana?</strong></p>
+    <textarea id="resp-qua-2" placeholder="Escreva sua reflexão..." oninput="salvarAuto('resp-qua-2')"></textarea>
+    <div class="salvo-aviso" id="aviso-resp-qua-2"></div>
+
+    <div class="aplicacao">
+      <strong>💡 Aplicação prática:</strong> Faça uma lista de 3 coisas que você tem valorizado mais do que a Palavra de Deus (ex: redes sociais, novelas, compras, trabalho excessivo). Para cada uma, escreva uma pequena decisão de como reduzi-la. Depois, escreva uma coisa que você vai <em>aumentar</em> em troca (ex: 15 minutos de leitura bíblica por dia).
+    </div>
+
+    <div class="secao-titulo">4) FAZENDO UMA DECISÃO</div>
+    <p>Escreva abaixo as 3 coisas que você vai reduzir e o que vai aumentar em troca:</p>
+    <textarea id="decisao-qua" placeholder="Ex:&#10;1. Vou reduzir o tempo no Instagram de 2h para 30min.&#10;2. Vou aumentar 15 min de leitura bíblica por dia.&#10;..." oninput="salvarAuto('decisao-qua')"></textarea>
+    <div class="salvo-aviso" id="aviso-decisao-qua"></div>
+
+    <div class="oracao">
+      <strong>🙏 Oração guiada:</strong> "Senhor, perdoa-me por tantas vezes ter valorizado coisas passageiras mais do que a Tua Palavra. Ajuda-me a enxergar a Tua Palavra como ouro puro e mel doce. Que eu a deseje mais do que qualquer outra coisa. Em nome de Jesus, amém."
+    </div>
+
+    <div class="secao-titulo">5) COMPARTILHANDO</div>
+    <p>Compartilhe com um amigo o que você tem aprendido sobre o valor da Palavra. Ore para que Deus aumente o desejo dele também.</p>
+  </div>
+</div>
+
+<!-- ============ QUINTA ============ -->
+<div class="dia" id="dia-3">
+  <div class="card destaque">
+    <h2>Quinta – A Palavra que Corrige e Recompensa</h2>
+    <div class="versiculo-chave">
+      “Também o teu servo é advertido por elas; em guardá-las há grande recompensa.” (Sl 19.11)
+    </div>
+
+    <div class="contexto">
+      <strong>📜 Contexto:</strong> Davi passa da admiração para a <strong>aplicação pessoal</strong>. Ele reconhece que a Palavra não é só para ser admirada — é para ser obedecida. Ele fala de <strong>dois tipos de pecados</strong>: os "escondidos" (que nem percebemos) e os "presunçosos" (que cometemos conscientemente). E pede que Deus o purifique de ambos.
+    </div>
+
+    <div class="grego">
+      <strong>📖 Palavra original (hebraico):</strong> "Advertido" é <em>zahar</em> (זָהַר), que significa "brilhar, iluminar, avisar". A Palavra de Deus é como uma <strong>lanterna</strong> que ilumina os cantos escuros do nosso coração. Não é para nos condenar, mas para nos libertar.
+    </div>
+
+    <div class="secao-titulo">1) ENTENDENDO</div>
+    <p>A Palavra de Deus não é apenas para ser admirada; é para ser obedecida. Davi reconhece que a Bíblia o adverte e o corrige. Ele sabe que há pecados "escondidos" e pecados "presunçosos". A obediência traz "grande recompensa".</p>
+    <p><strong>➔ Você tem permitido que a Bíblia te corrija? Qual foi a última vez que você mudou uma atitude porque a Palavra te mostrou que estava errada? Seja honesto(a).</strong></p>
+    <textarea id="resp-qui-1" placeholder="Escreva sua resposta..." oninput="salvarAuto('resp-qui-1')"></textarea>
+    <div class="salvo-aviso" id="aviso-resp-qui-1"></div>
+
+    <div class="secao-titulo">2) MEMORIZANDO</div>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “Também o teu <input class="lacuna" data-resp="servo" id="lac-qui-1"> é <input class="lacuna" data-resp="advertido" id="lac-qui-2"> por elas; em <input class="lacuna" data-resp="guardá-las" id="lac-qui-3"> há grande <input class="lacuna" data-resp="recompensa" id="lac-qui-4">.”
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('qui', 4)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('qui')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-qui"></div>
+      <div class="placar" id="placar-qui">Pontos: 0 / 4</div>
+    </div>
+
+    <div class="secao-titulo">3) TIRANDO A LIÇÃO</div>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 3.11-12')">📖 Provérbios 3.11-12</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Hebreus 12.5-11')">📖 Hebreus 12.5-11</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Apocalipse 3.19')">📖 Apocalipse 3.19</button>
+    <p style="margin-top:14px;"><strong>➔ A correção de Deus não é castigo, mas cuidado. Você tem recebido a correção com humildade ou com resistência? Como você pode mudar isso?</strong></p>
+    <textarea id="resp-qui-2" placeholder="Escreva sua reflexão..." oninput="salvarAuto('resp-qui-2')"></textarea>
+    <div class="salvo-aviso" id="aviso-resp-qui-2"></div>
+
+    <div class="aplicacao">
+      <strong>💡 Aplicação prática:</strong> Faça uma oração como a de Davi: <em>"Sonda-me, ó Deus, e conhece o meu coração; prova-me e conhece os meus pensamentos. Vê se em mim existe algum caminho mau e guia-me pelo caminho eterno"</em> (Sl 139.23-24). Depois, fique em silêncio por 3 minutos ouvindo o que Deus quer te mostrar.
+    </div>
+
+    <div class="secao-titulo">4) FAZENDO UMA DECISÃO</div>
+    <p>Escreva abaixo o que Deus mostrou ao seu coração e o que você vai fazer a respeito:</p>
+    <textarea id="decisao-qui" placeholder="Escreva sua decisão de hoje..." oninput="salvarAuto('decisao-qui')"></textarea>
+    <div class="salvo-aviso" id="aviso-decisao-qui"></div>
+
+    <div class="oracao">
+      <strong>🙏 Oração guiada:</strong> "Senhor, eu quero ser corrigido por Ti. Mostra-me os pecados que eu não vejo e guarda-me dos pecados que eu cometo de forma consciente. Dá-me um coração humilde para aceitar a Tua correção. Em nome de Jesus, amém."
+    </div>
+
+    <div class="secao-titulo">5) COMPARTILHANDO</div>
+    <p>Agradeça a Deus pela correção amorosa dEle. Compartilhe com alguém de confiança a sua decisão de ser mais obediente a Deus.</p>
+  </div>
+</div>
+
+<!-- ============ SEXTA ============ -->
+<div class="dia" id="dia-4">
+  <div class="card destaque">
+    <h2>Sexta – A Oração Final</h2>
+    <div class="versiculo-chave">
+      “Que as palavras da minha boca e a meditação do meu coração sejam agradáveis a ti, Senhor, minha Rocha e meu Redentor.” (Sl 19.14)
+    </div>
+
+    <div class="contexto">
+      <strong>📜 Contexto:</strong> Este é o versículo mais famoso do Salmo 19. Davi termina sua meditação com uma <strong>oração que resume tudo</strong>: ele quer que sua vida interior (meditação do coração) e exterior (palavras da boca) sejam agradáveis a Deus. Ele chama Deus de <strong>"Rocha"</strong> (segurança, fundamento) e <strong>"Redentor"</strong> (aquele que resgata, que compra de volta).
+    </div>
+
+    <div class="grego">
+      <strong>📖 Palavra original (hebraico):</strong> "Redentor" é <em>go'el</em> (גֹּאֵל), um termo jurídico que designava o <strong>parente mais próximo</strong> que tinha a obrigação de resgatar um familiar que havia sido vendido como escravo ou perdido suas terras. Jesus é o nosso <em>Go'el</em> — Ele se tornou nosso parente em Cristo para nos resgatar!
+    </div>
+
+    <div class="secao-titulo">1) ENTENDENDO</div>
+    <p>O Salmo termina com uma oração que resume tudo. Davi deseja que sua vida (palavras e pensamentos) seja agradável a Deus. Ele reconhece que Deus é a sua "Rocha" e o seu "Redentor".</p>
+    <p><strong>➔ Se as suas palavras e pensamentos de hoje fossem colocados em uma balança, seriam agradáveis a Deus? O que você precisa mudar para que essa oração se torne realidade na sua vida?</strong></p>
+    <textarea id="resp-sex-1" placeholder="Escreva sua resposta..." oninput="salvarAuto('resp-sex-1')"></textarea>
+    <div class="salvo-aviso" id="aviso-resp-sex-1"></div>
+
+    <div class="secao-titulo">2) MEMORIZANDO</div>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “Que as <input class="lacuna" data-resp="palavras" id="lac-sex-1"> da minha <input class="lacuna" data-resp="boca" id="lac-sex-2"> e a <input class="lacuna" data-resp="meditação" id="lac-sex-3"> do meu <input class="lacuna" data-resp="coração" id="lac-sex-4"> sejam <input class="lacuna" data-resp="agradáveis" id="lac-sex-5"> a ti, Senhor, minha <input class="lacuna" data-resp="Rocha" id="lac-sex-6"> e meu <input class="lacuna" data-resp="Redentor" id="lac-sex-7">.”
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('sex', 7)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('sex')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-sex"></div>
+      <div class="placar" id="placar-sex">Pontos: 0 / 7</div>
+    </div>
+
+    <div class="secao-titulo">3) TIRANDO A LIÇÃO</div>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 4.23')">📖 Provérbios 4.23</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Mateus 12.34')">📖 Mateus 12.34</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Colossenses 3.17')">📖 Colossenses 3.17</button>
+    <p style="margin-top:14px;"><strong>➔ Quanto mais meditamos na Palavra, mais os nossos pensamentos se alinham com os de Deus. O que você precisa mudar nas suas palavras e nos seus pensamentos?</strong></p>
+    <textarea id="resp-sex-2" placeholder="Escreva sua reflexão..." oninput="salvarAuto('resp-sex-2')"></textarea>
+    <div class="salvo-aviso" id="aviso-resp-sex-2"></div>
+
+    <div class="aplicacao">
+      <strong>💡 Aplicação prática:</strong> Durante o dia de hoje, cada vez que você for falar algo negativo, pare, respire e transforme em algo positivo. Faça isso por 24 horas. Anote no seu caderno quantas vezes você conseguiu e quantas falhou.
+    </div>
+
+    <div class="secao-titulo">4) FAZENDO UMA DECISÃO</div>
+    <p>Escreva 3 coisas que você precisa mudar nas suas palavras e 3 coisas que precisa mudar nos seus pensamentos:</p>
+    <textarea id="decisao-sex" placeholder="Palavras:&#10;1.&#10;2.&#10;3.&#10;&#10;Pensamentos:&#10;1.&#10;2.&#10;3." oninput="salvarAuto('decisao-sex')"></textarea>
+    <div class="salvo-aviso" id="aviso-decisao-sex"></div>
+
+    <div class="oracao">
+      <strong>🙏 Oração guiada:</strong> "Senhor, que as palavras da minha boca e a meditação do meu coração sejam agradáveis a Ti. Tu és a minha Rocha e o meu Redentor. Ajuda-me a guardar o meu coração e a falar somente o que edifica. Em nome de Jesus, amém."
+    </div>
+
+    <div class="secao-titulo">5) COMPARTILHANDO</div>
+    <p>Encerre a semana lendo o Salmo 19 inteiro em voz alta, como uma oração. Agradeça pelo que aprendeu. Compartilhe com alguém a sua oração final e o compromisso assumido com Deus nesta semana.</p>
+  </div>
+</div>
+
+<!-- ============ DIÁRIO ESPIRITUAL ============ -->
+<div class="dia" id="dia-5">
+  <div class="card">
+    <h2>📋 Minhas Decisões da Semana</h2>
+    <p>Aqui está o resumo de todas as suas decisões. Você pode revisá-las e orar sobre cada uma.</p>
+    <ul class="lista-decisoes" id="lista-decisoes"></ul>
+    <button class="btn btn-ouro" onclick="exportarDecisoes()">📥 Exportar como texto</button>
+    <button class="btn btn-verde" onclick="exportarTudo()">📤 Exportar TUDO (respostas + decisões)</button>
+  </div>
+
+  <div class="card destaque">
+    <h2>📔 Diário Espiritual da Semana</h2>
+    <div class="diario">
+      <h4>O que Deus falou comigo nesta semana?</h4>
+      <textarea id="diario-1" placeholder="Escreva aqui o que Deus ministrou ao seu coração durante esta semana..." oninput="salvarAuto('diario-1')"></textarea>
+      <div class="salvo-aviso" id="aviso-diario-1"></div>
+    </div>
+    <div class="diario">
+      <h4>Qual foi a maior descoberta que fiz sobre a Palavra de Deus?</h4>
+      <textarea id="diario-2" placeholder="Escreva aqui..." oninput="salvarAuto('diario-2')"></textarea>
+      <div class="salvo-aviso" id="aviso-diario-2"></div>
+    </div>
+    <div class="diario">
+      <h4>Como pretendo continuar meditando na Palavra depois desta semana?</h4>
+      <textarea id="diario-3" placeholder="Escreva aqui..." oninput="salvarAuto('diario-3')"></textarea>
+      <div class="salvo-aviso" id="aviso-diario-3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="modal-titulo">Versículo</h3>
+    <div class="ref" id="modal-ref"></div>
+    <div class="texto-nvi" id="modal-texto"></div>
+    <button class="btn btn-fechar" onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
+
+<footer>
+  <p>Nova Tabernáculo Batista — Ministério de Meditação</p>
+  <p>Salmo 19 — A Mensagem dos Céus e a Perfeição da Palavra</p>
+</footer>
+
+<script>
+/* ============ NAVEGAÇÃO ============ */
+function mostrarDia(index, btn) {
+  document.querySelectorAll('.dia').forEach(d => d.classList.remove('ativo'));
+  document.getElementById('dia-' + index).classList.add('ativo');
+  document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
+  btn.classList.add('ativa');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (index === 5) atualizarListaDecisoes();
+}
+
+/* ============ SALVAMENTO ============ */
+function salvarAuto(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  localStorage.setItem('salmo19_' + id, el.value);
+  const aviso = document.getElementById('aviso-' + id);
+  if (aviso) {
+    aviso.textContent = '✔ Salvo automaticamente';
+    setTimeout(() => aviso.textContent = '', 1500);
+  }
+}
+
+function carregarTudo() {
+  document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
+    if (el.id) {
+      const salvo = localStorage.getItem('salmo19_' + el.id);
+      if (salvo !== null) el.value = salvo;
+    }
+  });
+  ['seg','ter','qua','qui','sex'].forEach(dia => {
+    const pontos = localStorage.getItem('salmo19_pontos_' + dia);
+    if (pontos) {
+      const placar = document.getElementById('placar-' + dia);
+      if (placar) placar.textContent = 'Pontos: ' + pontos;
+    }
+  });
+}
+
+/* ============ MEMORIZAÇÃO ============ */
+function verificarMemorizacao(dia, total) {
+  const lacunas = document.querySelectorAll('[id^="lac-' + dia + '-"]');
+  let acertos = 0;
+  lacunas.forEach(lac => {
+    const resposta = lac.value.trim().toLowerCase();
+    const correta = lac.dataset.resp.toLowerCase();
+    lac.classList.remove('correta', 'errada');
+    if (resposta === correta) {
+      lac.classList.add('correta');
+      acertos++;
+    } else if (resposta !== '') {
+      lac.classList.add('errada');
+    }
+  });
+  const feedback = document.getElementById('feedback-' + dia);
+  const placar = document.getElementById('placar-' + dia);
+  placar.textContent = 'Pontos: ' + acertos + ' / ' + total;
+  localStorage.setItem('salmo19_pontos_' + dia, acertos + ' / ' + total);
+
+  if (acertos === total) {
+    feedback.textContent = '🎉 Parabéns! Você acertou todas as ' + total + ' palavras!';
+    feedback.className = 'feedback ok';
+  } else if (acertos >= total / 2) {
+    feedback.textContent = '👍 Muito bem! Você acertou ' + acertos + ' de ' + total + '. Continue!';
+    feedback.className = 'feedback ok';
+  } else {
+    feedback.textContent = '💪 Você acertou ' + acertos + ' de ' + total + '. Leia o versículo e tente de novo!';
+    feedback.className = 'feedback erro';
+  }
+}
+
+function limparMemorizacao(dia) {
+  const lacunas = document.querySelectorAll('[id^="lac-' + dia + '-"]');
+  lacunas.forEach(lac => {
+    lac.value = '';
+    lac.classList.remove('correta', 'errada');
+  });
+  document.getElementById('feedback-' + dia).textContent = '';
+  document.getElementById('placar-' + dia).textContent = 'Pontos: 0 / ' + lacunas.length;
+  localStorage.removeItem('salmo19_pontos_' + dia);
+}
+
+/* ============ VERSÍCULOS NVI ============ */
+const versiculosNVI = {
+  'Romanos 1.20': 'Pois desde a criação do mundo os atributos invisíveis de Deus, seu eterno poder e sua natureza divina, têm sido vistos claramente, sendo compreendidos por meio das coisas criadas, de forma que tais homens são indesculpáveis.',
+  'Atos 14.17': 'Contudo, não deixou de dar testemunho de si mesmo: faz o bem, dando a vocês chuvas do céu e colheitas no tempo certo, concedendo-lhes alimento em abundância e enchendo de alegria os seus corações.',
+  'Jó 12.7-9': 'Pergunte aos animais, e eles o ensinarão; às aves do céu, e elas o informarão; fale com a terra, e ela o instruirá; os peixes do mar o informarão. Qual deles não sabe que a mão do Senhor fez isso?',
+  '2 Timóteo 3.16-17': 'Toda a Escritura é inspirada por Deus e útil para o ensino, para a repreensão, para a correção e para a instrução na justiça, para que o homem de Deus seja apto e plenamente preparado para toda boa obra.',
+  'Hebreus 4.12': 'Pois a palavra de Deus é viva e eficaz, e mais afiada que qualquer espada de dois gumes; ela penetra até o ponto de dividir alma e espírito, juntas e medulas, e julga os pensamentos e as intenções do coração.',
+  'Josué 1.8': 'Não deixe de falar as palavras deste Livro da Lei e de meditar nelas de dia e de noite, para que você cumpra fielmente tudo o que nele está escrito. Só então os seus caminhos prosperarão e você será bem-sucedido.',
+  'Provérbios 3.13-15': 'Feliz é o homem que acha sabedoria, o homem que adquire entendimento; pois ela é mais lucrativa do que a prata, e rende mais do que o ouro. Ela é mais preciosa do que as joias; tudo o que você deseja não se compara a ela.',
+  'Salmo 119.72': 'A lei da tua boca é para mim mais preciosa do que milhares de moedas de ouro e de prata.',
+  'Provérbios 24.13-14': 'Meu filho, coma mel, porque é bom; o mel do favo é doce ao paladar. Saiba que a sabedoria é doce para a sua alma; se você a encontrar, há esperança para o seu futuro, e a sua esperança não será frustrada.',
+  'Provérbios 3.11-12': 'Meu filho, não despreze a disciplina do Senhor, nem se irrite com a sua repreensão, pois o Senhor disciplina a quem ama, assim como o pai faz ao filho de quem deseja o bem.',
+  'Hebreus 12.5-11': 'Vocês se esqueceram da palavra de ânimo que ele lhes dirige como a filhos: "Meu filho, não despreze a disciplina do Senhor, nem se magoe com a sua repreensão, pois o Senhor disciplina a quem ama, e castiga todo aquele a quem aceita como filho". Suportem as dificuldades como disciplina; Deus está tratando vocês como filhos. Pois, qual é o filho a quem seu pai não disciplina? ... Nenhuma disciplina parece ser motivo de alegria no momento, mas sim de tristeza. Mais tarde, porém, produz fruto de justiça e paz para aqueles que por ela foram exercitados.',
+  'Apocalipse 3.19': 'Eu repreendo e disciplino a quantos amo. Portanto, seja zeloso e arrependa-se.',
+  'Provérbios 4.23': 'Acima de tudo, guarde o seu coração, pois dele depende a sua vida.',
+  'Mateus 12.34': 'Raça de víboras, como podem vocês, que são maus, dizer coisas boas? Pois a boca fala do que está cheio o coração.',
+  'Colossenses 3.17': 'Tudo o que fizerem, seja em palavra ou em ação, façam-no em nome do Senhor Jesus, dando por meio dele graças a Deus Pai.'
+};
+
+function abrirVersiculo(ref) {
+  const modal = document.getElementById('modal-overlay');
+  document.getElementById('modal-titulo').textContent = '📖 ' + ref;
+  document.getElementById('modal-ref').textContent = 'Tradução: Nova Versão Internacional (NVI)';
+  document.getElementById('modal-texto').textContent = versiculosNVI[ref] || 'Texto não disponível offline.';
+  modal.classList.add('aberto');
+}
+
+function fecharModal(event) {
+  if (event && event.target !== event.currentTarget && event.target.className !== 'btn btn-fechar') return;
+  document.getElementById('modal-overlay').classList.remove('aberto');
+}
+
+/* ============ LISTA DE DECISÕES ============ */
+function atualizarListaDecisoes() {
+  const lista = document.getElementById('lista-decisoes');
+  lista.innerHTML = '';
+  const dias = [
+    { id: 'decisao-seg', nome: 'Segunda – A Voz da Criação' },
+    { id: 'decisao-ter', nome: 'Terça – A Perfeição da Palavra' },
+    { id: 'decisao-qua', nome: 'Quarta – O Valor Inestimável' },
+    { id: 'decisao-qui', nome: 'Quinta – A Palavra que Corrige' },
+    { id: 'decisao-sex', nome: 'Sexta – A Oração Final' }
+  ];
+  let temAlgo = false;
+  dias.forEach(d => {
+    const valor = localStorage.getItem('salmo19_' + d.id);
+    if (valor && valor.trim() !== '') {
+      temAlgo = true;
+      const li = document.createElement('li');
+      li.innerHTML = '<strong>' + d.nome + ':</strong><br>' + valor.replace(/\n/g, '<br>');
+      lista.appendChild(li);
+    }
+  });
+  if (!temAlgo) {
+    lista.innerHTML = '<li>Nenhuma decisão registrada ainda. Comece a meditar e suas decisões aparecerão aqui.</li>';
+  }
+}
+
+function exportarDecisoes() {
+  const dias = [
+    { id: 'decisao-seg', nome: 'SEGUNDA – A Voz da Criação' },
+    { id: 'decisao-ter', nome: 'TERÇA – A Perfeição da Palavra' },
+    { id: 'decisao-qua', nome: 'QUARTA – O Valor Inestimável' },
+    { id: 'decisao-qui', nome: 'QUINTA – A Palavra que Corrige' },
+    { id: 'decisao-sex', nome: 'SEXTA – A Oração Final' }
+  ];
+  let texto = 'MINHAS DECISÕES – SALMO 19\n' + '='.repeat(50) + '\n\n';
+  dias.forEach(d => {
+    const valor = localStorage.getItem('salmo19_' + d.id) || '(sem decisão registrada)';
+    texto += d.nome + '\n' + '-'.repeat(40) + '\n' + valor + '\n\n';
+  });
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'minhas-decisoes-salmo19.txt';
+  link.click();
+}
+
+function exportarTudo() {
+  const dias = ['seg','ter','qua','qui','sex'];
+  const nomes = { seg: 'SEGUNDA', ter: 'TERÇA', qua: 'QUARTA', qui: 'QUINTA', sex: 'SEXTA' };
+  let texto = 'MINHA MEDITAÇÃO COMPLETA – SALMO 19\n' + '='.repeat(60) + '\n\n';
+  dias.forEach(d => {
+    texto += '\n### ' + nomes[d] + ' ###\n' + '-'.repeat(40) + '\n';
+    // Respostas
+    const respostas = document.querySelectorAll('[id^="resp-' + d + '-"]');
+    respostas.forEach((r, i) => {
+      const salvo = localStorage.getItem('salmo19_' + r.id) || '(sem resposta)';
+      texto += 'Pergunta ' + (i+1) + ':\n' + salvo + '\n\n';
+    });
+    // Decisão
+    const decisao = localStorage.getItem('salmo19_decisao-' + d) || '(sem decisão)';
+    texto += 'DECISÃO:\n' + decisao + '\n\n';
+    // Pontos
+    const pontos = localStorage.getItem('salmo19_pontos_' + d) || '0 / 0';
+    texto += 'Memorização: ' + pontos + '\n';
+  });
+  // Diário
+  texto += '\n\n### DIÁRIO ESPIRITUAL ###\n' + '-'.repeat(40) + '\n';
+  ['diario-1','diario-2','diario-3'].forEach(id => {
+    const salvo = localStorage.getItem('salmo19_' + id) || '(vazio)';
+    texto += '\n' + id + ':\n' + salvo + '\n';
+  });
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'meditacao-completa-salmo19.txt';
+  link.click();
+}
+
+/* ============ INICIALIZAÇÃO ============ */
+window.onload = function() {
+  carregarTudo();
+  atualizarListaDecisoes();
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('modal-overlay').classList.remove('aberto');
+  }
+});
+</script>
+
+</body>
+</html>
