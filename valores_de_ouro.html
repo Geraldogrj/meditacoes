@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meditação Interativa - Valores de Ouro S1</title>
+<style>
+  :root {
+    --azul: #1e3a5f;
+    --azul-claro: #2c5282;
+    --dourado: #b7791f;
+    --verde: #276749;
+    --vermelho: #9b2c2c;
+    --fundo: #f7fafc;
+    --card: #ffffff;
+    --texto: #1a202c;
+    --borda: #cbd5e0;
+    --creme: #fffaf0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1.7;
+    background: var(--fundo);
+    color: var(--texto);
+    margin: 0;
+    padding: 0 12px 100px;
+  }
+  header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    color: #fff;
+    padding: 26px 16px 22px;
+    text-align: center;
+    border-radius: 0 0 20px 20px;
+    margin: 0 -12px 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+  header h1 { margin: 0 0 8px; font-size: 28px; letter-spacing: .5px; }
+  header p { margin: 4px 0; font-size: 18px; opacity: .95; }
+
+  .abas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 22px;
+    position: sticky;
+    top: 0;
+    background: var(--fundo);
+    padding: 10px 0;
+    z-index: 50;
+  }
+  .aba {
+    background: #fff;
+    border: 3px solid var(--azul-claro);
+    color: var(--azul);
+    padding: 12px 18px;
+    font-size: 17px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .2s;
+  }
+  .aba:hover { background: #ebf4ff; transform: translateY(-2px); }
+  .aba.ativa { background: var(--azul-claro); color: #fff; }
+
+  .dia { display: none; animation: fade .3s; }
+  .dia.ativo { display: block; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    border-left: 8px solid var(--dourado);
+  }
+  .card.destaque { border-left-color: var(--verde); background: #f0fdf9; }
+  .card h2 {
+    font-size: 24px;
+    color: var(--azul);
+    margin: 0 0 14px;
+    border-bottom: 3px solid var(--borda);
+    padding-bottom: 10px;
+  }
+  .card h3 { font-size: 20px; color: var(--azul-claro); margin-top: 24px; }
+  
+  .versiculo-chave {
+    font-style: italic;
+    background: var(--creme);
+    border-left: 6px solid var(--dourado);
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin: 14px 0;
+    font-size: 20px;
+    color: #744210;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  textarea, input[type="text"], input[type="number"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 19px;
+    padding: 12px;
+    border: 2px solid var(--borda);
+    border-radius: 10px;
+    background: #fff;
+    resize: vertical;
+    min-height: 50px;
+    margin-top: 6px;
+  }
+  textarea:focus, input:focus {
+    outline: 3px solid var(--dourado);
+    border-color: var(--dourado);
+  }
+  .salvo-aviso {
+    font-size: 15px;
+    color: var(--verde);
+    margin-top: 4px;
+    height: 20px;
+    font-weight: bold;
+  }
+
+  .versiculo-btn {
+    display: inline-block;
+    background: #ebf8ff;
+    color: var(--azul-claro);
+    border: 2px solid var(--azul-claro);
+    padding: 10px 16px;
+    margin: 6px 6px 6px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: bold;
+    transition: .2s;
+  }
+  .versiculo-btn:hover { background: var(--azul-claro); color: #fff; }
+
+  .btn {
+    background: var(--azul-claro);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 8px 8px 8px 0;
+    transition: .2s;
+  }
+  .btn:hover { background: var(--azul); transform: translateY(-2px); }
+  .btn-verde { background: var(--verde); }
+  .btn-verde:hover { background: #22543d; }
+  .btn-limpar { background: #718096; }
+  .btn-limpar:hover { background: #4a5568; }
+  .btn-ouro { background: var(--dourado); }
+  .btn-ouro:hover { background: #975a16; }
+
+  .feedback {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    min-height: 30px;
+  }
+  .feedback.ok { color: var(--verde); }
+  .feedback.erro { color: var(--vermelho); }
+
+  .tabela-responsiva {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    background: #fff;
+    font-size: 18px;
+  }
+  .tabela-responsiva th, .tabela-responsiva td {
+    border: 2px solid var(--borda);
+    padding: 10px;
+    text-align: left;
+  }
+  .tabela-responsiva th { background: #ebf8ff; color: var(--azul); }
+  .tabela-responsiva input { min-height: 40px; margin: 0; padding: 8px; }
+
+  /* Estilos do Jogo de Memorização */
+  .memoriza-area {
+    background: #f0fff4;
+    border: 3px dashed var(--verde);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 14px 0;
+  }
+  .memoriza-frase {
+    font-size: 20px;
+    line-height: 2.5;
+    margin-bottom: 14px;
+  }
+  .lacuna {
+    display: inline-block;
+    width: 130px;
+    border: none;
+    border-bottom: 3px solid var(--dourado);
+    background: #fffdf5;
+    font-size: 19px;
+    padding: 4px 6px;
+    margin: 0 4px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--azul);
+  }
+  .lacuna.correta { border-bottom-color: var(--verde); background: #c6f6d5; }
+  .lacuna.errada { border-bottom-color: var(--vermelho); background: #fed7d7; }
+  .placar {
+    background: var(--dourado);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: bold;
+    display: inline-block;
+    margin: 10px 0;
+  }
+
+  /* Checkboxes customizados */
+  .check-group {
+    margin: 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid var(--borda);
+    cursor: pointer;
+    transition: .2s;
+  }
+  .check-item:hover { border-color: var(--azul-claro); }
+  .check-item input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    margin-top: 4px;
+    cursor: pointer;
+    accent-color: var(--verde);
+  }
+
+  /* Lista de Decisões */
+  .lista-decisoes { list-style: none; padding: 0; }
+  .lista-decisoes li {
+    background: var(--creme);
+    border-left: 6px solid var(--dourado);
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    font-size: 18px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65);
+    z-index: 999; justify-content: center; align-items: center; padding: 16px;
+  }
+  .modal-overlay.aberto { display: flex; }
+  .modal {
+    background: #fff; border-radius: 16px; max-width: 720px; width: 100%;
+    max-height: 85vh; overflow-y: auto; padding: 28px; box-shadow: 0 10px 40px rgba(0,0,0,.3);
+  }
+  .modal h3 { margin-top: 0; color: var(--azul); border-bottom: 3px solid var(--dourado); padding-bottom: 10px; }
+  .modal .texto-nvi { font-size: 21px; line-height: 1.8; color: #2d3748; }
+  .modal .ref { font-weight: bold; color: var(--dourado); margin-bottom: 12px; }
+  .modal .btn-fechar { background: var(--vermelho); margin-top: 16px; }
+
+  footer { text-align: center; color: #718096; font-size: 15px; margin-top: 30px; padding: 20px; border-top: 2px solid var(--borda); }
+
+  @media (max-width: 600px) {
+    body { font-size: 18px; }
+    .aba { font-size: 15px; padding: 10px 12px; }
+    .lacuna { width: 90px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏆 Valores de Ouro</h1>
+  <p><strong>Semana 1 — Integridade</strong></p>
+</header>
+
+<div class="abas">
+  <button class="aba ativa" onclick="mostrarDia(0, this)">Segunda</button>
+  <button class="aba" onclick="mostrarDia(1, this)">Terça</button>
+  <button class="aba" onclick="mostrarDia(2, this)">Quarta</button>
+  <button class="aba" onclick="mostrarDia(3, this)">Quinta</button>
+  <button class="aba" onclick="mostrarDia(4, this)">Sexta</button>
+  <button class="aba" onclick="mostrarDia(5, this)">📋 Decisões</button>
+</div>
+
+<!-- ============ SEGUNDA ============ -->
+<div class="dia ativo" id="dia-0">
+  <div class="card destaque">
+    <h2>Segunda-feira – Tema: O DIAMANTE DA INTEGRIDADE</h2>
+    <div class="versiculo-chave">
+      “Minha integridade não negarei jamais, até à morte. Manterei minha retidão e nunca a deixarei; enquanto eu viver, a minha consciência não me repreenderá.” (Jó 27:5-6)
+    </div>
+
+    <h3>1) ENTENDER:</h3>
+    <p>Vivemos em uma sociedade onde os valores mudam constantemente de acordo com políticas, pensamentos e benefícios próprios. Precisamos ter em mente que a Palavra de Deus nos apresenta princípios eternos que permanecem firmes em todas as gerações. Céus e terra passarão, mas a Palavra de Deus não passará. Esses princípios são verdadeiros tesouros espirituais, mais preciosos do que o ouro, pois moldam nosso caráter, fortalecem nossa fé e direcionam nossa caminhada com Cristo. Entre todas as pedras preciosas conhecidas, o diamante ocupa um lugar especial. Sua resistência, brilho e valor, o tornam símbolo de algo raro e admirado. Da mesma forma, a integridade na vida de um cristão é um dos tesouros mais preciosos da vida cristã. O que é ser íntegro? Ser é uma pessoa quando se está sozinho, mesmo sendo difícil ou quando está sozinho. É a qualidade de agir com honestidade, coerência e firmeza moral.</p>
+    <p><strong>➔ Responda:</strong></p>
+    
+    <p>a) Segundo Jó, por qual motivo ele não negou sua integridade?</p>
+    <textarea id="seg-a" placeholder="Sua resposta..." oninput="salvarAuto('seg-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-a"></div>
+
+    <p>b) Por quais dificuldades Jó passou?</p>
+    <textarea id="seg-b" placeholder="Sua resposta..." oninput="salvarAuto('seg-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-b"></div>
+
+    <p>c) Como você pode ser íntegro?</p>
+    <textarea id="seg-c" placeholder="Sua resposta..." oninput="salvarAuto('seg-c')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-c"></div>
+
+    <p>d) Qual o conceito de retidão?</p>
+    <textarea id="seg-d" placeholder="Sua resposta..." oninput="salvarAuto('seg-d')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-d"></div>
+
+    <p>e) Agora escreva o que você aprendeu:</p>
+    <textarea id="seg-e" placeholder="Sua resposta..." oninput="salvarAuto('seg-e')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-e"></div>
+
+    <h3>2) MEMORIZAR:</h3>
+    <p>Estamos começando uma nova semana. Escolha iniciá-la com foco total na Palavra e, por isso, separe alguns minutos para memorizar o verso de hoje. Separe as palavras-chaves para facilitar sua memorização. <strong>As palavras são: Integridade > Morte > Retidão > Nunca > Consciência.</strong> Agora, sem olhar no texto, tente reconstruir o versículo completo a partir dessas palavras. Esse exercício ajudará você a gravar a mensagem no coração. Memorizou?</p>
+    
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “Minha <input class="lacuna" data-resp="integridade" id="lac-seg-1"> não negarei jamais, até à <input class="lacuna" data-resp="morte" id="lac-seg-2">. Manterei minha <input class="lacuna" data-resp="retidão" id="lac-seg-3"> e <input class="lacuna" data-resp="nunca" id="lac-seg-4"> a deixarei; enquanto eu viver, a minha <input class="lacuna" data-resp="consciência" id="lac-seg-5"> não me repreenderá.”
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('seg', 5)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('seg')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-seg"></div>
+      <div class="placar" id="placar-seg">Pontos: 0 / 5</div>
+    </div>
+
+    <h3>3) TIRAR A LIÇÃO:</h3>
+    <p>Jó escolheu uma vida de integridade, mesmo em meio aos sofrimentos e diante das dificuldades. <strong>Integridade é fazer o que é certo, mesmo que ninguém esteja olhando.</strong> Em um mundo onde a verdade é negociada a qualquer custo e os princípios são ajustados conforme as circunstâncias, a integridade se destaca como um verdadeiro diamante espiritual. Jó enfrentou perdas, sofrimento e acusações injustas, mas permaneceu firme em sua decisão de não abandonar seus valores. Ele declarou: <em>Minha integridade não negarei jamais!</em> Que essa verdade, esteja presente em nossas vidas! Para fortalecer a nossa fé, leia as passagens abaixo:</p>
+    
+    <p>Clique nos versículos para ler (NVI):</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmo 25.21')">📖 Sl. 25:21</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 11.3')">📖 Pv. 11:3</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 20.7')">📖 Pv. 20:7</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Lucas 16.10')">📖 Lc. 16:10</button>
+
+    <table class="tabela-responsiva">
+      <tr><th>Passagem</th><th>Lição</th></tr>
+      <tr><td>Sl. 25:21</td><td><input type="text" id="seg-tab-1" placeholder="Sua lição..." oninput="salvarAuto('seg-tab-1')"></td></tr>
+      <tr><td>Pv. 11:3</td><td><input type="text" id="seg-tab-2" placeholder="Sua lição..." oninput="salvarAuto('seg-tab-2')"></td></tr>
+      <tr><td>Pv. 20:7</td><td><input type="text" id="seg-tab-3" placeholder="Sua lição..." oninput="salvarAuto('seg-tab-3')"></td></tr>
+      <tr><td>Lc. 16:10</td><td><input type="text" id="seg-tab-4" placeholder="Sua lição..." oninput="salvarAuto('seg-tab-4')"></td></tr>
+    </table>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Assim como Jó, todos nós enfrentamos situações em que somos desafiados a renunciar a nossa integridade. E por isso, precisamos escolher a integridade a todo custo! Veja as áreas abaixo, e tome uma decisão para cada uma.</p>
+    <table class="tabela-responsiva">
+      <tr><th>Área</th><th>Decisão</th></tr>
+      <tr><td>Relacionamento com Deus</td><td><input type="text" id="seg-dec-1" placeholder="Sua decisão..." oninput="salvarAuto('seg-dec-1')"></td></tr>
+      <tr><td>Trabalho</td><td><input type="text" id="seg-dec-2" placeholder="Sua decisão..." oninput="salvarAuto('seg-dec-2')"></td></tr>
+      <tr><td>Estudos</td><td><input type="text" id="seg-dec-3" placeholder="Sua decisão..." oninput="salvarAuto('seg-dec-3')"></td></tr>
+      <tr><td>Família</td><td><input type="text" id="seg-dec-4" placeholder="Sua decisão..." oninput="salvarAuto('seg-dec-4')"></td></tr>
+    </table>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Converse com Deus em oração. Agradeça porque Ele é paciente e continua moldando seu caráter todos os dias. Peça que o Espírito Santo lapide seu coração para que a integridade seja um valor presente em suas palavras, atitudes e decisões.</p>
+  </div>
+</div>
+
+<!-- ============ TERÇA ============ -->
+<div class="dia" id="dia-1">
+  <div class="card destaque">
+    <h2>Terça-feira – Tema: O QUILATE DA FÉ INABALÁVEL</h2>
+    <div class="versiculo-chave">
+      “Faz-me justiça, Senhor, pois tenho vivido com integridade. Tenho confiado no Senhor sem vacilar.” (Salmos 26:1)
+    </div>
+
+    <h3>1) ENTENDER:</h3>
+    <p>Na jornada cristã, a fé é um dos tesouros mais valiosos que possuímos. A fé é a certeza de daquilo que esperamos e a certeza das coisas que não vemos. Porém, assim como os diamantes são avaliados por seus quilates, a fé também revela seu verdadeiro valor quando é colocada a prova. Para entender mais o verso de hoje, pesquise o significado das palavras a seguir:</p>
+    
+    <p>a) Significado de Justiça:</p>
+    <textarea id="ter-a" placeholder="Sua resposta..." oninput="salvarAuto('ter-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-a"></div>
+
+    <p>b) Significado de Integridade (coloque o que aprendeu ontem):</p>
+    <textarea id="ter-b" placeholder="Sua resposta..." oninput="salvarAuto('ter-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-b"></div>
+
+    <p>c) Significado de Confiar:</p>
+    <textarea id="ter-c" placeholder="Sua resposta..." oninput="salvarAuto('ter-c')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-c"></div>
+
+    <p>d) Significado de Vacilar:</p>
+    <textarea id="ter-d" placeholder="Sua resposta..." oninput="salvarAuto('ter-d')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-d"></div>
+
+    <p>Após ter pesquisado o significado escreva com suas palavras o que o versículo de hoje tem a ver com ter uma fé inabalável.</p>
+    <textarea id="ter-e" placeholder="Sua resposta..." oninput="salvarAuto('ter-e')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-e"></div>
+
+    <h3>2) MEMORIZAR:</h3>
+    <p>Estamos no segundo dia da nossa semana e, antes de avançar, precisamos relembrar o versículo de ontem. Vamos lá? Se você já conseguiu, está mais fácil a memorização de hoje, porque ele fala de integridade e confiança. Reserve alguns minutos para memorizar.</p>
+    
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “Faz-me <input class="lacuna" data-resp="justiça" id="lac-ter-1">, Senhor, pois tenho vivido com <input class="lacuna" data-resp="integridade" id="lac-ter-2">. Tenho <input class="lacuna" data-resp="confiado" id="lac-ter-3"> no Senhor sem <input class="lacuna" data-resp="vacilar" id="lac-ter-4">.”
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('ter', 4)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('ter')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-ter"></div>
+      <div class="placar" id="placar-ter">Pontos: 0 / 4</div>
+    </div>
+
+    <h3>3) TIRAR A LIÇÃO:</h3>
+    <p>Ter uma fé inabalável é confiar no Senhor sem pensar duas vezes, sem “vacilar” com diz o versículo de hoje. Nos dias de hoje nossa fé é extremamente posta a prova, o mundo realmente jaz no maligno, porque não fala de zomba, perseguida, ameaçada. Deus diz em Sua Palavra que nos últimos dias seria assim, a apostasia vai ser presente em nosso convívio (apostasia é o amor de muitos esfriar). Cabe a cada um de nós permanecer firmes até o fim, não vacilar, ser integro e confiar no Senhor. Leia as passagens a seguir e escreva o que se pede, depois se avalie e se der uma nota.</p>
+
+    <table class="tabela-responsiva">
+      <tr><th>Viver com integridade</th><td>
+        <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 20.7')">📖 Pv. 20:7</button>
+        <br><input type="text" id="ter-tab-1" placeholder="Lição..." oninput="salvarAuto('ter-tab-1')">
+      </td><td>Nota: <input type="number" min="0" max="10" id="ter-nota-1" oninput="salvarAuto('ter-nota-1')"></td></tr>
+      
+      <tr><th>Confiar no Senhor</th><td>
+        <button class="versiculo-btn" onclick="abrirVersiculo('Salmo 37.5')">📖 Sl. 37:5</button>
+        <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 3.5-6')">📖 Pv. 3:5,6</button>
+        <br><input type="text" id="ter-tab-2" placeholder="Lição..." oninput="salvarAuto('ter-tab-2')">
+      </td><td>Nota: <input type="number" min="0" max="10" id="ter-nota-2" oninput="salvarAuto('ter-nota-2')"></td></tr>
+
+      <tr><th>Não vacilar / Não duvidar</th><td>
+        <button class="versiculo-btn" onclick="abrirVersiculo('Hebreus 10.23')">📖 Hb. 10:23</button>
+        <button class="versiculo-btn" onclick="abrirVersiculo('Tiago 1.6')">📖 Tg. 1:6</button>
+        <br><input type="text" id="ter-tab-3" placeholder="Lição..." oninput="salvarAuto('ter-tab-3')">
+      </td><td>Nota: <input type="number" min="0" max="10" id="ter-nota-3" oninput="salvarAuto('ter-nota-3')"></td></tr>
+    </table>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Com base na nota que você tirou nos quadros acima tome uma decisão para melhorar em cada uma delas.</p>
+    <textarea id="ter-dec" placeholder="Eu decido: ..." oninput="salvarAuto('ter-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Ore e peça ajuda a Deus! Ele pode te fazer ter uma fé inabalável. Ore para que continue sempre firme, até nos dias ruins, fale com Deus sobre sua fé.</p>
+  </div>
+</div>
+
+<!-- ============ QUARTA ============ -->
+<div class="dia" id="dia-2">
+  <div class="card destaque">
+    <h2>Quarta-feira – Tema: HONESTIDADE DE OURO</h2>
+    <div class="versiculo-chave">
+      “A integridade dos justos os guia, mas a falsidade dos infiéis os destrói.” (Provérbios 11:3)
+    </div>
+
+    <h3>1) ENTENDER:</h3>
+    <p>O ouro preserva o seu valor ao longo de anos por combinar características físicas únicas atrelado a fatores econômicos. Embora seu valor tenha pequenas oscilações no curto prazo, o ouro raramente perde o seu poder de compra a longo prazo. O que o torna valioso? Raridade e escassez. O ouro não pode ser facilmente encontrado, assim como uma pessoa honesta. Salomão apresenta um contraste claro entre dois caminhos: honestidade ou falsidade. A integridade do cristão funciona como uma bússola, que o guia e orienta a tomar decisões e agir de forma a agradar a Deus. A pessoa que não tem a Deus só se destrói em meio as suas mentiras e falsidades.</p>
+    <p><strong>➔ Responda:</strong></p>
+
+    <p>a) Em que áreas da sua vida você precisa de orientação do Senhor?</p>
+    <textarea id="qua-a" placeholder="Sua resposta..." oninput="salvarAuto('qua-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-a"></div>
+
+    <p>b) Você se considera uma pessoa íntegra?</p>
+    <textarea id="qua-b" placeholder="Sua resposta..." oninput="salvarAuto('qua-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-b"></div>
+
+    <p>c) O que é ser uma pessoa justa, segundo a Bíblia?</p>
+    <textarea id="qua-c" placeholder="Sua resposta..." oninput="salvarAuto('qua-c')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-c"></div>
+
+    <p>d) O que é falsidade?</p>
+    <textarea id="qua-d" placeholder="Sua resposta..." oninput="salvarAuto('qua-d')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-d"></div>
+
+    <p>e) Sua fé tem sido verdadeira?</p>
+    <textarea id="qua-e" placeholder="Sua resposta..." oninput="salvarAuto('qua-e')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-e"></div>
+
+    <p>f) Que são os infiéis?</p>
+    <textarea id="qua-f" placeholder="Sua resposta..." oninput="salvarAuto('qua-f')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-f"></div>
+
+    <h3>2) MEMORIZAR:</h3>
+    <p>Anote o verso de hoje em um papel a parte e relembre durante o dia o verso de hoje. Após memorizar.</p>
+    
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “A <input class="lacuna" data-resp="integridade" id="lac-qua-1"> dos <input class="lacuna" data-resp="justos" id="lac-qua-2"> os guia, mas a <input class="lacuna" data-resp="falsidade" id="lac-qua-3"> dos <input class="lacuna" data-resp="infiéis" id="lac-qua-4"> os destrói.”
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('qua', 4)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('qua')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-qua"></div>
+      <div class="placar" id="placar-qua">Pontos: 0 / 4</div>
+    </div>
+
+    <h3>3) TIRAR A LIÇÃO:</h3>
+    <p>O ouro é um dos metais mais valiosos e desejado pelo mundo, sua pureza, brilho, resistência fazem dele um símbolo de grande valor. Da mesma forma, a honestidade é uma das virtudes mais preciosa na vida cristã. Deus nos chama a viver com sinceridade, transparência e retidão em todas as áreas de nossa vida. Quando decidimos agir com honestidade, encontramos direções seguras, mesmo diante de situações difíceis. Os íntegros são guiados pela segurança da Palavra, porque não estão constantemente ajustando uma imagem falsa, já que seu caráter lhes dá direção. Eles não precisam de esquemas intermináveis para se protegerem, porque vivem abertamente diante de Deus. A integridade não elimina todas as dificuldades, mas traz clareza. Porém, a perversidade dos ímpios se toma autodestrutiva. A traição sempre distorce o que deveria ser reto, e com o tempo essa distorção leva ao colapso. Este versículo mostra novamente que o pecado contém sua própria ruína. O que parece astúcia a curto prazo acaba se revelando destruição no final. Veja as áreas a seguir e der uma nota para cada área na sua vida em relação a honestidade.</p>
+
+    <table class="tabela-responsiva">
+      <tr><th>Trabalho</th><th>Igreja</th><th>Meditação</th><th>Família</th><th>Dinheiro</th></tr>
+      <tr>
+        <td><input type="number" min="0" max="10" id="qua-nota-1" placeholder="0-10" oninput="salvarAuto('qua-nota-1')"></td>
+        <td><input type="number" min="0" max="10" id="qua-nota-2" placeholder="0-10" oninput="salvarAuto('qua-nota-2')"></td>
+        <td><input type="number" min="0" max="10" id="qua-nota-3" placeholder="0-10" oninput="salvarAuto('qua-nota-3')"></td>
+        <td><input type="number" min="0" max="10" id="qua-nota-4" placeholder="0-10" oninput="salvarAuto('qua-nota-4')"></td>
+        <td><input type="number" min="0" max="10" id="qua-nota-5" placeholder="0-10" oninput="salvarAuto('qua-nota-5')"></td>
+      </tr>
+    </table>
+    
+    <p>Agora para cada área em que sua nota foi menor que 7, tome uma decisão (Não precisa ter ido ruim para decidir).</p>
+    <textarea id="qua-dec-area" placeholder="Sua decisão para as áreas com nota baixa..." oninput="salvarAuto('qua-dec-area')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-dec-area"></div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Nossas decisões estão sendo guiadas pela integridade ou pelas circunstâncias da vida? Escolha andar em integridade e agrade ao Senhor Jesus de todo o coração. ( ) Decido:</p>
+    <textarea id="qua-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('qua-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Ore para Deus e peça para Ele te ajudar a ser mais íntegro, justo e fiel a Ele.</p>
+  </div>
+</div>
+
+<!-- ============ QUINTA ============ -->
+<div class="dia" id="dia-3">
+  <div class="card destaque">
+    <h2>Quinta-feira – Tema: CONDUTA IRREPREENSÍVEL</h2>
+    <div class="versiculo-chave">
+      "O Senhor detesta os perversos de coração, mas os de conduta irrepreensível dão-lhe prazer." (Provérbios 11:20)
+    </div>
+
+    <h3>1) ENTENDER:</h3>
+    <p>Ser irrepreensível significa viver com integridade e retidão, de modo que suas ações não deem motivo para acusações justas. Não se trata de ausência absoluta de erros, mas de um caráter transparente e dedicado a Deus. Como vemos na passagem de hoje, o Senhor detesta os perversos de coração, ou seja, aquele que decidem viver afastados de Deus em suas condutas e corações. O homem mau age simplesmente pelo prazer de gerar dor. O seu interior é caído e separado de Deus. A sua mente é inclinada para o mau e para gerar dor. O ser humano sem Cristo é egoísta, maldoso, perverso, enganoso. Ele caminha em direção contrária a direção de Deus.</p>
+    <p><strong>➔ Responda:</strong></p>
+
+    <p>a) Você tem buscado ao Senhor durante a sua semana?</p>
+    <textarea id="qui-a" placeholder="Sua resposta..." oninput="salvarAuto('qui-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-a"></div>
+
+    <p>b) Além da meditação diária, você fala com Deus? Lê sua Bíblia?</p>
+    <textarea id="qui-b" placeholder="Sua resposta..." oninput="salvarAuto('qui-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-b"></div>
+
+    <p>c) Como está a sua conduta a luz da Bíblia?</p>
+    <textarea id="qui-c" placeholder="Sua resposta..." oninput="salvarAuto('qui-c')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-c"></div>
+
+    <p>d) Que atitudes do seu dia a dia tem alegrado ao Senhor?</p>
+    <textarea id="qui-d" placeholder="Sua resposta..." oninput="salvarAuto('qui-d')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-d"></div>
+
+    <p>e) As pessoas vem pelo seu modo de agir que você é um seguidor(a) de Jesus?</p>
+    <textarea id="qui-e" placeholder="Sua resposta..." oninput="salvarAuto('qui-e')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-e"></div>
+
+    <p>f) Como você tem se dedicado para viver uma conduta que dá prazer ao Senhor?</p>
+    <textarea id="qui-f" placeholder="Sua resposta..." oninput="salvarAuto('qui-f')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-f"></div>
+
+    <h3>2) MEMORIZAR:</h3>
+    <p>Uma das grandes qualidades de um servo irrepreensível é guardar a Palavra de Deus no coração. Memorize o versículo de hoje.</p>
+    
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "O Senhor <input class="lacuna" data-resp="detesta" id="lac-qui-1"> os <input class="lacuna" data-resp="perversos" id="lac-qui-2"> de coração, mas os de <input class="lacuna" data-resp="conduta" id="lac-qui-3"> <input class="lacuna" data-resp="irrepreensível" id="lac-qui-4"> dão-lhe prazer."
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('qui', 4)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('qui')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-qui"></div>
+      <div class="placar" id="placar-qui">Pontos: 0 / 4</div>
+    </div>
+
+    <h3>3) TIRAR A LIÇÃO:</h3>
+    <p>A Bíblia nos ensina que a nossa verdadeira prioridade deve ser viver de forma justa e correta no cotidiano, pois fazer o que é justo e certo é muito mais aceitável ao Senhor do que oferecer sacrifícios (Pv. 21:3). Ser irrepreensível não significa ser perfeito, mas sim escolher o caminho da integridade nas pequenas decisões do dia a dia, de modo que não haja nada do que nos possam nos acusar. Quando decidimos viver com essa transparência e retidão, colhemos o fruto maravilhoso de saber que o próprio Deus nos sustenta por causa da nossa integridade e nos põe em sua presença para sempre (Sl. 41:12). Viver uma vida irrepreensível exige vigilância constante nas escolhas diárias, rejeitando atalhos e preferindo agradar a Deus antes de agradar aos homens. O nosso velho homem todos os dias tenta nos destruir. Por isso, precisamos avaliar constantemente nossa conduta diária e identificar o que precisa ser ajustado para que o nosso testemunho reflita verdadeiramente a luz de Cristo. ➔ Você sabia que podemos criar um banco de dados espiritual com a Palavra de Deus? Sempre que formos tentados a negociar nossa integridade, ter versículos guardados no coração nos fortalece. Preencha a tabela a seguir com os princípios bíblicos que nos ensinam a manter uma conduta irrepreensível:</p>
+
+    <table class="tabela-responsiva">
+      <tr><th>Versículo</th><th>Princípio</th></tr>
+      <tr><td><button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 2.7')">📖 Provérbios 2:7</button></td><td><input type="text" id="qui-tab-1" placeholder="Princípio..." oninput="salvarAuto('qui-tab-1')"></td></tr>
+      <tr><td><button class="versiculo-btn" onclick="abrirVersiculo('Lucas 1.6')">📖 Lucas 1:6</button></td><td><input type="text" id="qui-tab-2" placeholder="Princípio..." oninput="salvarAuto('qui-tab-2')"></td></tr>
+      <tr><td><button class="versiculo-btn" onclick="abrirVersiculo('Romanos 12.2')">📖 Romanos 12:2</button></td><td><input type="text" id="qui-tab-3" placeholder="Princípio..." oninput="salvarAuto('qui-tab-3')"></td></tr>
+      <tr><td><button class="versiculo-btn" onclick="abrirVersiculo('Filipenses 2.15-16')">📖 Filipenses 2:15-16</button></td><td><input type="text" id="qui-tab-4" placeholder="Princípio..." oninput="salvarAuto('qui-tab-4')"></td></tr>
+    </table>
+
+    <h3>4) DECIDIR:</h3>
+    <p>A Bíblia diz que somos cartas de Cristo, conhecidas e lidas por todos (2 Co. 3:2-3). No nosso dia a dia, nossa conduta e nossas reações diárias comunicam quem Cristo é. Pare e decida.</p>
+    
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="qui-check-1" onchange="salvarCheck('qui-check-1')">
+        <span>Decido escolher o que é justo e certo no meu dia a dia, mesmo quando ninguém estiver olhando.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qui-check-2" onchange="salvarCheck('qui-check-2')">
+        <span>Decido controlar minha língua, rejeitando mentiras, fofocas ou qualquer palavra que possa manchar o nome de Cristo.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qui-check-3" onchange="salvarCheck('qui-check-3')">
+        <span>Decido ser íntegro(a) em todas as áreas da minha vida sem dar motivo para acusações justas.</span>
+      </label>
+    </div>
+    
+    <p>( ) Decido:</p>
+    <textarea id="qui-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('qui-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Separe um momento para orar. Apresente ao Senhor suas decisões, sua busca diária por integridade e as áreas em que você se sente mais fraco ou tentado a ceder. Peça sabedoria, força e o temor de Deus para manter uma conduta irrepreensível, refletindo a luz de Cristo em cada atitude. Peça ajuda de Deus para seguir firme com Ele.</p>
+  </div>
+</div>
+
+<!-- ============ SEXTA ============ -->
+<div class="dia" id="dia-4">
+  <div class="card destaque">
+    <h2>Sexta-feira – Tema: TESTEMUNHO REAL</h2>
+    <div class="versiculo-chave">
+      "Pois estamos tendo o cuidado de fazer o que é correto, não apenas aos olhos do Senhor, mas também aos olhos dos homens." (2 Coríntios 8:21)
+    </div>
+
+    <h3>1) ENTENDER:</h3>
+    <p>Em um mundo cada vez mais complexo e desafiador, a mensagem do verso de hoje continua sendo relevante e necessária.</p>
+    <p><strong>➔ Responda:</strong></p>
+
+    <p>a) O que significa fazer o que é correto?</p>
+    <textarea id="sex-a" placeholder="Sua resposta..." oninput="salvarAuto('sex-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-a"></div>
+
+    <p>b) Por que Paulo se preocupava em agir corretamente tanto diante de Deus quanto diante das pessoas?</p>
+    <textarea id="sex-b" placeholder="Sua resposta..." oninput="salvarAuto('sex-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-b"></div>
+
+    <p>c) Como suas atitudes afetam as pessoas de conhecerem a Cristo?</p>
+    <textarea id="sex-c" placeholder="Sua resposta..." oninput="salvarAuto('sex-c')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-c"></div>
+
+    <p>d) Como esse principio pode transformar a maneira como vivemos hoje?</p>
+    <textarea id="sex-d" placeholder="Sua resposta..." oninput="salvarAuto('sex-d')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-d"></div>
+
+    <p>No contexto de 2 Coríntios 8, Paulo estava organizando a coleta de ofertas destinadas aos irmãos necessitados em Jerusalém. Para evitar qualquer dúvida sobre a administração desses recursos, ele tomou o cuidado de agir com total transparência, acompanhado por outros irmãos escolhidos pelas igrejas (2 Co. 8:18-21). Seu objetivo era honrar a Deus e preservar um testemunho irrepreensível diante das pessoas. Esse cuidado nos ensina que a integridade não se limita ao que fazemos quando estamos a sós com Deus; ela também se revela na forma como conduzimos nossa vida diante daqueles que nos observam. Sempre tem alguém nos olhando e as coisas que fazemos falam mais alto que as palavras que falamos. Pense nisso.</p>
+
+    <h3>2) MEMORIZAR:</h3>
+    <p>Chegamos na sexta-feira. Separe alguns minutos para memorizar o versículo de hoje. Faça deste versículo um lembrete para o seu dia.</p>
+    
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Pois estamos tendo o cuidado de fazer o que é <input class="lacuna" data-resp="correto" id="lac-sex-1">, não apenas aos olhos do <input class="lacuna" data-resp="Senhor" id="lac-sex-2">, mas também aos olhos dos <input class="lacuna" data-resp="homens" id="lac-sex-3">."
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('sex', 3)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('sex')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-sex"></div>
+      <div class="placar" id="placar-sex">Pontos: 0 / 3</div>
+    </div>
+
+    <h3>3) TIRAR A LIÇÃO:</h3>
+    <p>Daniel orinava um carso de grande responsabilidade no reino da Babilônia. Seus adversários orotravam encontrar algum motivo para acusá-lo mas a Rihlia afirma que não conseguiram achar nenhuma falha em sua conduta porque ele era fiel (Dn. 6:4). Seu testemunho era tão íntegro que nem mesmo aqueles que deseavam reivindicá-lo mudaram questionar seu caráter. Assim também deve ser a nossa vida. Nosso testemunho não é construído apenas pelo que dizemos, mas principalmente nela forma como vivemos. Na igreja, no trabalho, na escola, em casa ou em qualquer outro lugar, nossas atitudes devem refletir o caráter de Cristo. Jesus nos ensinou esse princípio ao dizer: "Assim brilhe a luz de vocês diante dos homens, para que vejam as suas boas obras e alorifiquem ao Pai de vocês, que está nas céus." (Mt. 5:16). Da mesma forma. Pedro nos encerria a manter uma conduta exemplar para que, ao observarem nossas boas obras, as nossas alorifiquem a Deus (1 Pe. 2:12). Nosso testemunho não existe para chamar atenção para nós mesmos, mas para amontar as nossas para Cristo. Quando nossas palavras e atitudes caminham juntas, o evangelho se torna visível por meio da nossa vida. Se as nossas observassem sua vida de certo, elas encontrariam um testemunho que confirma aquilo que você diz crer? Escreva, em uma frase, o que Deus falou ao seu coração por meio desta reflexão:</p>
+    <textarea id="sex-frase" placeholder="Sua frase..." oninput="salvarAuto('sex-frase')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-frase"></div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Que atitude prática você pode tomar hoje para que seu testemunho reflita melhor o caráter de Cristo?</p>
+    
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="sex-check-1" onchange="salvarCheck('sex-check-1')">
+        <span>Decido preservar o bom nome e não me envolver com desonestidades.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="sex-check-2" onchange="salvarCheck('sex-check-2')">
+        <span>Decido convidar um amigo para ir ao culto no próximo domingo.</span>
+      </label>
+    </div>
+    
+    <p>( ) Decido:</p>
+    <textarea id="sex-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('sex-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Aradera ao Senhor neles ensinamentos desta semana e entregue a Ele sua vida. Peça que cada valor aprendido seja refletido em suas palavras, escolhas e atitudes, para que o seu testemunho conduza outras pessoas a conhecerem a Cristo.</p>
+  </div>
+</div>
+
+<!-- ============ ABA DE DECISÕES ============ -->
+<div class="dia" id="dia-5">
+  <div class="card">
+    <h2>📋 Minhas Decisões da Semana</h2>
+    <p>Aqui está o resumo de todas as suas decisões e checkboxes marcados. Você pode revisá-las e orar sobre cada uma.</p>
+    <ul class="lista-decisoes" id="lista-decisoes"></ul>
+    <button class="btn btn-ouro" onclick="exportarDecisoes()">📥 Exportar como texto</button>
+    <button class="btn btn-verde" onclick="exportarTudo()">📤 Exportar TUDO (respostas + decisões)</button>
+  </div>
+</div>
+
+<!-- MODAL DE VERSÍCULOS -->
+<div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="modal-titulo">Versículo</h3>
+    <div class="ref" id="modal-ref"></div>
+    <div class="texto-nvi" id="modal-texto"></div>
+    <button class="btn btn-fechar" onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Nova Igreja Batista - Ministério de Meditação</p>
+  <p>Valores de Ouro — Semana 1</p>
+</footer>
+
+<script>
+/* ============ NAVEGAÇÃO ============ */
+function mostrarDia(index, btn) {
+  document.querySelectorAll('.dia').forEach(d => d.classList.remove('ativo'));
+  document.getElementById('dia-' + index).classList.add('ativo');
+  document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
+  btn.classList.add('ativa');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (index === 5) atualizarListaDecisoes();
+}
+
+/* ============ SALVAMENTO ============ */
+function salvarAuto(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  localStorage.setItem('valoresouro_' + id, el.value);
+  const aviso = document.getElementById('aviso-' + id);
+  if (aviso) {
+    aviso.textContent = '✔ Salvo automaticamente';
+    setTimeout(() => aviso.textContent = '', 1500);
+  }
+}
+
+function salvarCheck(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    localStorage.setItem('valoresouro_' + id, el.checked ? 'true' : 'false');
+  }
+}
+
+function carregarTudo() {
+  document.querySelectorAll('textarea, input').forEach(el => {
+    if (el.id) {
+      const salvo = localStorage.getItem('valoresouro_' + el.id);
+      if (salvo !== null) {
+        if (el.type === 'checkbox') {
+          el.checked = salvo === 'true';
+        } else {
+          el.value = salvo;
+        }
+      }
+    }
+  });
+  // Carregar placares de memorização
+  ['seg','ter','qua','qui','sex'].forEach(dia => {
+    const pontos = localStorage.getItem('valoresouro_pontos_' + dia);
+    if (pontos) {
+      const placar = document.getElementById('placar-' + dia);
+      if (placar) placar.textContent = 'Pontos: ' + pontos;
+    }
+  });
+}
+
+/* ============ MEMORIZAÇÃO ============ */
+function verificarMemorizacao(dia, total) {
+  const lacunas = document.querySelectorAll('[id^="lac-' + dia + '-"]');
+  let acertos = 0;
+  lacunas.forEach(lac => {
+    const resposta = lac.value.trim().toLowerCase();
+    const correta = lac.dataset.resp.toLowerCase();
+    lac.classList.remove('correta', 'errada');
+    if (resposta === correta) {
+      lac.classList.add('correta');
+      acertos++;
+    } else if (resposta !== '') {
+      lac.classList.add('errada');
+    }
+  });
+  const feedback = document.getElementById('feedback-' + dia);
+  const placar = document.getElementById('placar-' + dia);
+  placar.textContent = 'Pontos: ' + acertos + ' / ' + total;
+  localStorage.setItem('valoresouro_pontos_' + dia, acertos + ' / ' + total);
+
+  if (acertos === total) {
+    feedback.textContent = '🎉 Parabéns! Você acertou todas as ' + total + ' palavras!';
+    feedback.className = 'feedback ok';
+  } else if (acertos >= total / 2) {
+    feedback.textContent = '👍 Muito bem! Você acertou ' + acertos + ' de ' + total + '. Continue!';
+    feedback.className = 'feedback ok';
+  } else {
+    feedback.textContent = '💪 Você acertou ' + acertos + ' de ' + total + '. Leia o versículo e tente de novo!';
+    feedback.className = 'feedback erro';
+  }
+}
+
+function limparMemorizacao(dia) {
+  const lacunas = document.querySelectorAll('[id^="lac-' + dia + '-"]');
+  lacunas.forEach(lac => {
+    lac.value = '';
+    lac.classList.remove('correta', 'errada');
+  });
+  document.getElementById('feedback-' + dia).textContent = '';
+  document.getElementById('placar-' + dia).textContent = 'Pontos: 0 / ' + lacunas.length;
+  localStorage.removeItem('valoresouro_pontos_' + dia);
+}
+
+/* ============ VERSÍCULOS NVI ============ */
+const versiculosNVI = {
+  'Salmo 25.21': 'Que a integridade e a retidão me protejam, porque em ti coloquei a minha esperança.',
+  'Provérbios 11.3': 'A integridade dos justos os guia, mas a falsidade dos infiéis os destrói.',
+  'Provérbios 20.7': 'O justo caminha na sua integridade; felizes são os seus filhos depois dele.',
+  'Lucas 16.10': 'Quem é fiel no pouco, também é fiel no muito, e quem é desonesto no pouco, também é desonesto no muito.',
+  'Salmo 37.5': 'Entregue o seu caminho ao Senhor; confie nele, e ele agirá.',
+  'Provérbios 3.5-6': 'Confie no Senhor de todo o seu coração e não se apoie em seu próprio entendimento; reconheça o Senhor em todos os seus caminhos, e ele endireitará as suas veredas.',
+  'Hebreus 10.23': 'Apeguemo-nos com firmeza à esperança que professamos, pois aquele que prometeu é fiel.',
+  'Tiago 1.6': 'Mas, quando pedir, creia, sem duvidar, pois aquele que duvida é semelhante à onda do mar, levada e agitada pelo vento.',
+  'Provérbios 2.7': 'Ele reserva a sensatez para os retos e é escudo para os que caminham na integridade.',
+  'Lucas 1.6': 'Ambos eram justos aos olhos de Deus, obedecendo de modo irrepreensível a todos os mandamentos e preceitos do Senhor.',
+  'Romanos 12.2': 'Não se amoldem ao padrão deste mundo, mas transformem-se pela renovação da sua mente, para que sejam capazes de experimentar e comprovar a boa, agradável e perfeita vontade de Deus.',
+  'Filipenses 2.15-16': 'para que vocês venham a ser irrepreensíveis e puros, filhos de Deus inculpáveis no meio de uma geração corrompida e depravada, na qual vocês brilham como estrelas no universo, retendo firmemente a palavra da vida.'
+};
+
+function abrirVersiculo(ref) {
+  const modal = document.getElementById('modal-overlay');
+  document.getElementById('modal-titulo').textContent = '📖 ' + ref;
+  document.getElementById('modal-ref').textContent = 'Tradução: Nova Versão Internacional (NVI)';
+  document.getElementById('modal-texto').textContent = versiculosNVI[ref] || 'Texto não disponível offline.';
+  modal.classList.add('aberto');
+}
+
+function fecharModal(event) {
+  if (event && event.target !== event.currentTarget && event.target.className !== 'btn btn-fechar') return;
+  document.getElementById('modal-overlay').classList.remove('aberto');
+}
+
+/* ============ LISTA DE DECISÕES ============ */
+function atualizarListaDecisoes() {
+  const lista = document.getElementById('lista-decisoes');
+  lista.innerHTML = '';
+  
+  // Mapeamento de ID -> Nome amigável
+  const decisoesMap = {
+    'seg-dec-1': 'Segunda - Relacionamento com Deus',
+    'seg-dec-2': 'Segunda - Trabalho',
+    'seg-dec-3': 'Segunda - Estudos',
+    'seg-dec-4': 'Segunda - Família',
+    'ter-dec': 'Terça - Melhorar a fé',
+    'qua-dec-area': 'Quarta - Áreas com nota baixa',
+    'qua-dec': 'Quarta - Decisão geral',
+    'qui-dec': 'Quinta - Decisão de conduta',
+    'sex-dec': 'Sexta - Decisão de testemunho'
+  };
+
+  let temAlgo = false;
+  
+  // 1. Textareas de decisão
+  for (const [id, nome] of Object.entries(decisoesMap)) {
+    const valor = localStorage.getItem('valoresouro_' + id);
+    if (valor && valor.trim() !== '') {
+      temAlgo = true;
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${nome}:</strong><br>${valor.replace(/\n/g, '<br>')}`;
+      lista.appendChild(li);
+    }
+  }
+
+  // 2. Checkboxes
+  const checksMap = {
+    'qui-check-1': 'Quinta - Escolher o justo mesmo sozinho',
+    'qui-check-2': 'Quinta - Controlar a língua',
+    'qui-check-3': 'Quinta - Ser íntegro em todas as áreas',
+    'sex-check-1': 'Sexta - Preservar o bom nome',
+    'sex-check-2': 'Sexta - Convidar um amigo para o culto'
+  };
+
+  for (const [id, nome] of Object.entries(checksMap)) {
+    if (localStorage.getItem('valoresouro_' + id) === 'true') {
+      temAlgo = true;
+      const li = document.createElement('li');
+      li.innerHTML = `✅ <strong>${nome}</strong>`;
+      lista.appendChild(li);
+    }
+  }
+
+  if (!temAlgo) {
+    lista.innerHTML = '<li>Nenhuma decisão registrada ainda. Comece a meditar e suas decisões aparecerão aqui.</li>';
+  }
+}
+
+function exportarDecisoes() {
+  let texto = 'MINHAS DECISÕES – VALORES DE OURO (SEMANA 1)\n' + '='.repeat(50) + '\n\n';
+  
+  const decisoesMap = {
+    'seg-dec-1': 'SEGUNDA - Relacionamento com Deus',
+    'seg-dec-2': 'SEGUNDA - Trabalho',
+    'seg-dec-3': 'SEGUNDA - Estudos',
+    'seg-dec-4': 'SEGUNDA - Família',
+    'ter-dec': 'TERÇA - Melhorar a fé',
+    'qua-dec-area': 'QUARTA - Áreas com nota baixa',
+    'qua-dec': 'QUARTA - Decisão geral',
+    'qui-dec': 'QUINTA - Decisão de conduta',
+    'sex-dec': 'SEXTA - Decisão de testemunho'
+  };
+
+  for (const [id, nome] of Object.entries(decisoesMap)) {
+    const valor = localStorage.getItem('valoresouro_' + id) || '(sem decisão)';
+    texto += nome + '\n' + '-'.repeat(30) + '\n' + valor + '\n\n';
+  }
+
+  texto += '\nCHECKBOXES MARCADOS:\n' + '-'.repeat(30) + '\n';
+  const checksMap = {
+    'qui-check-1': 'Quinta - Escolher o justo mesmo sozinho',
+    'qui-check-2': 'Quinta - Controlar a língua',
+    'qui-check-3': 'Quinta - Ser íntegro em todas as áreas',
+    'sex-check-1': 'Sexta - Preservar o bom nome',
+    'sex-check-2': 'Sexta - Convidar um amigo para o culto'
+  };
+  for (const [id, nome] of Object.entries(checksMap)) {
+    if (localStorage.getItem('valoresouro_' + id) === 'true') {
+      texto += `[X] ${nome}\n`;
+    }
+  }
+
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'minhas-decisoes-valores-ouro.txt';
+  link.click();
+}
+
+function exportarTudo() {
+  let texto = 'MINHA MEDITAÇÃO COMPLETA – VALORES DE OURO (SEMANA 1)\n' + '='.repeat(60) + '\n\n';
+  
+  // Pega todas as textareas e inputs que não sejam as lacunas de memorização
+  document.querySelectorAll('textarea, input[type="text"], input[type="number"]').forEach(el => {
+    if (el.id && !el.id.startsWith('lac-')) {
+      const valor = localStorage.getItem('valoresouro_' + el.id);
+      if (valor && valor.trim() !== '') {
+        texto += `[${el.id}]: ${valor}\n`;
+      }
+    }
+  });
+
+  // Adiciona os checkboxes
+  texto += '\nCHECKBOXES:\n' + '-'.repeat(30) + '\n';
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+    if (localStorage.getItem('valoresouro_' + el.id) === 'true') {
+      const label = el.nextElementSibling ? el.nextElementSibling.textContent : el.id;
+      texto += `[X] ${label}\n`;
+    }
+  });
+
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'meditacao-completa-valores-ouro.txt';
+  link.click();
+}
+
+/* ============ INICIALIZAÇÃO ============ */
+window.onload = function() {
+  carregarTudo();
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('modal-overlay').classList.remove('aberto');
+  }
+});
+</script>
+
+</body>
+</html>
