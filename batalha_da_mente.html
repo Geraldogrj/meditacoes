@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meditação Profunda - A Batalha Interior</title>
+<style>
+  :root {
+    --azul: #1e3a5f;
+    --azul-claro: #2c5282;
+    --dourado: #b7791f;
+    --verde: #276749;
+    --vermelho: #9b2c2c;
+    --fundo: #f7fafc;
+    --card: #ffffff;
+    --texto: #1a202c;
+    --borda: #cbd5e0;
+    --creme: #fffaf0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1.7;
+    background: var(--fundo);
+    color: var(--texto);
+    margin: 0;
+    padding: 0 12px 100px;
+  }
+  header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    color: #fff;
+    padding: 26px 16px 22px;
+    text-align: center;
+    border-radius: 0 0 20px 20px;
+    margin: 0 -12px 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+  header h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: .5px; }
+  header p { margin: 4px 0; font-size: 18px; opacity: .95; }
+
+  .abas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 22px;
+    position: sticky;
+    top: 0;
+    background: var(--fundo);
+    padding: 10px 0;
+    z-index: 50;
+  }
+  .aba {
+    background: #fff;
+    border: 3px solid var(--azul-claro);
+    color: var(--azul);
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .2s;
+  }
+  .aba:hover { background: #ebf4ff; transform: translateY(-2px); }
+  .aba.ativa { background: var(--azul-claro); color: #fff; }
+
+  .dia { display: none; animation: fade .3s; }
+  .dia.ativo { display: block; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    border-left: 8px solid var(--dourado);
+  }
+  .card.destaque { border-left-color: var(--verde); background: #f0fdf9; }
+  .card h2 {
+    font-size: 22px;
+    color: var(--azul);
+    margin: 0 0 14px;
+    border-bottom: 3px solid var(--borda);
+    padding-bottom: 10px;
+  }
+  .card h3 { font-size: 20px; color: var(--azul-claro); margin-top: 24px; }
+  
+  .versiculo-chave {
+    font-style: italic;
+    background: var(--creme);
+    border-left: 6px solid var(--dourado);
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin: 14px 0;
+    font-size: 19px;
+    color: #744210;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .contexto-box { background: #ebf8ff; border-left: 5px solid var(--azul-claro); padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 18px; }
+  .contexto-box strong { color: var(--azul-claro); }
+  .exegese-box { background: #faf5ff; border-left: 5px solid #805ad5; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 18px; }
+  .exegese-box strong { color: #553c9a; }
+  .ilustracao-box { background: #fff5f5; border-left: 5px solid var(--vermelho); padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 18px; }
+  .ilustracao-box strong { color: var(--vermelho); }
+  .oracao-box { background: linear-gradient(135deg, #fefcbf 0%, #faf089 100%); border-left: 6px solid var(--dourado); padding: 18px 22px; border-radius: 12px; margin: 16px 0; font-size: 19px; color: #744210; font-style: italic; }
+  .oracao-box strong { color: var(--dourado); display: block; margin-bottom: 8px; font-style: normal; }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 19px;
+    padding: 12px;
+    border: 2px solid var(--borda);
+    border-radius: 10px;
+    background: #fff;
+    resize: vertical;
+    min-height: 60px;
+    margin-top: 6px;
+  }
+  textarea:focus, input:focus {
+    outline: 3px solid var(--dourado);
+    border-color: var(--dourado);
+  }
+  .salvo-aviso {
+    font-size: 15px;
+    color: var(--verde);
+    margin-top: 4px;
+    height: 20px;
+    font-weight: bold;
+  }
+
+  .versiculo-btn {
+    display: inline-block;
+    background: #ebf8ff;
+    color: var(--azul-claro);
+    border: 2px solid var(--azul-claro);
+    padding: 10px 16px;
+    margin: 6px 6px 6px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: bold;
+    transition: .2s;
+  }
+  .versiculo-btn:hover { background: var(--azul-claro); color: #fff; }
+
+  .btn {
+    background: var(--azul-claro);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 8px 8px 8px 0;
+    transition: .2s;
+  }
+  .btn:hover { background: var(--azul); transform: translateY(-2px); }
+  .btn-verde { background: var(--verde); }
+  .btn-verde:hover { background: #22543d; }
+  .btn-limpar { background: #718096; }
+  .btn-limpar:hover { background: #4a5568; }
+  .btn-ouro { background: var(--dourado); }
+  .btn-ouro:hover { background: #975a16; }
+
+  .feedback { font-size: 18px; font-weight: bold; margin-top: 10px; min-height: 30px; }
+  .feedback.ok { color: var(--verde); }
+  .feedback.erro { color: var(--vermelho); }
+
+  .memoriza-area { background: #f0fff4; border: 3px dashed var(--verde); border-radius: 12px; padding: 18px; margin: 14px 0; }
+  .memoriza-frase { font-size: 20px; line-height: 2.5; margin-bottom: 14px; }
+  .lacuna { display: inline-block; width: 80px; border: none; border-bottom: 3px solid var(--dourado); background: #fffdf5; font-size: 19px; padding: 4px 6px; margin: 0 4px; text-align: center; font-weight: bold; color: var(--azul); }
+  .lacuna.larga { width: 120px; }
+  .lacuna.curta { width: 50px; }
+  .lacuna.correta { border-bottom-color: var(--verde); background: #c6f6d5; }
+  .lacuna.errada { border-bottom-color: var(--vermelho); background: #fed7d7; }
+  .placar { background: var(--dourado); color: #fff; padding: 10px 20px; border-radius: 12px; font-size: 20px; font-weight: bold; display: inline-block; margin: 10px 0; }
+
+  .lista-decisoes { list-style: none; padding: 0; }
+  .lista-decisoes li { background: var(--creme); border-left: 6px solid var(--dourado); padding: 14px 18px; margin-bottom: 12px; border-radius: 8px; font-size: 18px; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 999; justify-content: center; align-items: center; padding: 16px; }
+  .modal-overlay.aberto { display: flex; }
+  .modal { background: #fff; border-radius: 16px; max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 28px; box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+  .modal h3 { margin-top: 0; color: var(--azul); border-bottom: 3px solid var(--dourado); padding-bottom: 10px; }
+  .modal .texto-nvi { font-size: 21px; line-height: 1.8; color: #2d3748; }
+  .modal .ref { font-weight: bold; color: var(--dourado); margin-bottom: 12px; }
+  .modal .btn-fechar { background: var(--vermelho); margin-top: 16px; }
+
+  footer { text-align: center; color: #718096; font-size: 15px; margin-top: 30px; padding: 20px; border-top: 2px solid var(--borda); }
+
+  @media (max-width: 600px) {
+    body { font-size: 18px; }
+    .aba { font-size: 14px; padding: 10px 12px; }
+    .lacuna { width: 60px; }
+    .lacuna.larga { width: 90px; }
+    .lacuna.curta { width: 40px; }
+    .card h2 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚔️ A Batalha que Acontece em Silêncio</h1>
+  <p><strong>Um estudo profundo sobre Tiago 1:13-18</strong></p>
+</header>
+
+<div class="abas">
+  <button class="aba ativa" onclick="mostrarDia(0, this)">Segunda</button>
+  <button class="aba" onclick="mostrarDia(1, this)">Terça</button>
+  <button class="aba" onclick="mostrarDia(2, this)">Quarta</button>
+  <button class="aba" onclick="mostrarDia(3, this)">Quinta</button>
+  <button class="aba" onclick="mostrarDia(4, this)">Sexta</button>
+  <button class="aba" onclick="mostrarDia(5, this)">📋 Decisões</button>
+</div>
+
+<!-- ============ SEGUNDA ============ -->
+<div class="dia ativo" id="dia-0">
+  <div class="card destaque">
+    <h2>Segunda-feira – A Origem da Tentação</h2>
+    <div class="versiculo-chave">
+      "Ninguém, ao ser tentado, diga: 'Deus está me tentando'. Pois Deus não pode ser tentado pelo mal, e a ninguém tenta." (Tiago 1:13)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Tiago escreve para cristãos judeus que foram dispersos por causa da perseguição. Eles estavam sofrendo e sendo tentados a abandonar a fé. A tendência natural do ser humano, quando está sob pressão, é procurar um culpado. E o culpado mais fácil é sempre Deus. Tiago começa sua carta corrigindo essa visão distorcida.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "tentado" aqui é <strong><em>peirazō</em></strong> (πειράζω). Ela tem dois sentidos: 1) Provar, testar a fé (como o ourives prova o ouro no fogo); 2) Instigar ao mal, seduzir. Tiago está dizendo: "Deus pode provar a sua fé, mas Ele nunca te seduz para o mal. Ele nunca coloca uma armadilha para te ver cair."
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>O grande problema da humanidade é que nós sempre encontramos um culpado. Na igreja primitiva, o culpado favorito era Deus. Hoje, mudamos o nome do culpado: "Foi o diabo", "Foi a minha criação", "Foi a pessoa que me provocou", "É o meu temperamento", "Deus me fez assim". No fundo, todas essas frases dizem a mesma coisa: "O problema não está em mim".</p>
+    <p>Tiago responde: Deus não pode ser tentado pelo mal. Ele é santo. Não existe nada no caráter de Deus que responda a um convite para o mal. E Deus não tenta ninguém. Ele não coloca uma isca na sua frente. Tudo o que vem de Deus é bom (v.17). A tentação, portanto, não tem a sua origem em Deus.</p>
+    
+    <p><strong>➔ Responda:</strong></p>
+    <p>a) Qual é o "culpado" que você costuma usar para justificar suas tentações?</p>
+    <textarea id="seg-a" placeholder="Sua resposta..." oninput="salvarAuto('seg-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-a"></div>
+
+    <p>b) Por que é tão difícil assumir a responsabilidade pelas nossas próprias batalhas?</p>
+    <textarea id="seg-b" placeholder="Sua resposta..." oninput="salvarAuto('seg-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-b"></div>
+
+    <h3>2) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Hebreus 4.15')">📖 Hebreus 4:15</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Romanos 6.16')">📖 Romanos 6:16</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 Coríntios 10.13')">📖 1 Coríntios 10:13</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 19.3')">📖 Provérbios 19:3</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Gênesis 3.12')">📖 Gênesis 3:12</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmos 51.4')">📖 Salmos 51:4</button>
+
+    <h3>3) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (falta o versículo):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Ninguém, ao ser <input class="lacuna larga" data-resp="tentado" id="lac-seg-1">, diga: 'Deus está me tentando'. Pois Deus não pode ser <input class="lacuna larga" data-resp="tentado" id="lac-seg-2"> pelo mal, e a ninguém <input class="lacuna" data-resp="tenta" id="lac-seg-3">."
+        <br><br><span style="font-size: 18px; color: #4a5568;">(Tiago 1:<input class="lacuna curta" data-resp="13" id="lac-seg-4">)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('seg', 4)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('seg')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-seg"></div>
+      <div class="placar" id="placar-seg">Pontos: 0 / 4</div>
+    </div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Faça uma decisão prática para esta semana:</p>
+    <textarea id="seg-dec" placeholder="Eu decido parar de culpar..." oninput="salvarAuto('seg-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Reserve um momento para orar. Apresente a Deus as áreas em que você tem culpado os outros ou as circunstâncias. Peça perdão e peça a ajuda do Espírito Santo para assumir a responsabilidade pela sua própria batalha interior.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, eu reconheço que muitas vezes procuro culpados fora de mim. Culpo as pessoas, as circunstâncias e até mesmo o Senhor. Perdoa-me por transferir a responsabilidade. Ajuda-me a entender que a batalha começa dentro de mim. Dá-me um coração humilde para assumir as minhas falhas e a Tua força para vencê-las. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ TERÇA ============ -->
+<div class="dia" id="dia-1">
+  <div class="card destaque">
+    <h2>Terça-feira – O Processo da Queda</h2>
+    <div class="versiculo-chave">
+      "Então, depois que o desejo concebe, dá à luz o pecado; e o pecado, uma vez consumado, gera a morte." (Tiago 1:15)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Tiago usa a metáfora da gestação para descrever como o pecado age. Assim como um bebê é gerado no ventre e cresce até nascer, o desejo é gerado no coração, cresce e dá à luz o pecado. E o fim desse processo é a morte. Não há como fugir dessa lei espiritual.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "concebe" é <strong><em>syllambanō</em></strong> (συλλαμβάνω), que significa "pegar, agarrar". O desejo "agarra" a mente e a domina. Já a palavra "consumado" é <strong><em>apoteléō</em></strong> (ἀποτελέω), que significa "atingir o objetivo final". O pecado sempre chega ao seu objetivo: a morte. Ele nunca para no meio do caminho.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Tiago diz que a tentação segue um processo de quatro etapas: <strong>Desejo</strong> (a vontade de ter o que não é seu), <strong>Concebe</strong> (o desejo é alimentado, cultivado, acariciado), <strong>Pecado</strong> (o desejo cresce e vira ação) e <strong>Morte</strong> (o pecado cumpre o seu propósito, traz culpa, vergonha e vazio).</p>
+    <p>Ninguém peca no mesmo instante em que é tentado. Há um intervalo. É nesse intervalo que a batalha é vencida ou perdida. Você não pode controlar o que bate à porta, mas pode controlar se vai abrir.</p>
+
+    <p><strong>➔ Responda:</strong></p>
+    <p>a) O que você tem alimentado na sua mente ultimamente?</p>
+    <textarea id="ter-a" placeholder="Sua resposta..." oninput="salvarAuto('ter-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-a"></div>
+
+    <p>b) Em qual das quatro etapas (Desejo, Concebe, Pecado, Morte) você costuma perceber a tentação? Por quê?</p>
+    <textarea id="ter-b" placeholder="Sua resposta..." oninput="salvarAuto('ter-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-b"></div>
+
+    <h3>2) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tiago 1.14-15')">📖 Tiago 1:14-15</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Gênesis 4.7')">📖 Gênesis 4:7</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Romanos 7.18-19')">📖 Romanos 7:18-19</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 4.23')">📖 Provérbios 4:23</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Mateus 5.28')">📖 Mateus 5:28</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmos 119.11')">📖 Salmos 119:11</button>
+
+    <h3>3) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (falta o nome do livro):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Então, depois que o <input class="lacuna larga" data-resp="desejo" id="lac-ter-1"> concebe, dá à luz o <input class="lacuna larga" data-resp="pecado" id="lac-ter-2">; e o pecado, uma vez <input class="lacuna larga" data-resp="consumado" id="lac-ter-3">, gera a <input class="lacuna" data-resp="morte" id="lac-ter-4">."
+        <br><br><span style="font-size: 18px; color: #4a5568;">(<input class="lacuna larga" data-resp="Tiago" id="lac-ter-5"> 1:15)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('ter', 5)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('ter')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-ter"></div>
+      <div class="placar" id="placar-ter">Pontos: 0 / 5</div>
+    </div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Faça uma decisão prática para esta semana:</p>
+    <textarea id="ter-dec" placeholder="Eu decido interromper o processo..." oninput="salvarAuto('ter-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Ore a Deus pedindo discernimento para reconhecer o processo da tentação na sua vida. Peça forças para interromper o desejo antes que ele se torne pecado. Entregue a Ele os seus pensamentos e intenções.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, ajuda-me a discernir o momento em que o desejo está sendo gerado no meu coração. Dá-me forças para interromper o processo antes que ele se torne pecado. Que os meus pensamentos sejam cativos à Tua vontade e que o meu coração seja guardado em Ti. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ QUARTA ============ -->
+<div class="dia" id="dia-2">
+  <div class="card destaque">
+    <h2>Quarta-feira – A Ilusão do "Eu Sou Assim"</h2>
+    <div class="versiculo-chave">
+      "Cada um é tentado quando atraído e seduzido pelos seus próprios desejos." (Tiago 1:14)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Na época de Tiago, havia uma filosofia grega (o estoicismo) que dizia que as paixões humanas eram naturais e, portanto, não podiam ser pecaminosas. Tiago combate isso: o desejo desordenado não é algo neutro; ele é uma isca que nos atrai para longe de Deus.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "desejo" aqui é <strong><em>epithymia</em></strong> (ἐπιθυμία), que significa "desejo intenso, cobiça". É o mesmo termo usado nos Dez Mandamentos para "não cobiçarás". Não é apenas um desejo natural; é um desejo que foi corrompido pelo pecado e que busca satisfazer a si mesmo, independentemente de Deus.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Existe uma mentira muito comum no nosso coração: "Se eu sinto vontade, é porque é natural. Se é natural, é porque Deus me fez assim. Se Deus me fez assim, então não é errado." Essa lógica parece bonita, mas é falsa! Sentir não é o mesmo que poder. Desejo não é autorização para agir!</p>
+    <p>Tiago já desmontou isso: o desejo não vem de Deus. O desejo vem de dentro de nós, e ele é atraído e seduzido. O desejo não é um guia confiável. Ele é uma isca. Desejo é o que você sente. Permissão é o que você decide fazer com o desejo. A sua responsabilidade está entre o que bate à porta e o que você deixa entrar.</p>
+    <p>Se o critério fosse "sentir", então ninguém poderia ser responsabilizado por nada. Nem o ladrão, nem o adúltero, nem o assassino. Todos sentiram vontade antes de fazer. A verdade é que você não é escravo do desejo. Você é escravo de quem você escolhe obedecer.</p>
+
+    <p><strong>➔ Responda:</strong></p>
+    <p>a) Você já usou a desculpa "é mais forte do que eu"? Como você pode mudar essa mentalidade?</p>
+    <textarea id="qua-a" placeholder="Sua resposta..." oninput="salvarAuto('qua-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-a"></div>
+
+    <p>b) Qual a diferença entre sentir um desejo e dar permissão para ele?</p>
+    <textarea id="qua-b" placeholder="Sua resposta..." oninput="salvarAuto('qua-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-b"></div>
+
+    <h3>2) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 Coríntios 10.13')">📖 1 Coríntios 10:13</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Romanos 6.16')">📖 Romanos 6:16</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Gálatas 5.16-17')">📖 Gálatas 5:16-17</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Efésios 4.22-24')">📖 Efésios 4:22-24</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Colossenses 3.5')">📖 Colossenses 3:5</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 Pedro 2.11')">📖 1 Pedro 2:11</button>
+
+    <h3>3) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (falta o capítulo):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Cada um é <input class="lacuna larga" data-resp="tentado" id="lac-qua-1"> quando <input class="lacuna larga" data-resp="atraído" id="lac-qua-2"> e <input class="lacuna larga" data-resp="seduzido" id="lac-qua-3"> pelos seus próprios <input class="lacuna larga" data-resp="desejos" id="lac-qua-4">."
+        <br><br><span style="font-size: 18px; color: #4a5568;">(Tiago <input class="lacuna curta" data-resp="1" id="lac-qua-5">:14)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('qua', 5)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('qua')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-qua"></div>
+      <div class="placar" id="placar-qua">Pontos: 0 / 5</div>
+    </div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Faça uma decisão prática para esta semana:</p>
+    <textarea id="qua-dec" placeholder="Eu decido não confundir desejo com permissão..." oninput="salvarAuto('qua-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Ore pedindo a Deus que te ajude a não se enganar com os próprios desejos. Peça um coração ensinável e disposto a obedecer a Deus em vez de ceder às paixões.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, perdoa-me pelas vezes que usei a desculpa de que 'eu sou assim' para justificar os meus pecados. Ajuda-me a entender que sentir não é o mesmo que pecar, e que eu posso escolher não ceder. Ensina-me a discernir os meus desejos e a te obedecer em tudo. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ QUINTA ============ -->
+<div class="dia" id="dia-3">
+  <div class="card destaque">
+    <h2>Quinta-feira – O Deus Que Não Muda</h2>
+    <div class="versiculo-chave">
+      "Toda boa dádiva e todo dom perfeito vêm do alto, descendo do Pai das luzes, que não muda como sombras inconstantes." (Tiago 1:17)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Depois de falar de desejo, pecado e morte, Tiago muda o tom de propósito. Porque olhar só para dentro de si mesmo é deprimente. Você olha para dentro e encontra desejo, pecado e morte. Se você ficar só aí, você desiste. Tiago diz: olhe para cima.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A frase "não muda como sombras inconstantes" vem do grego <strong><em>parallagē</em></strong> (παραλλαγή), que significa "variação, mudança". No original, a ideia é que Deus não sofre variação nem sombra de mudança. Ele é absolutamente constante. Não há "fases" em Deus.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Deus não tem fases. Ele não tem dias bons e dias ruins. Ele é o mesmo ontem, hoje e sempre. Por que isso importa para a tentação? Porque se Deus mudasse, você nunca saberia o que esperar dele. Mas Ele não muda. Ele é sempre santo. Sempre bom. Sempre justo. Sempre fiel.</p>
+    <p>Tiago diz que toda boa dádiva vem de Deus. Não algumas. Todas. O que é bom, vem dele. O que não é bom, não vem dele. Isso significa que a tentação não vem de Deus. O desejo desordenado não vem de Deus. O pecado não vem de Deus. A morte não vem de Deus. O que vem de Deus é vida, bondade, santidade, esperança.</p>
+    <p>Quando você estiver sendo tentado, olhe para o caráter de Deus. Não olhe para o tamanho da tentação. Olhe para o tamanho do Deus que está com você. A tentação parece grande quando você olha para ela. Ela diminui quando você olha para Deus. Não porque a tentação fica menor. Mas porque Deus é maior.</p>
+
+    <p><strong>➔ Responda:</strong></p>
+    <p>a) Como saber que Deus é bom e imutável ajuda você a enfrentar a tentação?</p>
+    <textarea id="qui-a" placeholder="Sua resposta..." oninput="salvarAuto('qui-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-a"></div>
+
+    <p>b) O que você tem olhado mais: para o tamanho da tentação ou para o tamanho de Deus?</p>
+    <textarea id="qui-b" placeholder="Sua resposta..." oninput="salvarAuto('qui-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-b"></div>
+
+    <h3>2) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Malaquias 3.6')">📖 Malaquias 3:6</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Hebreus 13.8')">📖 Hebreus 13:8</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Números 23.19')">📖 Números 23:19</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tiago 1.17')">📖 Tiago 1:17</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmos 102.27')">📖 Salmos 102:27</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Isaías 40.28')">📖 Isaías 40:28</button>
+
+    <h3>3) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (falta o nome do livro):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Toda boa <input class="lacuna larga" data-resp="dádiva" id="lac-qui-1"> e todo dom <input class="lacuna larga" data-resp="perfeito" id="lac-qui-2"> vêm do alto, descendo do Pai das <input class="lacuna" data-resp="luzes" id="lac-qui-3">, que não muda como sombras inconstantes."
+        <br><br><span style="font-size: 18px; color: #4a5568;">(<input class="lacuna larga" data-resp="Tiago" id="lac-qui-4"> 1:17)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('qui', 4)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('qui')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-qui"></div>
+      <div class="placar" id="placar-qui">Pontos: 0 / 4</div>
+    </div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Faça uma decisão prática para esta semana:</p>
+    <textarea id="qui-dec" placeholder="Eu decido olhar para Deus..." oninput="salvarAuto('qui-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Reserve um tempo para adorar a Deus pelo Seu caráter imutável. Agradeça porque Ele é o mesmo ontem, hoje e sempre. Peça que Ele te ajude a confiar nEle nos momentos de tentação.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, eu Te louvo porque Tu não mudas. Tu és o mesmo Deus que me sustentou ontem e que me sustentará hoje. Ajuda-me a não olhar para o tamanho da tentação, mas para o tamanho do Deus que está comigo. Que a Tua bondade e a Tua imutabilidade sejam a minha âncora. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ SEXTA ============ -->
+<div class="dia" id="dia-4">
+  <div class="card destaque">
+    <h2>Sexta-feira – A Nova Identidade</h2>
+    <div class="versiculo-chave">
+      "Ele nos gerou pela palavra da verdade, para que fôssemos como que as primícias de todas as suas criaturas." (Tiago 1:18)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Tiago termina com uma imagem linda: Deus nos gerou (deu vida) pela palavra da verdade (o instrumento) para que fôssemos as primícias (os primeiros frutos de uma nova criação). Nós não somos mais escravos do desejo. Nós somos filhos de Deus.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "primícias" é <strong><em>aparchē</em></strong> (ἀπαρχή), que era a oferta dos primeiros frutos da colheita, uma garantia de que o restante viria. Nós somos a garantia de que a nova criação de Deus está começando em nós.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Se a Palavra foi o instrumento que Deus usou para nos gerar, ela também é o alimento que nos sustenta. Você não vence a tentação só com força de vontade. Força de vontade é limitada. Você vence a tentação quando o seu coração está cheio da Palavra.</p>
+    <p>Jesus mostrou isso no deserto. Ele foi tentado três vezes. As três vezes Ele respondeu com a Palavra: "Está escrito...". Ele não discutiu com o diabo. Ele não usou argumentos humanos. Ele usou a Palavra.</p>
+    <p>Existe uma diferença entre ser alimentado e se alimentar. Ser alimentado é passivo. Alguém coloca a comida na sua boca. Se alimentar é ativo. Você pega o garfo, corta, leva à boca, mastiga, engole. Muitos cristãos são alimentados uma vez por semana, no culto. E acham que isso é suficiente. Mas ninguém sobrevive com uma refeição por semana. Se você quer vencer a tentação, você precisa se alimentar da Palavra todos os dias.</p>
+
+    <p><strong>➔ Responda:</strong></p>
+    <p>a) O que você tem alimentado? O desejo ou a Palavra?</p>
+    <textarea id="sex-a" placeholder="Sua resposta..." oninput="salvarAuto('sex-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-a"></div>
+
+    <p>b) Como você pode "se alimentar" da Palavra de forma ativa, e não apenas passiva?</p>
+    <textarea id="sex-b" placeholder="Sua resposta..." oninput="salvarAuto('sex-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-b"></div>
+
+    <h3>2) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Mateus 4.4')">📖 Mateus 4:4</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Hebreus 4.12')">📖 Hebreus 4:12</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Josué 1.8')">📖 Josué 1:8</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmos 119.11')">📖 Salmos 119:11</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('2 Timóteo 3.16-17')">📖 2 Timóteo 3:16-17</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 Pedro 2.2')">📖 1 Pedro 2:2</button>
+
+    <h3>3) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (faltam o capítulo e o versículo):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Ele nos <input class="lacuna larga" data-resp="gerou" id="lac-sex-1"> pela palavra da <input class="lacuna larga" data-resp="verdade" id="lac-sex-2">, para que fôssemos como que as <input class="lacuna larga" data-resp="primícias" id="lac-sex-3"> de todas as suas criaturas."
+        <br><br><span style="font-size: 18px; color: #4a5568;">(Tiago <input class="lacuna curta" data-resp="1" id="lac-sex-4">:<input class="lacuna curta" data-resp="18" id="lac-sex-5">)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('sex', 5)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('sex')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-sex"></div>
+      <div class="placar" id="placar-sex">Pontos: 0 / 5</div>
+    </div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Faça uma decisão prática para esta semana:</p>
+    <textarea id="sex-dec" placeholder="Eu decido me alimentar da Palavra..." oninput="salvarAuto('sex-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Ore agradecendo a Deus pela nova identidade que você tem em Cristo. Peça a Ele um desejo sincero pela Sua Palavra e comprometa-se a se alimentar dela todos os dias.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, obrigado porque Tu me geraste pela palavra da verdade e me deste uma nova identidade. Não sou mais escravo do desejo, sou Teu filho. Ajuda-me a me alimentar da Tua Palavra todos os dias, para que eu cresça e dê frutos. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ ABA DE DECISÕES ============ -->
+<div class="dia" id="dia-5">
+  <div class="card">
+    <h2>📋 Minhas Decisões da Semana</h2>
+    <p>Aqui está o resumo de todas as suas decisões. Você pode revisá-las e orar sobre cada uma.</p>
+    <ul class="lista-decisoes" id="lista-decisoes"></ul>
+    <button class="btn btn-ouro" onclick="exportarDecisoes()">📥 Exportar como texto</button>
+    <button class="btn btn-verde" onclick="exportarTudo()">📤 Exportar TUDO (respostas + decisões)</button>
+  </div>
+</div>
+
+<!-- MODAL DE VERSÍCULOS -->
+<div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="modal-titulo">Versículo</h3>
+    <div class="ref" id="modal-ref"></div>
+    <div class="texto-nvi" id="modal-texto"></div>
+    <button class="btn btn-fechar" onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
+
+<footer>
+  <p>Nova Igreja Batista - Ministério de Meditação</p>
+  <p>A Batalha que Acontece em Silêncio</p>
+</footer>
+
+<script>
+/* ============ NAVEGAÇÃO ============ */
+function mostrarDia(index, btn) {
+  document.querySelectorAll('.dia').forEach(d => d.classList.remove('ativo'));
+  document.getElementById('dia-' + index).classList.add('ativo');
+  document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
+  btn.classList.add('ativa');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (index === 5) atualizarListaDecisoes();
+}
+
+/* ============ SALVAMENTO ============ */
+function salvarAuto(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  localStorage.setItem('batalha_' + id, el.value);
+  const aviso = document.getElementById('aviso-' + id);
+  if (aviso) {
+    aviso.textContent = '✔ Salvo automaticamente';
+    setTimeout(() => aviso.textContent = '', 1500);
+  }
+}
+
+function carregarTudo() {
+  document.querySelectorAll('textarea, input').forEach(el => {
+    if (el.id) {
+      const salvo = localStorage.getItem('batalha_' + el.id);
+      if (salvo !== null) el.value = salvo;
+    }
+  });
+  ['seg','ter','qua','qui','sex'].forEach(dia => {
+    const pontos = localStorage.getItem('batalha_pontos_' + dia);
+    if (pontos) {
+      const placar = document.getElementById('placar-' + dia);
+      if (placar) placar.textContent = 'Pontos: ' + pontos;
+    }
+  });
+}
+
+/* ============ MEMORIZAÇÃO ============ */
+function verificarMemorizacao(dia, total) {
+  const lacunas = document.querySelectorAll('[id^="lac-' + dia + '-"]');
+  let acertos = 0;
+  lacunas.forEach(lac => {
+    const resposta = lac.value.trim().toLowerCase();
+    const correta = lac.dataset.resp.toLowerCase();
+    lac.classList.remove('correta', 'errada');
+    if (resposta === correta) {
+      lac.classList.add('correta');
+      acertos++;
+    } else if (resposta !== '') {
+      lac.classList.add('errada');
+    }
+  });
+  const feedback = document.getElementById('feedback-' + dia);
+  const placar = document.getElementById('placar-' + dia);
+  placar.textContent = 'Pontos: ' + acertos + ' / ' + total;
+  localStorage.setItem('batalha_pontos_' + dia, acertos + ' / ' + total);
+
+  if (acertos === total) {
+    feedback.textContent = '🎉 Parabéns! Você acertou todas as ' + total + ' palavras!';
+    feedback.className = 'feedback ok';
+  } else if (acertos >= total / 2) {
+    feedback.textContent = '👍 Muito bem! Você acertou ' + acertos + ' de ' + total + '. Continue!';
+    feedback.className = 'feedback ok';
+  } else {
+    feedback.textContent = '💪 Você acertou ' + acertos + ' de ' + total + '. Leia o versículo e tente de novo!';
+    feedback.className = 'feedback erro';
+  }
+}
+
+function limparMemorizacao(dia) {
+  const lacunas = document.querySelectorAll('[id^="lac-' + dia + '-"]');
+  lacunas.forEach(lac => {
+    lac.value = '';
+    lac.classList.remove('correta', 'errada');
+  });
+  document.getElementById('feedback-' + dia).textContent = '';
+  document.getElementById('placar-' + dia).textContent = 'Pontos: 0 / ' + lacunas.length;
+  localStorage.removeItem('batalha_pontos_' + dia);
+}
+
+/* ============ VERSÍCULOS NVI ============ */
+const versiculosNVI = {
+  'Tiago 1.13': 'Ninguém, ao ser tentado, diga: "Deus está me tentando". Pois Deus não pode ser tentado pelo mal, e a ninguém tenta.',
+  'Tiago 1.14-15': 'Mas cada um é tentado quando atraído e seduzido pelos seus próprios desejos. Então, depois que o desejo concebe, dá à luz o pecado; e o pecado, uma vez consumado, gera a morte.',
+  'Tiago 1.17': 'Toda boa dádiva e todo dom perfeito vêm do alto, descendo do Pai das luzes, que não muda como sombras inconstantes.',
+  'Tiago 1.18': 'Ele nos gerou pela palavra da verdade, para que fôssemos como que as primícias de todas as suas criaturas.',
+  'Hebreus 4.15': 'Pois não temos um sumo sacerdote que não possa compadecer-se das nossas fraquezas, mas sim alguém que, como nós, passou por todo tipo de tentação, porém, sem pecado.',
+  'Romanos 6.16': 'Não sabem que, quando vocês se oferecem a alguém para lhe obedecer como escravos, tornam-se escravos daquele a quem obedecem: escravos do pecado, que leva à morte, ou da obediência, que leva à justiça?',
+  '1 Coríntios 10.13': 'Não sobreveio a vocês tentação que não fosse comum aos homens. E Deus é fiel; ele não permitirá que vocês sejam tentados além do que podem suportar. Mas, quando forem tentados, ele lhes providenciará um escape, para que o possam suportar.',
+  'Provérbios 19.3': 'A insensatez do homem arruína a sua vida, e o seu coração se irrita contra o Senhor.',
+  'Gênesis 3.12': 'O homem respondeu: "Foi a mulher que me deste por companheira que me deu do fruto da árvore, e eu comi".',
+  'Salmos 51.4': 'Pequei contra ti, contra ti somente, e fiz o que é mau aos teus olhos, de modo que a tua sentença é justa e o teu julgamento é reto.',
+  'Gênesis 4.7': 'Se você fizer o bem, não será aceito? Mas se não o fizer, saiba que o pecado o ameaça à porta; ele deseja conquistá-lo, mas você deve dominá-lo.',
+  'Romanos 7.18-19': 'Sei que nada de bom habita em mim, isto é, em minha carne. Porque tenho o desejo de fazer o que é bom, mas não consigo realizá-lo. Pois o que faço não é o bem que desejo, mas o mal que não quero fazer, esse eu continuo fazendo.',
+  'Provérbios 4.23': 'Acima de tudo, guarde o seu coração, pois dele depende a sua vida.',
+  'Mateus 5.28': 'Mas eu lhes digo: qualquer que olhar para uma mulher com intenção impura, no coração, já adulterou com ela.',
+  'Salmos 119.11': 'Guardei no coração a tua palavra para não pecar contra ti.',
+  'Gálatas 5.16-17': 'Por isso digo: vivam pelo Espírito, e de modo nenhum satisfarão os desejos da carne. Pois a carne deseja o que é contrário ao Espírito; e o Espírito, o que é contrário à carne. Eles estão em conflito um com o outro, de modo que vocês não fazem o que desejam.',
+  'Efésios 4.22-24': 'Vocês foram ensinados a despir-se do velho homem, que se corrompe por desejos enganosos, a serem renovados no modo de pensar e a revestir-se do novo homem, criado para ser semelhante a Deus em justiça e em santidade provenientes da verdade.',
+  'Colossenses 3.5': 'Façam morrer tudo o que pertence à natureza terrena de vocês: imoralidade sexual, impureza, paixão, desejos maus e a ganância, que é idolatria.',
+  '1 Pedro 2.11': 'Amados, exorto-vos, como peregrinos e forasteiros que sois, a vos abster das paixões carnais, que fazem guerra contra a alma.',
+  'Malaquias 3.6': 'Eu, o Senhor, não mudo; por isso vocês, descendentes de Jacó, não foram destruídos.',
+  'Hebreus 13.8': 'Jesus Cristo é o mesmo, ontem, hoje e para sempre.',
+  'Números 23.19': 'Deus não é homem para que minta, nem filho de homem para que se arrependa. Acaso ele fala, e deixa de agir? Acaso promete, e deixa de cumprir?',
+  'Salmos 102.27': 'Mas tu permaneces o mesmo, e os teus anos nunca terão fim.',
+  'Isaías 40.28': 'Você não sabe? Nunca ouviu? O Senhor é o Deus eterno, o Criador de toda a terra. Ele não se cansa nem fica exausto, e sua sabedoria é insondável.',
+  'Mateus 4.4': 'Jesus respondeu: "Está escrito: Não só de pão viverá o homem, mas de toda palavra que procede da boca de Deus".',
+  'Hebreus 4.12': 'Pois a palavra de Deus é viva e eficaz, e mais afiada que qualquer espada de dois gumes; ela penetra até o ponto de dividir alma e espírito, juntas e medulas, e julga os pensamentos e as intenções do coração.',
+  'Josué 1.8': 'Não deixe de falar as palavras deste Livro da Lei e de meditar nelas de dia e de noite, para que você cumpra fielmente tudo o que nele está escrito. Só então os seus caminhos prosperarão e você será bem-sucedido.',
+  '2 Timóteo 3.16-17': 'Toda a Escritura é inspirada por Deus e útil para o ensino, para a repreensão, para a correção e para a instrução na justiça, para que o homem de Deus seja apto e plenamente preparado para toda boa obra.',
+  '1 Pedro 2.2': 'Como crianças recém-nascidas, desejem de coração o leite espiritual puro, para que por meio dele cresçam para a salvação.'
+};
+
+function abrirVersiculo(ref) {
+  const modal = document.getElementById('modal-overlay');
+  document.getElementById('modal-titulo').textContent = '📖 ' + ref;
+  document.getElementById('modal-ref').textContent = 'Tradução: Nova Versão Internacional (NVI)';
+  document.getElementById('modal-texto').textContent = versiculosNVI[ref] || 'Texto não disponível offline.';
+  modal.classList.add('aberto');
+}
+
+function fecharModal(event) {
+  if (event && event.target !== event.currentTarget && event.target.className !== 'btn btn-fechar') return;
+  document.getElementById('modal-overlay').classList.remove('aberto');
+}
+
+/* ============ LISTA DE DECISÕES ============ */
+function atualizarListaDecisoes() {
+  const lista = document.getElementById('lista-decisoes');
+  lista.innerHTML = '';
+  
+  const decisoesMap = {
+    'seg-dec': 'Segunda - A Origem da Tentação',
+    'ter-dec': 'Terça - O Processo da Queda',
+    'qua-dec': 'Quarta - A Ilusão do "Eu Sou Assim"',
+    'qui-dec': 'Quinta - O Deus Que Não Muda',
+    'sex-dec': 'Sexta - A Nova Identidade'
+  };
+
+  let temAlgo = false;
+  
+  for (const [id, nome] of Object.entries(decisoesMap)) {
+    const valor = localStorage.getItem('batalha_' + id);
+    if (valor && valor.trim() !== '') {
+      temAlgo = true;
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${nome}:</strong><br>${valor.replace(/\n/g, '<br>')}`;
+      lista.appendChild(li);
+    }
+  }
+
+  if (!temAlgo) {
+    lista.innerHTML = '<li>Nenhuma decisão registrada ainda. Comece a meditar e suas decisões aparecerão aqui.</li>';
+  }
+}
+
+function exportarDecisoes() {
+  let texto = 'MINHAS DECISÕES – A BATALHA QUE ACONTECE EM SILÊNCIO\n' + '='.repeat(60) + '\n\n';
+  
+  const decisoesMap = {
+    'seg-dec': 'SEGUNDA - A Origem da Tentação',
+    'ter-dec': 'TERÇA - O Processo da Queda',
+    'qua-dec': 'QUARTA - A Ilusão do "Eu Sou Assim"',
+    'qui-dec': 'QUINTA - O Deus Que Não Muda',
+    'sex-dec': 'SEXTA - A Nova Identidade'
+  };
+
+  for (const [id, nome] of Object.entries(decisoesMap)) {
+    const valor = localStorage.getItem('batalha_' + id) || '(sem decisão)';
+    texto += nome + '\n' + '-'.repeat(40) + '\n' + valor + '\n\n';
+  }
+
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'minhas-decisoes-batalha-interior.txt';
+  link.click();
+}
+
+function exportarTudo() {
+  let texto = 'MINHA MEDITAÇÃO COMPLETA – A BATALHA QUE ACONTECE EM SILÊNCIO\n' + '='.repeat(70) + '\n\n';
+  
+  document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
+    if (el.id && !el.id.startsWith('lac-')) {
+      const valor = localStorage.getItem('batalha_' + el.id);
+      if (valor && valor.trim() !== '') {
+        texto += `[${el.id}]: ${valor}\n`;
+      }
+    }
+  });
+
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'meditacao-completa-batalha-interior.txt';
+  link.click();
+}
+
+/* ============ INICIALIZAÇÃO ============ */
+window.onload = function() {
+  carregarTudo();
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('modal-overlay').classList.remove('aberto');
+  }
+});
+</script>
+
+</body>
+</html>
