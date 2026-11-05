@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meditação Interativa - Colossenses 1:9-12</title>
+<style>
+  :root {
+    --azul: #1e3a5f;
+    --azul-claro: #2c5282;
+    --dourado: #b7791f;
+    --verde: #276749;
+    --vermelho: #9b2c2c;
+    --fundo: #f7fafc;
+    --card: #ffffff;
+    --texto: #1a202c;
+    --borda: #cbd5e0;
+    --creme: #fffaf0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1.7;
+    background: var(--fundo);
+    color: var(--texto);
+    margin: 0;
+    padding: 0 12px 100px;
+  }
+  header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    color: #fff;
+    padding: 26px 16px 22px;
+    text-align: center;
+    border-radius: 0 0 20px 20px;
+    margin: 0 -12px 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+  header h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: .5px; }
+  header p { margin: 4px 0; font-size: 18px; opacity: .95; }
+
+  .abas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 22px;
+    position: sticky;
+    top: 0;
+    background: var(--fundo);
+    padding: 10px 0;
+    z-index: 50;
+  }
+  .aba {
+    background: #fff;
+    border: 3px solid var(--azul-claro);
+    color: var(--azul);
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .2s;
+  }
+  .aba:hover { background: #ebf4ff; transform: translateY(-2px); }
+  .aba.ativa { background: var(--azul-claro); color: #fff; }
+
+  .dia { display: none; animation: fade .3s; }
+  .dia.ativo { display: block; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    border-left: 8px solid var(--dourado);
+  }
+  .card.destaque { border-left-color: var(--verde); background: #f0fdf9; }
+  .card h2 {
+    font-size: 22px;
+    color: var(--azul);
+    margin: 0 0 14px;
+    border-bottom: 3px solid var(--borda);
+    padding-bottom: 10px;
+  }
+  .card h3 { font-size: 20px; color: var(--azul-claro); margin-top: 24px; }
+  
+  .versiculo-chave {
+    font-style: italic;
+    background: var(--creme);
+    border-left: 6px solid var(--dourado);
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin: 14px 0;
+    font-size: 19px;
+    color: #744210;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .contexto-box { background: #ebf8ff; border-left: 5px solid var(--azul-claro); padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 18px; }
+  .contexto-box strong { color: var(--azul-claro); }
+  .exegese-box { background: #faf5ff; border-left: 5px solid #805ad5; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 18px; }
+  .exegese-box strong { color: #553c9a; }
+  .ilustracao-box { background: #fff5f5; border-left: 5px solid var(--vermelho); padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 18px; }
+  .ilustracao-box strong { color: var(--vermelho); }
+  .oracao-box { background: linear-gradient(135deg, #fefcbf 0%, #faf089 100%); border-left: 6px solid var(--dourado); padding: 18px 22px; border-radius: 12px; margin: 16px 0; font-size: 19px; color: #744210; font-style: italic; }
+  .oracao-box strong { color: var(--dourado); display: block; margin-bottom: 8px; font-style: normal; }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 19px;
+    padding: 12px;
+    border: 2px solid var(--borda);
+    border-radius: 10px;
+    background: #fff;
+    resize: vertical;
+    min-height: 60px;
+    margin-top: 6px;
+  }
+  textarea:focus, input:focus {
+    outline: 3px solid var(--dourado);
+    border-color: var(--dourado);
+  }
+  .salvo-aviso {
+    font-size: 15px;
+    color: var(--verde);
+    margin-top: 4px;
+    height: 20px;
+    font-weight: bold;
+  }
+
+  .versiculo-btn {
+    display: inline-block;
+    background: #ebf8ff;
+    color: var(--azul-claro);
+    border: 2px solid var(--azul-claro);
+    padding: 10px 16px;
+    margin: 6px 6px 6px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: bold;
+    transition: .2s;
+  }
+  .versiculo-btn:hover { background: var(--azul-claro); color: #fff; }
+
+  .btn {
+    background: var(--azul-claro);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 8px 8px 8px 0;
+    transition: .2s;
+  }
+  .btn:hover { background: var(--azul); transform: translateY(-2px); }
+  .btn-verde { background: var(--verde); }
+  .btn-verde:hover { background: #22543d; }
+  .btn-limpar { background: #718096; }
+  .btn-limpar:hover { background: #4a5568; }
+  .btn-ouro { background: var(--dourado); }
+  .btn-ouro:hover { background: #975a16; }
+
+  .feedback { font-size: 18px; font-weight: bold; margin-top: 10px; min-height: 30px; }
+  .feedback.ok { color: var(--verde); }
+  .feedback.erro { color: var(--vermelho); }
+
+  .memoriza-area { background: #f0fff4; border: 3px dashed var(--verde); border-radius: 12px; padding: 18px; margin: 14px 0; }
+  .memoriza-frase { font-size: 20px; line-height: 2.5; margin-bottom: 14px; }
+  .lacuna { display: inline-block; width: 80px; border: none; border-bottom: 3px solid var(--dourado); background: #fffdf5; font-size: 19px; padding: 4px 6px; margin: 0 4px; text-align: center; font-weight: bold; color: var(--azul); }
+  .lacuna.larga { width: 140px; }
+  .lacuna.curta { width: 50px; }
+  .lacuna.correta { border-bottom-color: var(--verde); background: #c6f6d5; }
+  .lacuna.errada { border-bottom-color: var(--vermelho); background: #fed7d7; }
+  .placar { background: var(--dourado); color: #fff; padding: 10px 20px; border-radius: 12px; font-size: 20px; font-weight: bold; display: inline-block; margin: 10px 0; }
+
+  .lista-decisoes { list-style: none; padding: 0; }
+  .lista-decisoes li { background: var(--creme); border-left: 6px solid var(--dourado); padding: 14px 18px; margin-bottom: 12px; border-radius: 8px; font-size: 18px; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 999; justify-content: center; align-items: center; padding: 16px; }
+  .modal-overlay.aberto { display: flex; }
+  .modal { background: #fff; border-radius: 16px; max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 28px; box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+  .modal h3 { margin-top: 0; color: var(--azul); border-bottom: 3px solid var(--dourado); padding-bottom: 10px; }
+  .modal .texto-nvi { font-size: 21px; line-height: 1.8; color: #2d3748; }
+  .modal .ref { font-weight: bold; color: var(--dourado); margin-bottom: 12px; }
+  .modal .btn-fechar { background: var(--vermelho); margin-top: 16px; }
+
+  footer { text-align: center; color: #718096; font-size: 15px; margin-top: 30px; padding: 20px; border-top: 2px solid var(--borda); }
+
+  @media (max-width: 600px) {
+    body { font-size: 18px; }
+    .aba { font-size: 14px; padding: 10px 12px; }
+    .lacuna { width: 60px; }
+    .lacuna.larga { width: 100px; }
+    .lacuna.curta { width: 40px; }
+    .card h2 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌱 Como Viver uma Vida que Agrada a Deus</h1>
+  <p><strong>Um estudo profundo sobre Colossenses 1:9-12</strong></p>
+</header>
+
+<div class="abas">
+  <button class="aba ativa" onclick="mostrarDia(0, this)">Segunda</button>
+  <button class="aba" onclick="mostrarDia(1, this)">Terça</button>
+  <button class="aba" onclick="mostrarDia(2, this)">Quarta</button>
+  <button class="aba" onclick="mostrarDia(3, this)">Quinta</button>
+  <button class="aba" onclick="mostrarDia(4, this)">Sexta</button>
+  <button class="aba" onclick="mostrarDia(5, this)">📋 Decisões</button>
+</div>
+
+<!-- ============ SEGUNDA ============ -->
+<div class="dia ativo" id="dia-0">
+  <div class="card destaque">
+    <h2>Segunda-feira – O Conhecimento da Vontade de Deus</h2>
+    <div class="versiculo-chave">
+      "Por essa razão, desde o dia em que soubemos disso, não paramos de orar por vocês e de pedir que sejam cheios do conhecimento da sua vontade, em toda a sabedoria e entendimento espiritual." (Colossenses 1:9)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> A igreja em Colossos estava sendo ameaçada por falsos ensinamentos que misturavam filosofia humana e práticas religiosas com o evangelho. Paulo escreve esta carta para lembrá-los de que a vida cristã autêntica não depende de regras externas, mas de um conhecimento profundo de Deus. A oração que ele faz por eles é um modelo do que devemos buscar: ser cheios da vontade de Deus.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "conhecimento" é <strong><em>epignōsis</em></strong> (ἐπίγνωσις), que significa "conhecimento pleno, pessoal e experimental". Não é apenas saber sobre Deus; é conhecer a Deus. Já a palavra "sabedoria" é <strong><em>sophia</em></strong> (σοφία), a habilidade de aplicar esse conhecimento à vida prática. O "entendimento espiritual" é <strong><em>synesis</em></strong> (σύνεσις), a capacidade de discernir e conectar as verdades de Deus.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Paulo não ora para que os colossenses tenham uma vida fácil ou próspera. Ele ora para que eles sejam <strong>cheios do conhecimento da vontade de Deus</strong>. Isso é revolucionário! Muitas vezes, oramos por circunstâncias, mas Paulo nos ensina a orar por compreensão. Ele quer que saibamos o que Deus quer, para que possamos viver de acordo com isso.</p>
+    <p>Esse conhecimento não é apenas intelectual. É "em toda a sabedoria e entendimento espiritual". Ou seja, é um conhecimento que transforma a mente e o coração, que nos capacita a tomar decisões que agradam a Deus em todas as áreas da vida.</p>
+
+    <p><strong>➔ Responda:</strong></p>
+    <p>a) O que você tem pedido a Deus em oração? Suas orações são mais sobre circunstâncias ou sobre conhecer a vontade de Deus?</p>
+    <textarea id="seg-a" placeholder="Sua resposta..." oninput="salvarAuto('seg-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-a"></div>
+
+    <p>b) Como você pode buscar um conhecimento mais profundo de Deus no dia a dia?</p>
+    <textarea id="seg-b" placeholder="Sua resposta..." oninput="salvarAuto('seg-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-b"></div>
+
+    <h3>2) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 2.1-5')">📖 Provérbios 2:1-5</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Jeremias 9.24')">📖 Jeremias 9:24</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Oséias 6.6')">📖 Oséias 6:6</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('João 17.3')">📖 João 17:3</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Efésios 1.17')">📖 Efésios 1:17</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tiago 1.5')">📖 Tiago 1:5</button>
+
+    <h3>3) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (falta o nome do livro):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Por essa razão, desde o dia em que soubemos disso, não paramos de <input class="lacuna larga" data-resp="orar" id="lac-seg-1"> por vocês e de pedir que sejam <input class="lacuna larga" data-resp="cheios" id="lac-seg-2"> do <input class="lacuna larga" data-resp="conhecimento" id="lac-seg-3"> da sua vontade, em toda a <input class="lacuna larga" data-resp="sabedoria" id="lac-seg-4"> e <input class="lacuna larga" data-resp="entendimento" id="lac-seg-5"> espiritual."
+        <br><br><span style="font-size: 18px; color: #4a5568;">(<input class="lacuna larga" data-resp="Colossenses" id="lac-seg-6"> 1:9)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('seg', 6)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('seg')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-seg"></div>
+      <div class="placar" id="placar-seg">Pontos: 0 / 6</div>
+    </div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Faça uma decisão prática para esta semana:</p>
+    <textarea id="seg-dec" placeholder="Eu decido buscar conhecer mais a vontade de Deus..." oninput="salvarAuto('seg-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Reserve um momento para orar, pedindo a Deus que te encha do conhecimento da Sua vontade. Peça sabedoria e entendimento espiritual para discernir o que é agradável a Ele em todas as áreas da sua vida.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Pai, eu quero conhecer a Tua vontade, não apenas saber sobre Ti, mas Te conhecer de verdade. Enche-me do Teu conhecimento, da Tua sabedoria e do Teu entendimento espiritual. Que a minha vida seja guiada pela Tua verdade, e não pelas circunstâncias. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ TERÇA ============ -->
+<div class="dia" id="dia-1">
+  <div class="card destaque">
+    <h2>Terça-feira – Andar Dignamente e Frutificar</h2>
+    <div class="versiculo-chave">
+      "Para que vivam de modo digno do Senhor e lhe agradem em tudo, dando frutos em toda boa obra e crescendo no conhecimento de Deus." (Colossenses 1:10)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Depois de pedir que os colossenses sejam cheios do conhecimento da vontade de Deus, Paulo agora mostra o propósito desse conhecimento: para que eles vivam de modo digno do Senhor. O conhecimento não é um fim em si mesmo; ele deve levar a uma vida transformada que agrada a Deus.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "digno" é <strong><em>axiōs</em></strong> (ἀξίως), que significa "de maneira correspondente, de forma equilibrada". Viver dignamente é viver de forma que a nossa vida corresponda ao valor do evangelho. Já "agradem em tudo" é <strong><em>areskeia</em></strong> (ἀρέσκεια), que significa "buscar agradar, ser agradável". O objetivo da vida cristã é agradar a Deus em todas as coisas, não apenas em algumas.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Paulo ora para que os colossenses vivam de modo digno do Senhor. Isso não é sobre perfeição, mas sobre coerência. É sobre a nossa vida refletir aquilo que cremos. Ele diz que essa vida se manifesta de duas formas: <strong>dando frutos em toda boa obra</strong> e <strong>crescendo no conhecimento de Deus</strong>. Esses dois aspectos caminham juntos: quanto mais conhecemos a Deus, mais frutificamos; quanto mais frutificamos, mais conhecemos a Deus.</p>
+    <p>Frutificar em toda boa obra não é apenas fazer coisas boas. É fazer a vontade de Deus com a motivação correta. É viver de forma que as pessoas vejam Cristo em nós, não por nossas palavras, mas por nossas atitudes.</p>
+
+    <div class="ilustracao-box">
+      <strong>💡 Ilustração:</strong> Uma árvore não precisa se esforçar para dar frutos. Ela apenas precisa estar conectada à raiz, recebendo água e nutrientes. Da mesma forma, se estivermos conectados a Cristo, os frutos virão naturalmente. O esforço não é para produzir frutos, mas para permanecer conectados.
+    </div>
+
+    <p><strong>➔ Responda:</strong></p>
+    <p>a) O que significa, na prática, viver de modo digno do Senhor?</p>
+    <textarea id="ter-a" placeholder="Sua resposta..." oninput="salvarAuto('ter-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-a"></div>
+
+    <p>b) Como você tem frutificado em boas obras? Dê exemplos concretos.</p>
+    <textarea id="ter-b" placeholder="Sua resposta..." oninput="salvarAuto('ter-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-b"></div>
+
+    <h3>2) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('João 15.5')">📖 João 15:5</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Gálatas 5.22-23')">📖 Gálatas 5:22-23</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Efésios 2.10')">📖 Efésios 2:10</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tiago 2.17')">📖 Tiago 2:17</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Filipenses 1.11')">📖 Filipenses 1:11</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('2 Coríntios 5.9')">📖 2 Coríntios 5:9</button>
+
+    <h3>3) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (falta o capítulo):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Para que vivam de modo <input class="lacuna larga" data-resp="digno" id="lac-ter-1"> do Senhor e lhe <input class="lacuna larga" data-resp="agradem" id="lac-ter-2"> em tudo, dando <input class="lacuna larga" data-resp="frutos" id="lac-ter-3"> em toda boa obra e <input class="lacuna larga" data-resp="crescendo" id="lac-ter-4"> no conhecimento de Deus."
+        <br><br><span style="font-size: 18px; color: #4a5568;">(Colossenses <input class="lacuna curta" data-resp="1" id="lac-ter-5">:10)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('ter', 5)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('ter')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-ter"></div>
+      <div class="placar" id="placar-ter">Pontos: 0 / 5</div>
+    </div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Faça uma decisão prática para esta semana:</p>
+    <textarea id="ter-dec" placeholder="Eu decido viver de modo digno do Senhor..." oninput="salvarAuto('ter-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Ore pedindo a Deus que te ajude a viver de modo digno do Senhor, dando frutos em toda boa obra. Peça que Ele te mostre áreas onde você precisa crescer e frutificar mais.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, eu quero viver de modo digno de Ti, não por minhas forças, mas pelo Teu poder. Ajuda-me a dar frutos em toda boa obra e a crescer no conhecimento de Ti. Que a minha vida seja um reflexo do Teu amor e da Tua graça. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ QUARTA ============ -->
+<div class="dia" id="dia-2">
+  <div class="card destaque">
+    <h2>Quarta-feira – Fortalecidos para a Perseverança</h2>
+    <div class="versiculo-chave">
+      "Sendo fortalecidos com todo o poder, segundo a força da sua glória, para que tenham toda a perseverança e paciência com alegria." (Colossenses 1:11)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Os colossenses estavam enfrentando pressões e ensinamentos falsos. Paulo sabia que eles precisariam de força espiritual para permanecer firmes. Ele ora para que sejam fortalecidos com todo o poder de Deus, não para fugir das dificuldades, mas para perseverar nelas com alegria.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "fortalecidos" é <strong><em>dynamoō</em></strong> (δυναμόω), que significa "ser capacitado com poder". A mesma raiz de <em>dynamis</em> (poder, milagre). Já "perseverança" é <strong><em>hypomonē</em></strong> (ὑπομονή), que significa "permanecer firme debaixo de pressão". E "paciência" é <strong><em>makrothymia</em></strong> (μακροθυμία), que significa "longanimidade, ter um coração grande para suportar". Paulo ora para que eles tenham ambas as coisas, com alegria.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Paulo não ora para que os colossenses sejam poupados das dificuldades. Ele ora para que sejam <strong>fortalecidos</strong> para enfrentá-las. A força que ele pede não é força humana, mas o poder da glória de Deus. Essa força nos capacita a ter perseverança e paciência, não com murmuração, mas com alegria.</p>
+    <p>Perseverança é a capacidade de continuar firme quando tudo parece desmoronar. Paciência é a capacidade de suportar as pessoas e as circunstâncias sem perder a paz. Essas duas virtudes são frutos do poder de Deus em nós, não do nosso esforço próprio.</p>
+
+    <div class="ilustracao-box">
+      <strong>💡 Ilustração:</strong> O diamante é formado sob pressão extrema e altas temperaturas. Se o carbono não fosse submetido a essa pressão, continuaria sendo apenas grafite, algo comum e frágil. Da mesma forma, Deus usa as pressões da vida para nos transformar em algo precioso.
+    </div>
+
+    <p><strong>➔ Responda:</strong></p>
+    <p>a) Em que área da sua vida você tem mais dificuldade de perseverar?</p>
+    <textarea id="qua-a" placeholder="Sua resposta..." oninput="salvarAuto('qua-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-a"></div>
+
+    <p>b) Como você pode buscar a força de Deus em vez de confiar apenas nas suas próprias forças?</p>
+    <textarea id="qua-b" placeholder="Sua resposta..." oninput="salvarAuto('qua-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-b"></div>
+
+    <h3>2) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Isaías 40.31')">📖 Isaías 40:31</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Romanos 5.3-5')">📖 Romanos 5:3-5</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tiago 1.2-4')">📖 Tiago 1:2-4</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('2 Coríntios 12.9')">📖 2 Coríntios 12:9</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Filipenses 4.13')">📖 Filipenses 4:13</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmos 46.1')">📖 Salmos 46:1</button>
+
+    <h3>3) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (faltam o livro e o capítulo):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Sendo <input class="lacuna larga" data-resp="fortalecidos" id="lac-qua-1"> com todo o <input class="lacuna larga" data-resp="poder" id="lac-qua-2">, segundo a força da sua <input class="lacuna larga" data-resp="glória" id="lac-qua-3">, para que tenham toda a <input class="lacuna larga" data-resp="perseverança" id="lac-qua-4"> e <input class="lacuna larga" data-resp="paciência" id="lac-qua-5"> com alegria."
+        <br><br><span style="font-size: 18px; color: #4a5568;">(<input class="lacuna larga" data-resp="Colossenses" id="lac-qua-6"> <input class="lacuna curta" data-resp="1" id="lac-qua-7">:11)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('qua', 7)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('qua')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-qua"></div>
+      <div class="placar" id="placar-qua">Pontos: 0 / 7</div>
+    </div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Faça uma decisão prática para esta semana:</p>
+    <textarea id="qua-dec" placeholder="Eu decido buscar a força de Deus para perseverar..." oninput="salvarAuto('qua-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Ore pedindo a Deus que te fortaleça com o poder da Sua glória. Peça perseverança e paciência para enfrentar as dificuldades com alegria, confiando que Ele está no controle.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, eu não quero confiar nas minhas próprias forças, porque sei que elas são limitadas. Fortalece-me com o poder da Tua glória. Dá-me perseverança para continuar firme e paciência para suportar as dificuldades com alegria. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ QUINTA ============ -->
+<div class="dia" id="dia-3">
+  <div class="card destaque">
+    <h2>Quinta-feira – A Gratidão pela Herança</h2>
+    <div class="versiculo-chave">
+      "Dando graças ao Pai, que nos tornou dignos de participar da herança dos santos no reino da luz." (Colossenses 1:12)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Paulo termina sua oração com uma explosão de gratidão. Ele lembra aos colossenses de que a vida cristã não é apenas sobre o que fazemos, mas sobre o que Deus já fez por nós. Ele nos tornou dignos de participar de uma herança eterna. Essa é a razão da nossa gratidão.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "dignos" é <strong><em>hikanō</em></strong> (ἱκανόω), que significa "tornar suficiente, capacitar". Não fomos nós que nos tornamos dignos; foi Deus quem nos capacitou. Já "herança" é <strong><em>klēros</em></strong> (κλῆρος), que significa "lote, porção". No Antigo Testamento, a herança era a terra prometida. No Novo Testamento, é a vida eterna com Cristo.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Paulo nos lembra de que a nossa vida cristã começa e termina com gratidão. Ele nos diz para darmos graças ao Pai, que nos tornou dignos de participar da herança dos santos. Não somos dignos por nossos méritos, mas pela graça de Deus. Ele nos capacitou, nos deu uma nova identidade e nos garantiu um futuro eterno.</p>
+    <p>Essa herança não é algo que conquistamos; é um presente. É a certeza de que pertencemos ao reino da luz, de que somos filhos de Deus e co-herdeiros com Cristo. Quando entendemos isso, a nossa vida se enche de gratidão, e essa gratidão transforma a forma como vivemos.</p>
+
+    <div class="ilustracao-box">
+      <strong>💡 Ilustração:</strong> Imagine um mendigo que, de repente, descobre que é herdeiro de uma fortuna. Ele não fez nada para merecer isso, mas a partir daquele momento, sua vida muda completamente. Ele não vive mais como mendigo, mas como filho do rei. Assim somos nós: fomos resgatados da miséria e feitos herdeiros de Deus.
+    </div>
+
+    <p><strong>➔ Responda:</strong></p>
+    <p>a) O que significa para você saber que Deus te tornou digno de participar da herança dos santos?</p>
+    <textarea id="qui-a" placeholder="Sua resposta..." oninput="salvarAuto('qui-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-a"></div>
+
+    <p>b) Como a gratidão pela herança eterna muda a forma como você vive hoje?</p>
+    <textarea id="qui-b" placeholder="Sua resposta..." oninput="salvarAuto('qui-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-b"></div>
+
+    <h3>2) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Efésios 1.18')">📖 Efésios 1:18</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 Pedro 1.3-4')">📖 1 Pedro 1:3-4</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Romanos 8.17')">📖 Romanos 8:17</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tiago 1.17')">📖 Tiago 1:17</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmos 16.5')">📖 Salmos 16:5</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Apocalipse 21.7')">📖 Apocalipse 21:7</button>
+
+    <h3>3) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (falta o versículo):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Dando <input class="lacuna larga" data-resp="graças" id="lac-qui-1"> ao Pai, que nos tornou <input class="lacuna larga" data-resp="dignos" id="lac-qui-2"> de participar da <input class="lacuna larga" data-resp="herança" id="lac-qui-3"> dos santos no reino da <input class="lacuna larga" data-resp="luz" id="lac-qui-4">."
+        <br><br><span style="font-size: 18px; color: #4a5568;">(Colossenses 1:<input class="lacuna curta" data-resp="12" id="lac-qui-5">)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('qui', 5)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('qui')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-qui"></div>
+      <div class="placar" id="placar-qui">Pontos: 0 / 5</div>
+    </div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Faça uma decisão prática para esta semana:</p>
+    <textarea id="qui-dec" placeholder="Eu decido viver com gratidão pela herança que recebi..." oninput="salvarAuto('qui-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Reserve um tempo para agradecer a Deus pela herança eterna que você tem em Cristo. Agradeça por Ele ter te tornado digno, não por seus méritos, mas pela graça.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Pai, eu Te agradeço porque Tu me tornaste digno de participar da herança dos santos. Não por causa dos meus méritos, mas pela Tua graça. Obrigado por me resgatar da escuridão e me trazer para o Teu reino de luz. Que a minha vida seja uma expressão de gratidão todos os dias. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ SEXTA ============ -->
+<div class="dia" id="dia-4">
+  <div class="card destaque">
+    <h2>Sexta-feira – Vivendo à Luz da Herança</h2>
+    <div class="versiculo-chave">
+      "Mas, se andarmos na luz, como ele na luz está, temos comunhão uns com os outros, e o sangue de Jesus, seu Filho, nos purifica de todo pecado." (1 João 1:7)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Ao longo desta semana, vimos que a vida que agrada a Deus começa com o conhecimento da Sua vontade (Cl 1:9), se manifesta em andar dignamente e frutificar (Cl 1:10), é sustentada pelo poder de Deus para perseverar (Cl 1:11), e é motivada pela gratidão pela herança eterna (Cl 1:12). O apóstolo João, em sua primeira carta, nos mostra como essa vida se expressa na prática: andando na luz.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "luz" é <strong><em>phōs</em></strong> (φῶς), que simboliza a santidade, a verdade e a pureza de Deus. "Andar na luz" significa viver em transparência, sem esconder nada, em comunhão com Deus e com os irmãos. Já a palavra "comunhão" é <strong><em>koinōnia</em></strong> (κοινωνία), que significa "participação comum, sociedade, parceria". Andar na luz nos leva a ter comunhão uns com os outros e a experimentar a purificação contínua do sangue de Jesus.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>João nos diz que, se andarmos na luz, temos duas coisas: <strong>comunhão uns com os outros</strong> e <strong>purificação de todo pecado</strong>. Andar na luz não é ser perfeito; é viver de forma transparente diante de Deus e das pessoas. É não esconder as nossas falhas, mas confessá-las e buscar a purificação que vem de Cristo.</p>
+    <p>A herança que recebemos não é apenas para o futuro; ela transforma o nosso presente. Vivemos à luz da herança quando andamos na luz, quando buscamos a comunhão com os irmãos e quando permitimos que o sangue de Jesus nos purifique continuamente. Essa é a vida que agrada a Deus: uma vida de transparência, comunhão e santidade.</p>
+
+    <p><strong>➔ Responda:</strong></p>
+    <p>a) O que significa, na prática, andar na luz?</p>
+    <textarea id="sex-a" placeholder="Sua resposta..." oninput="salvarAuto('sex-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-a"></div>
+
+    <p>b) Como a comunhão com os irmãos e a purificação do sangue de Jesus se relacionam com a vida que agrada a Deus?</p>
+    <textarea id="sex-b" placeholder="Sua resposta..." oninput="salvarAuto('sex-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-b"></div>
+
+    <h3>2) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Mateus 5.14-16')">📖 Mateus 5:14-16</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Efésios 5.8-10')">📖 Efésios 5:8-10</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Filipenses 2.15-16')">📖 Filipenses 2:15-16</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 Tessalonicenses 5.5')">📖 1 Tessalonicenses 5:5</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmos 119.105')">📖 Salmos 119:105</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Isaías 60.1')">📖 Isaías 60:1</button>
+
+    <h3>3) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (faltam o livro e o capítulo):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        "Mas, se andarmos na <input class="lacuna larga" data-resp="luz" id="lac-sex-1">, como ele na luz está, temos <input class="lacuna larga" data-resp="comunhão" id="lac-sex-2"> uns com os outros, e o <input class="lacuna larga" data-resp="sangue" id="lac-sex-3"> de Jesus, seu Filho, nos <input class="lacuna larga" data-resp="purifica" id="lac-sex-4"> de todo pecado."
+        <br><br><span style="font-size: 18px; color: #4a5568;">(<input class="lacuna larga" data-resp="1 João" id="lac-sex-5"> <input class="lacuna curta" data-resp="1" id="lac-sex-6">:7)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('sex', 6)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('sex')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-sex"></div>
+      <div class="placar" id="placar-sex">Pontos: 0 / 6</div>
+    </div>
+
+    <h3>4) DECIDIR:</h3>
+    <p>Faça uma decisão prática para esta semana:</p>
+    <textarea id="sex-dec" placeholder="Eu decido andar na luz..." oninput="salvarAuto('sex-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-dec"></div>
+
+    <h3>5) COMPARTILHAR COM DEUS:</h3>
+    <p>Ore agradecendo a Deus por tudo o que você aprendeu nesta semana. Peça a Ele que te ajude a andar na luz, a ter comunhão com os irmãos e a experimentar a purificação do sangue de Jesus em sua vida.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, obrigado por esta semana de aprendizado. Ajuda-me a andar na luz, em transparência e comunhão com os irmãos. Que o Teu sangue, Jesus, me purifique de todo pecado e que a minha vida seja um testemunho vivo do Teu reino. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ ABA DE DECISÕES ============ -->
+<div class="dia" id="dia-5">
+  <div class="card">
+    <h2>📋 Minhas Decisões da Semana</h2>
+    <p>Aqui está o resumo de todas as suas decisões. Você pode revisá-las e orar sobre cada uma.</p>
+    <ul class="lista-decisoes" id="lista-decisoes"></ul>
+    <button class="btn btn-ouro" onclick="exportarDecisoes()">📥 Exportar como texto</button>
+    <button class="btn btn-verde" onclick="exportarTudo()">📤 Exportar TUDO (respostas + decisões)</button>
+  </div>
+</div>
+
+<!-- MODAL DE VERSÍCULOS -->
+<div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="modal-titulo">Versículo</h3>
+    <div class="ref" id="modal-ref"></div>
+    <div class="texto-nvi" id="modal-texto"></div>
+    <button class="btn btn-fechar" onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
+
+<footer>
+  <p>Nova Igreja Batista - Ministério de Meditação</p>
+  <p>Colossenses 1:9-12 — Como Viver uma Vida que Agrada a Deus</p>
+</footer>
+
+<script>
+/* ============ NAVEGAÇÃO ============ */
+function mostrarDia(index, btn) {
+  document.querySelectorAll('.dia').forEach(d => d.classList.remove('ativo'));
+  document.getElementById('dia-' + index).classList.add('ativo');
+  document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
+  btn.classList.add('ativa');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (index === 5) atualizarListaDecisoes();
+}
+
+/* ============ SALVAMENTO ============ */
+function salvarAuto(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  localStorage.setItem('colossenses_' + id, el.value);
+  const aviso = document.getElementById('aviso-' + id);
+  if (aviso) {
+    aviso.textContent = '✔ Salvo automaticamente';
+    setTimeout(() => aviso.textContent = '', 1500);
+  }
+}
+
+function carregarTudo() {
+  document.querySelectorAll('textarea, input').forEach(el => {
+    if (el.id) {
+      const salvo = localStorage.getItem('colossenses_' + el.id);
+      if (salvo !== null) el.value = salvo;
+    }
+  });
+  ['seg','ter','qua','qui','sex'].forEach(dia => {
+    const pontos = localStorage.getItem('colossenses_pontos_' + dia);
+    if (pontos) {
+      const placar = document.getElementById('placar-' + dia);
+      if (placar) placar.textContent = 'Pontos: ' + pontos;
+    }
+  });
+}
+
+/* ============ MEMORIZAÇÃO ============ */
+function verificarMemorizacao(dia, total) {
+  const lacunas = document.querySelectorAll('[id^="lac-' + dia + '-"]');
+  let acertos = 0;
+  lacunas.forEach(lac => {
+    const resposta = lac.value.trim().toLowerCase();
+    const correta = lac.dataset.resp.toLowerCase();
+    lac.classList.remove('correta', 'errada');
+    if (resposta === correta) {
+      lac.classList.add('correta');
+      acertos++;
+    } else if (resposta !== '') {
+      lac.classList.add('errada');
+    }
+  });
+  const feedback = document.getElementById('feedback-' + dia);
+  const placar = document.getElementById('placar-' + dia);
+  placar.textContent = 'Pontos: ' + acertos + ' / ' + total;
+  localStorage.setItem('colossenses_pontos_' + dia, acertos + ' / ' + total);
+
+  if (acertos === total) {
+    feedback.textContent = '🎉 Parabéns! Você acertou todas as ' + total + ' palavras!';
+    feedback.className = 'feedback ok';
+  } else if (acertos >= total / 2) {
+    feedback.textContent = '👍 Muito bem! Você acertou ' + acertos + ' de ' + total + '. Continue!';
+    feedback.className = 'feedback ok';
+  } else {
+    feedback.textContent = '💪 Você acertou ' + acertos + ' de ' + total + '. Leia o versículo e tente de novo!';
+    feedback.className = 'feedback erro';
+  }
+}
+
+function limparMemorizacao(dia) {
+  const lacunas = document.querySelectorAll('[id^="lac-' + dia + '-"]');
+  lacunas.forEach(lac => {
+    lac.value = '';
+    lac.classList.remove('correta', 'errada');
+  });
+  document.getElementById('feedback-' + dia).textContent = '';
+  document.getElementById('placar-' + dia).textContent = 'Pontos: 0 / ' + lacunas.length;
+  localStorage.removeItem('colossenses_pontos_' + dia);
+}
+
+/* ============ VERSÍCULOS NVI ============ */
+const versiculosNVI = {
+  'Colossenses 1.9': 'Por essa razão, desde o dia em que soubemos disso, não paramos de orar por vocês e de pedir que sejam cheios do conhecimento da sua vontade, em toda a sabedoria e entendimento espiritual.',
+  'Colossenses 1.10': 'Para que vivam de modo digno do Senhor e lhe agradem em tudo, dando frutos em toda boa obra e crescendo no conhecimento de Deus.',
+  'Colossenses 1.11': 'Sendo fortalecidos com todo o poder, segundo a força da sua glória, para que tenham toda a perseverança e paciência com alegria.',
+  'Colossenses 1.12': 'Dando graças ao Pai, que nos tornou dignos de participar da herança dos santos no reino da luz.',
+  'Provérbios 2.1-5': 'Meu filho, se você aceitar as minhas palavras e guardar os meus mandamentos, se der ouvidos à sabedoria e inclinar o coração para o entendimento, se clamar por entendimento e por discernimento gritar bem alto, se procurar a sabedoria como se procura a prata e buscá-la como quem busca um tesouro escondido, então você entenderá o que é temer o Senhor e achará o conhecimento de Deus.',
+  'Jeremias 9.24': 'Mas quem se gloriar, glorie-se nisto: em compreender e conhecer a mim, pois eu sou o Senhor, que pratico o amor leal, o direito e a justiça na terra, e é nisso que tenho prazer, diz o Senhor.',
+  'Oséias 6.6': 'Pois o que eu quero é amor, não sacrifícios; e conhecimento de Deus, mais do que holocaustos.',
+  'João 17.3': 'E esta é a vida eterna: que te conheçam, o único Deus verdadeiro, e a Jesus Cristo, a quem enviaste.',
+  'Efésios 1.17': 'Peço que o Deus de nosso Senhor Jesus Cristo, o glorioso Pai, lhes dê o Espírito de sabedoria e de revelação, para que vocês o conheçam melhor.',
+  'Tiago 1.5': 'Se algum de vocês tem falta de sabedoria, peça-a a Deus, que a todos dá livremente, de boa vontade; e lhe será concedida.',
+  'João 15.5': 'Eu sou a videira; vocês são os ramos. Se alguém permanecer em mim e eu nele, esse dará muito fruto; pois sem mim vocês não podem fazer coisa alguma.',
+  'Gálatas 5.22-23': 'Mas o fruto do Espírito é amor, alegria, paz, paciência, amabilidade, bondade, fidelidade, mansidão e domínio próprio. Contra essas coisas não há lei.',
+  'Efésios 2.10': 'Porque somos criação de Deus realizada em Cristo Jesus para fazermos boas obras, as quais Deus preparou antes para nós as praticarmos.',
+  'Tiago 2.17': 'Assim também a fé, por si só, se não for acompanhada de obras, está morta.',
+  'Filipenses 1.11': 'Cheios do fruto de justiça, que vem por meio de Jesus Cristo, para glória e louvor de Deus.',
+  '2 Coríntios 5.9': 'Por isso, também nos empenhamos em agradá-lo, quer estejamos no corpo, quer fora dele.',
+  'Isaías 40.31': 'Mas os que esperam no Senhor renovarão as suas forças. Subirão com asas como águias; correrão e não se cansarão; caminharão e não se fatigarão.',
+  'Romanos 5.3-5': 'Não somente isso, mas também nos gloriamos nas tribulações, porque sabemos que a tribulação produz perseverança; a perseverança, um caráter aprovado; e o caráter aprovado, esperança. E a esperança não nos decepciona, porque Deus derramou seu amor em nossos corações, por meio do Espírito Santo que ele nos concedeu.',
+  'Tiago 1.2-4': 'Meus irmãos, considerem motivo de grande alegria o fato de passarem por diversas provações, pois vocês sabem que a prova da sua fé produz perseverança. E a perseverança deve ter ação completa, a fim de que vocês sejam maduros e íntegros, sem lhes faltar coisa alguma.',
+  '2 Coríntios 12.9': 'Mas ele me disse: "Minha graça é suficiente para você, pois o meu poder se aperfeiçoa na fraqueza". Portanto, eu me gloriarei ainda mais alegremente em minhas fraquezas, para que o poder de Cristo repouse em mim.',
+  'Filipenses 4.13': 'Tudo posso naquele que me fortalece.',
+  'Salmos 46.1': 'Deus é o nosso refúgio e fortaleza, socorro bem presente nas tribulações.',
+  'Efésios 1.18': 'Oro também para que os olhos do coração de vocês sejam iluminados, a fim de que vocês conheçam a esperança para a qual ele os chamou, as riquezas da gloriosa herança dele nos santos.',
+  '1 Pedro 1.3-4': 'Bendito seja o Deus e Pai de nosso Senhor Jesus Cristo! Conforme a sua grande misericórdia, ele nos regenerou para uma esperança viva, por meio da ressurreição de Jesus Cristo dentre os mortos, para uma herança que jamais poderá perecer, macular-se ou perder o seu valor. Herança guardada nos céus para vocês.',
+  'Romanos 8.17': 'Se somos filhos, então somos herdeiros; herdeiros de Deus e co-herdeiros com Cristo, se realmente participamos dos seus sofrimentos para que também participemos da sua glória.',
+  'Tiago 1.17': 'Toda boa dádiva e todo dom perfeito vêm do alto, descendo do Pai das luzes, que não muda como sombras inconstantes.',
+  'Salmos 16.5': 'Senhor, tu és a minha porção e o meu cálice; és tu que garantes o meu futuro.',
+  'Apocalipse 21.7': 'O vencedor herdará tudo isto, e eu serei seu Deus e ele será meu filho.',
+  'Mateus 5.14-16': 'Vocês são a luz do mundo. Não se pode esconder uma cidade construída sobre um monte. E, também, ninguém acende uma candeia e a coloca debaixo de uma vasilha. Pelo contrário, coloca-a no lugar apropriado, e assim ilumina a todos os que estão na casa. Assim brilhe a luz de vocês diante dos homens, para que vejam as suas boas obras e glorifiquem ao Pai de vocês, que está nos céus.',
+  'Efésios 5.8-10': 'Porque outrora vocês eram trevas, mas agora são luz no Senhor. Vivam como filhos da luz (pois o fruto da luz consiste em toda bondade, justiça e verdade), e aprendam a discernir o que é agradável ao Senhor.',
+  'Filipenses 2.15-16': 'Para que vocês venham a ser irrepreensíveis e puros, filhos de Deus inculpáveis no meio de uma geração corrompida e depravada, na qual vocês brilham como estrelas no universo, retendo firmemente a palavra da vida.',
+  '1 Tessalonicenses 5.5': 'Vocês todos são filhos da luz e filhos do dia. Não somos da noite nem das trevas.',
+  '1 João 1.7': 'Mas, se andarmos na luz, como ele na luz está, temos comunhão uns com os outros, e o sangue de Jesus, seu Filho, nos purifica de todo pecado.',
+  'Salmos 119.105': 'A tua palavra é lâmpada que ilumina os meus passos e luz que clareia o meu caminho.',
+  'Isaías 60.1': 'Levante-se e resplandeça, pois a sua luz chegou, e a glória do Senhor nasceu sobre você.'
+};
+
+function abrirVersiculo(ref) {
+  const modal = document.getElementById('modal-overlay');
+  document.getElementById('modal-titulo').textContent = '📖 ' + ref;
+  document.getElementById('modal-ref').textContent = 'Tradução: Nova Versão Internacional (NVI)';
+  document.getElementById('modal-texto').textContent = versiculosNVI[ref] || 'Texto não disponível offline.';
+  modal.classList.add('aberto');
+}
+
+function fecharModal(event) {
+  if (event && event.target !== event.currentTarget && event.target.className !== 'btn btn-fechar') return;
+  document.getElementById('modal-overlay').classList.remove('aberto');
+}
+
+/* ============ LISTA DE DECISÕES ============ */
+function atualizarListaDecisoes() {
+  const lista = document.getElementById('lista-decisoes');
+  lista.innerHTML = '';
+  
+  const decisoesMap = {
+    'seg-dec': 'Segunda - O Conhecimento da Vontade de Deus',
+    'ter-dec': 'Terça - Andar Dignamente e Frutificar',
+    'qua-dec': 'Quarta - Fortalecidos para a Perseverança',
+    'qui-dec': 'Quinta - A Gratidão pela Herança',
+    'sex-dec': 'Sexta - Vivendo à Luz da Herança'
+  };
+
+  let temAlgo = false;
+  
+  for (const [id, nome] of Object.entries(decisoesMap)) {
+    const valor = localStorage.getItem('colossenses_' + id);
+    if (valor && valor.trim() !== '') {
+      temAlgo = true;
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${nome}:</strong><br>${valor.replace(/\n/g, '<br>')}`;
+      lista.appendChild(li);
+    }
+  }
+
+  if (!temAlgo) {
+    lista.innerHTML = '<li>Nenhuma decisão registrada ainda. Comece a meditar e suas decisões aparecerão aqui.</li>';
+  }
+}
+
+function exportarDecisoes() {
+  let texto = 'MINHAS DECISÕES – COLOSSENSES 1:9-12\n' + '='.repeat(60) + '\n\n';
+  
+  const decisoesMap = {
+    'seg-dec': 'SEGUNDA - O Conhecimento da Vontade de Deus',
+    'ter-dec': 'TERÇA - Andar Dignamente e Frutificar',
+    'qua-dec': 'QUARTA - Fortalecidos para a Perseverança',
+    'qui-dec': 'QUINTA - A Gratidão pela Herança',
+    'sex-dec': 'SEXTA - Vivendo à Luz da Herança'
+  };
+
+  for (const [id, nome] of Object.entries(decisoesMap)) {
+    const valor = localStorage.getItem('colossenses_' + id) || '(sem decisão)';
+    texto += nome + '\n' + '-'.repeat(40) + '\n' + valor + '\n\n';
+  }
+
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'minhas-decisoes-colossenses.txt';
+  link.click();
+}
+
+function exportarTudo() {
+  let texto = 'MINHA MEDITAÇÃO COMPLETA – COLOSSENSES 1:9-12\n' + '='.repeat(70) + '\n\n';
+  
+  document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
+    if (el.id && !el.id.startsWith('lac-')) {
+      const valor = localStorage.getItem('colossenses_' + el.id);
+      if (valor && valor.trim() !== '') {
+        texto += `[${el.id}]: ${valor}\n`;
+      }
+    }
+  });
+
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'meditacao-completa-colossenses.txt';
+  link.click();
+}
+
+/* ============ INICIALIZAÇÃO ============ */
+window.onload = function() {
+  carregarTudo();
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('modal-overlay').classList.remove('aberto');
+  }
+});
+</script>
+
+</body>
+</html>
