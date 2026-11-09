@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meditação Interativa - Mãos Ocupadas, Coração Distante</title>
+<style>
+  :root {
+    --azul: #1e3a5f;
+    --azul-claro: #2c5282;
+    --dourado: #b7791f;
+    --verde: #276749;
+    --vermelho: #9b2c2c;
+    --fundo: #f7fafc;
+    --card: #ffffff;
+    --texto: #1a202c;
+    --borda: #cbd5e0;
+    --creme: #fffaf0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1.7;
+    background: var(--fundo);
+    color: var(--texto);
+    margin: 0;
+    padding: 0 12px 100px;
+  }
+  header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    color: #fff;
+    padding: 26px 16px 22px;
+    text-align: center;
+    border-radius: 0 0 20px 20px;
+    margin: 0 -12px 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+  header h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: .5px; }
+  header p { margin: 4px 0; font-size: 18px; opacity: .95; }
+
+  .abas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 22px;
+    position: sticky;
+    top: 0;
+    background: var(--fundo);
+    padding: 10px 0;
+    z-index: 50;
+  }
+  .aba {
+    background: #fff;
+    border: 3px solid var(--azul-claro);
+    color: var(--azul);
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .2s;
+  }
+  .aba:hover { background: #ebf4ff; transform: translateY(-2px); }
+  .aba.ativa { background: var(--azul-claro); color: #fff; }
+
+  .dia { display: none; animation: fade .3s; }
+  .dia.ativo { display: block; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    border-left: 8px solid var(--dourado);
+  }
+  .card.destaque { border-left-color: var(--verde); background: #f0fdf9; }
+  .card h2 {
+    font-size: 22px;
+    color: var(--azul);
+    margin: 0 0 14px;
+    border-bottom: 3px solid var(--borda);
+    padding-bottom: 10px;
+  }
+  .card h3 { font-size: 20px; color: var(--azul-claro); margin-top: 24px; }
+  
+  .versiculo-chave {
+    font-style: italic;
+    background: var(--creme);
+    border-left: 6px solid var(--dourado);
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin: 14px 0;
+    font-size: 19px;
+    color: #744210;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .contexto-box { background: #ebf8ff; border-left: 5px solid var(--azul-claro); padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 18px; }
+  .contexto-box strong { color: var(--azul-claro); }
+  .exegese-box { background: #faf5ff; border-left: 5px solid #805ad5; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 18px; }
+  .exegese-box strong { color: #553c9a; }
+  .ilustracao-box { background: #fff5f5; border-left: 5px solid var(--vermelho); padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 18px; }
+  .ilustracao-box strong { color: var(--vermelho); }
+  .oracao-box { background: linear-gradient(135deg, #fefcbf 0%, #faf089 100%); border-left: 6px solid var(--dourado); padding: 18px 22px; border-radius: 12px; margin: 16px 0; font-size: 19px; color: #744210; font-style: italic; }
+  .oracao-box strong { color: var(--dourado); display: block; margin-bottom: 8px; font-style: normal; }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 19px;
+    padding: 12px;
+    border: 2px solid var(--borda);
+    border-radius: 10px;
+    background: #fff;
+    resize: vertical;
+    min-height: 60px;
+    margin-top: 6px;
+  }
+  textarea:focus, input:focus {
+    outline: 3px solid var(--dourado);
+    border-color: var(--dourado);
+  }
+  .salvo-aviso {
+    font-size: 15px;
+    color: var(--verde);
+    margin-top: 4px;
+    height: 20px;
+    font-weight: bold;
+  }
+
+  .versiculo-btn {
+    display: inline-block;
+    background: #ebf8ff;
+    color: var(--azul-claro);
+    border: 2px solid var(--azul-claro);
+    padding: 10px 16px;
+    margin: 6px 6px 6px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: bold;
+    transition: .2s;
+  }
+  .versiculo-btn:hover { background: var(--azul-claro); color: #fff; }
+
+  .btn {
+    background: var(--azul-claro);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 8px 8px 8px 0;
+    transition: .2s;
+  }
+  .btn:hover { background: var(--azul); transform: translateY(-2px); }
+  .btn-verde { background: var(--verde); }
+  .btn-verde:hover { background: #22543d; }
+  .btn-limpar { background: #718096; }
+  .btn-limpar:hover { background: #4a5568; }
+  .btn-ouro { background: var(--dourado); }
+  .btn-ouro:hover { background: #975a16; }
+
+  .feedback { font-size: 18px; font-weight: bold; margin-top: 10px; min-height: 30px; }
+  .feedback.ok { color: var(--verde); }
+  .feedback.erro { color: var(--vermelho); }
+
+  .memoriza-area { background: #f0fff4; border: 3px dashed var(--verde); border-radius: 12px; padding: 18px; margin: 14px 0; }
+  .memoriza-frase { font-size: 20px; line-height: 2.5; margin-bottom: 14px; }
+  .lacuna { display: inline-block; width: 80px; border: none; border-bottom: 3px solid var(--dourado); background: #fffdf5; font-size: 19px; padding: 4px 6px; margin: 0 4px; text-align: center; font-weight: bold; color: var(--azul); }
+  .lacuna.larga { width: 140px; }
+  .lacuna.curta { width: 50px; }
+  .lacuna.correta { border-bottom-color: var(--verde); background: #c6f6d5; }
+  .lacuna.errada { border-bottom-color: var(--vermelho); background: #fed7d7; }
+  .placar { background: var(--dourado); color: #fff; padding: 10px 20px; border-radius: 12px; font-size: 20px; font-weight: bold; display: inline-block; margin: 10px 0; }
+
+  .check-group { margin: 12px 0; display: flex; flex-direction: column; gap: 10px; }
+  .check-item { display: flex; align-items: flex-start; gap: 12px; background: #fff; padding: 12px; border-radius: 8px; border: 2px solid var(--borda); cursor: pointer; transition: .2s; }
+  .check-item:hover { border-color: var(--azul-claro); }
+  .check-item input[type="checkbox"] { width: 24px; height: 24px; margin-top: 4px; cursor: pointer; accent-color: var(--verde); }
+
+  .lista-decisoes { list-style: none; padding: 0; }
+  .lista-decisoes li { background: var(--creme); border-left: 6px solid var(--dourado); padding: 14px 18px; margin-bottom: 12px; border-radius: 8px; font-size: 18px; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 999; justify-content: center; align-items: center; padding: 16px; }
+  .modal-overlay.aberto { display: flex; }
+  .modal { background: #fff; border-radius: 16px; max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 28px; box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+  .modal h3 { margin-top: 0; color: var(--azul); border-bottom: 3px solid var(--dourado); padding-bottom: 10px; }
+  .modal .texto-nvi { font-size: 21px; line-height: 1.8; color: #2d3748; }
+  .modal .ref { font-weight: bold; color: var(--dourado); margin-bottom: 12px; }
+  .modal .btn-fechar { background: var(--vermelho); margin-top: 16px; }
+
+  footer { text-align: center; color: #718096; font-size: 15px; margin-top: 30px; padding: 20px; border-top: 2px solid var(--borda); }
+
+  @media (max-width: 600px) {
+    body { font-size: 18px; }
+    .aba { font-size: 14px; padding: 10px 12px; }
+    .lacuna { width: 60px; }
+    .lacuna.larga { width: 100px; }
+    .lacuna.curta { width: 40px; }
+    .card h2 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🤲 Mãos Ocupadas, Coração Distante</h1>
+  <p><strong>Redescobrindo o relacionamento com Deus</strong></p>
+</header>
+
+<div class="abas">
+  <button class="aba ativa" onclick="mostrarDia(0, this)">Segunda</button>
+  <button class="aba" onclick="mostrarDia(1, this)">Terça</button>
+  <button class="aba" onclick="mostrarDia(2, this)">Quarta</button>
+  <button class="aba" onclick="mostrarDia(3, this)">Quinta</button>
+  <button class="aba" onclick="mostrarDia(4, this)">Sexta</button>
+  <button class="aba" onclick="mostrarDia(5, this)">📋 Decisões</button>
+</div>
+
+<!-- ============ SEGUNDA ============ -->
+<div class="dia ativo" id="dia-0">
+  <div class="card destaque">
+    <h2>Segunda-feira – Não Deixe de Cultivar Seu Relacionamento com Deus</h2>
+    <div class="versiculo-chave">
+      “Permaneçam em mim, e eu permanecerei em vocês.” (João 15:4a)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Jesus está no cenáculo, na noite em que seria traído. Ele acabou de lavar os pés dos discípulos e de anunciar que um deles o trairia. É nesse momento de profunda intimidade e tensão que Ele usa a metáfora da videira. Ele não está falando de um mero compromisso religioso, mas de uma conexão vital, orgânica, da qual depende a própria sobrevivência do ramo.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "permanecer" é <strong><em>menō</em></strong> (μένω), que significa "habitar, morar, continuar, permanecer firme". Não é uma visita rápida; é uma moradia. Jesus está dizendo: "Façam morada em mim, e eu farei morada em vocês". É uma relação de mútua habitação, de comunhão contínua.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Existe uma diferença entre manter um relacionamento e simplesmente manter uma rotina. Podemos morar na mesma casa que alguém, conversar sobre assuntos necessários, dividir responsabilidades e até nos encontrar todos os dias, mas isso não significa que estamos cultivando intimidade.</p>
+    <p>Algo semelhante pode acontecer em nossa caminhada com Deus. Podemos frequentar os cultos, participar das atividades da igreja, conhecer músicas, versículos e ensinamentos bíblicos, mas deixar de reservar tempo para estar verdadeiramente com o Senhor.</p>
+    <p>Em João 15, Jesus utiliza a figura da videira e dos ramos. Um ramo não produz frutos porque se esforça para parecer vivo, mas porque permanece ligado à videira. Da mesma maneira, nossa vida cristã não pode ser sustentada apenas por compromissos religiosos. Precisamos cultivar diariamente nossa comunhão com Cristo. Não se trata de abandonar nossas responsabilidades, mas de compreender que elas não substituem nosso relacionamento com Deus.</p>
+
+    <div class="ilustracao-box">
+      <strong>💡 Ilustração:</strong> Irmão Lourenço viveu em um mosteiro em Paris e passou boa parte da vida trabalhando na cozinha. Sua rotina era simples: preparar refeições, lavar utensílios e cuidar das tarefas do mosteiro. Mas ele desenvolveu uma prática espiritual interessante: procurava manter sua comunhão com Deus mesmo enquanto realizava as atividades mais comuns. Ele não acreditava que precisava estar o tempo todo em um lugar silencioso para estar na presença de Deus. Até mesmo o trabalho na cozinha podia ser realizado em comunhão com o Senhor.
+    </div>
+
+    <h3>2) CONFRONTANDO:</h3>
+    <p>a) Quanto tempo você tem dedicado a Deus além dos momentos de culto?</p>
+    <textarea id="seg-a" placeholder="Sua resposta..." oninput="salvarAuto('seg-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-a"></div>
+
+    <p>b) Sua leitura bíblica tem sido um momento de comunhão ou apenas uma tarefa a cumprir?</p>
+    <textarea id="seg-b" placeholder="Sua resposta..." oninput="salvarAuto('seg-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-b"></div>
+
+    <p>c) Você sente falta de estar na presença de Deus quando passa muito tempo sem buscá-lo?</p>
+    <textarea id="seg-c" placeholder="Sua resposta..." oninput="salvarAuto('seg-c')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-c"></div>
+
+    <p>d) O que tem ocupado o espaço que deveria ser dedicado ao seu relacionamento com Cristo?</p>
+    <textarea id="seg-d" placeholder="Sua resposta..." oninput="salvarAuto('seg-d')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-d"></div>
+
+    <h3>3) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmo 63.1-4')">📖 Salmo 63:1-4</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmo 27.4')">📖 Salmo 27:4</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Mateus 6.6')">📖 Mateus 6:6</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Lucas 10.38-42')">📖 Lucas 10:38-42</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('João 15.1-8')">📖 João 15:1-8</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Filipenses 3.8-10')">📖 Filipenses 3:8-10</button>
+
+    <h3>4) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência:</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “<input class="lacuna larga" data-resp="Permaneçam" id="lac-seg-1"> em mim, e eu <input class="lacuna larga" data-resp="permanecerei" id="lac-seg-2"> em vocês.”
+        <br><br><span style="font-size: 18px; color: #4a5568;">(João <input class="lacuna curta" data-resp="15" id="lac-seg-3">:<input class="lacuna curta" data-resp="4" id="lac-seg-4">a)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('seg', 4)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('seg')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-seg"></div>
+      <div class="placar" id="placar-seg">Pontos: 0 / 4</div>
+    </div>
+
+    <h3>5) DECIDIR:</h3>
+    <p>Marque as decisões que você quer tomar:</p>
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="seg-check-1" onchange="salvarCheck('seg-check-1')">
+        <span>Decido separar diariamente um tempo para estar com Deus, sem distrações.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="seg-check-2" onchange="salvarCheck('seg-check-2')">
+        <span>Decido voltar a cultivar uma vida de oração e leitura bíblica.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="seg-check-3" onchange="salvarCheck('seg-check-3')">
+        <span>Decido não permitir que minhas atividades religiosas substituam minha comunhão com Cristo.</span>
+      </label>
+    </div>
+
+    <p>Minha decisão pessoal:</p>
+    <textarea id="seg-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('seg-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-dec"></div>
+
+    <h3>6) COMPARTILHAR COM DEUS:</h3>
+    <p>Peça a Deus que desperte em você o desejo de estar em sua presença. Confesse as vezes em que sua rotina, seus compromissos e suas preocupações ocuparam o lugar da comunhão com Ele. Peça ajuda para desenvolver uma vida espiritual que não dependa apenas dos encontros da igreja, mas de um relacionamento cultivado diariamente.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, perdoa-me por tantas vezes ter transformado meu relacionamento Contigo em uma rotina. Ajuda-me a permanecer em Ti, não apenas nos cultos, mas todos os dias. Desperta em mim o desejo de estar na Tua presença e de cultivar a nossa comunhão. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ TERÇA ============ -->
+<div class="dia" id="dia-1">
+  <div class="card destaque">
+    <h2>Terça-feira – Lembre-se de Quem Amou Você Primeiro</h2>
+    <div class="versiculo-chave">
+      “Nós amamos porque ele nos amou primeiro.” (1 João 4:19)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> João escreve para uma igreja que estava sendo influenciada por falsos mestres que negavam a humanidade de Cristo. Ele enfatiza que o amor de Deus não é uma reação ao nosso amor, mas a causa dele. O amor de Deus é a fonte, o nosso amor é o rio que flui dele.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "amamos" é <strong><em>agapaō</em></strong> (ἀγαπάω), que significa "amar incondicionalmente, com um amor de escolha, não baseado no mérito do outro". Já "primeiro" é <strong><em>prōtos</em></strong> (πρῶτος), que significa "o primeiro em tempo ou ordem". João está dizendo: "Deus tomou a iniciativa. Ele nos amou antes de nós sabermos o que era amar."
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Você já percebeu como é diferente fazer algo por obrigação e fazer algo porque ama alguém? Quando existe amor, nossas atitudes não são motivadas apenas pelo dever. Existe gratidão, consideração e desejo de agradar.</p>
+    <p>Na vida cristã, precisamos compreender de onde nasce nosso amor por Deus. Não começamos nossa caminhada tentando conquistar o amor do Senhor. Pelo contrário, Deus nos amou quando ainda éramos pecadores. A Bíblia ensina que Cristo morreu por nós não porque já éramos pessoas boas ou merecedoras, mas porque Deus decidiu demonstrar seu amor por meio dele.</p>
+    <p>Quando perdemos de vista essa verdade, a vida cristã pode se transformar em uma tentativa de cumprir exigências. Oramos porque precisamos orar, servimos porque alguém está esperando, vamos à igreja porque é domingo. Tudo continua acontecendo, mas a gratidão pelo que Cristo fez vai ficando esquecida. Precisamos voltar a contemplar o amor de Deus.</p>
+
+    <div class="ilustracao-box">
+      <strong>💡 Ilustração:</strong> John Newton era marinheiro e participou do comércio de pessoas escravizadas. Durante uma viagem, seu navio enfrentou uma tempestade violenta. Diante do perigo de morrer, Newton clamou a Deus por misericórdia. A experiência marcou profundamente sua trajetória e ele passou a considerar aquele episódio um marco de sua conversão. Mas sua transformação não aconteceu de uma hora para outra. Anos mais tarde, reconheceu a gravidade daquela atividade, tornou-se pastor e passou a apoiar a luta contra o tráfico.
+    </div>
+
+    <h3>2) CONFRONTANDO:</h3>
+    <p>a) Quando foi a última vez que você parou para agradecer conscientemente pelo sacrifício de Jesus?</p>
+    <textarea id="ter-a" placeholder="Sua resposta..." oninput="salvarAuto('ter-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-a"></div>
+
+    <p>b) Você tem servido a Deus por gratidão ou apenas por obrigação?</p>
+    <textarea id="ter-b" placeholder="Sua resposta..." oninput="salvarAuto('ter-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-b"></div>
+
+    <p>c) A cruz de Cristo ainda influencia suas escolhas e prioridades?</p>
+    <textarea id="ter-c" placeholder="Sua resposta..." oninput="salvarAuto('ter-c')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-c"></div>
+
+    <p>d) Você tem vivido como alguém que reconhece o tamanho do amor que recebeu?</p>
+    <textarea id="ter-d" placeholder="Sua resposta..." oninput="salvarAuto('ter-d')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-d"></div>
+
+    <h3>3) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Romanos 5.6-8')">📖 Romanos 5:6-8</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('João 3.16')">📖 João 3:16</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Efésios 2.4-10')">📖 Efésios 2:4-10</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 João 4.9-10')">📖 1 João 4:9-10</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Gálatas 2.20')">📖 Gálatas 2:20</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tito 3.3-7')">📖 Tito 3:3-7</button>
+
+    <h3>4) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (falta o versículo):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “Nós <input class="lacuna larga" data-resp="amamos" id="lac-ter-1"> porque ele nos <input class="lacuna larga" data-resp="amou" id="lac-ter-2"> <input class="lacuna larga" data-resp="primeiro" id="lac-ter-3">.”
+        <br><br><span style="font-size: 18px; color: #4a5568;">(1 João 4:<input class="lacuna curta" data-resp="19" id="lac-ter-4">)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('ter', 4)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('ter')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-ter"></div>
+      <div class="placar" id="placar-ter">Pontos: 0 / 4</div>
+    </div>
+
+    <h3>5) DECIDIR:</h3>
+    <p>Marque as decisões que você quer tomar:</p>
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="ter-check-1" onchange="salvarCheck('ter-check-1')">
+        <span>Decido reservar momentos para meditar no sacrifício de Jesus e agradecer por sua graça.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="ter-check-2" onchange="salvarCheck('ter-check-2')">
+        <span>Decido abandonar a ideia de que preciso conquistar o amor de Deus por meio das minhas obras.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="ter-check-3" onchange="salvarCheck('ter-check-3')">
+        <span>Decido demonstrar minha gratidão a Cristo por meio de uma vida de dedicação a Ele.</span>
+      </label>
+    </div>
+
+    <p>Minha decisão pessoal:</p>
+    <textarea id="ter-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('ter-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-dec"></div>
+
+    <h3>6) COMPARTILHAR COM DEUS:</h3>
+    <p>Agradeça a Deus porque Ele o amou primeiro. Reconheça que você não merece a salvação, mas a recebeu pela graça de Cristo. Peça que o sacrifício de Jesus nunca se torne algo comum ou esquecido em sua vida e que sua gratidão produza uma caminhada de amor e dedicação.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Pai, obrigado porque Tu me amaste primeiro. Não porque eu era bom, mas porque Tu és bom. Perdoa-me por tantas vezes ter vivido a vida cristã por obrigação. Que a Tua graça e o Teu amor me constranjam todos os dias a viver para Ti. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ QUARTA ============ -->
+<div class="dia" id="dia-2">
+  <div class="card destaque">
+    <h2>Quarta-feira – Não Faça Apenas o Que Deus Manda. Aprenda a Amar o Que Ele Ama.</h2>
+    <div class="versiculo-chave">
+      “Se vocês me amam, obedecerão aos meus mandamentos.” (João 14:15)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Jesus está preparando os discípulos para a Sua partida. Ele os consola e lhes diz que, se O amam, devem guardar os Seus mandamentos. Não se trata de uma obediência servil, mas de uma resposta de amor. O amor é o motor da obediência; a obediência é a prova do amor.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "obedecerão" é <strong><em>tēreō</em></strong> (τηρέω), que significa "guardar, observar, manter". Não é apenas cumprir uma ordem; é guardar como um tesouro. Jesus não está pedindo uma obediência mecânica, mas um coração que valoriza e guarda os Seus mandamentos como algo precioso.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>É possível obedecer a uma ordem sem concordar com ela, sem gostar dela e sem ter qualquer desejo de cumpri-la. Uma criança pode arrumar o quarto apenas porque os pais ameaçaram tirar seu celular. Um funcionário pode realizar uma tarefa somente porque o chefe está observando. Mas será que essa é a maneira como devemos nos relacionar com Deus?</p>
+    <p>Jesus ensinou que o amor por Ele se manifesta por meio da obediência. Isso significa que não devemos enxergar os mandamentos de Deus apenas como regras que precisamos cumprir para evitar consequências desagradáveis. Deus não nos chama para uma obediência superficial, na qual fazemos o que é certo apenas quando alguém está olhando. Ele deseja transformar nosso interior, de modo que nossas escolhas expressem amor por Ele.</p>
+    <p>Pense em algumas situações: você diz a verdade porque teme ser descoberto ou porque ama aquilo que é verdadeiro? Perdoa porque alguém mandou ou porque compreende o perdão que recebeu de Deus? Abandona o pecado apenas por medo das consequências ou porque deseja agradar ao Senhor? A obediência cristã não é uma tentativa de comprar o amor de Deus. É uma resposta de amor àquele que já nos amou.</p>
+
+    <div class="ilustracao-box">
+      <strong>💡 Ilustração:</strong> Willian Wilberforce era membro do Parlamento britânico e, depois de sua conversão ao cristianismo, passou a compreender que sua fé deveria influenciar também suas decisões públicas. Em 1787, assumiu a causa da abolição do tráfico de escravizados. Foram anos de luta, derrotas e resistência política. Somente em 1807 o Parlamento aprovou a lei que aboliu o tráfico de escravizados nos domínios britânicos. Ele não se limitou a dizer que era cristão. Sua fé influenciou aquilo pelo qual estava disposto a lutar durante décadas.
+    </div>
+
+    <h3>2) CONFRONTANDO:</h3>
+    <p>a) Você obedece a Deus mesmo quando ninguém está observando?</p>
+    <textarea id="qua-a" placeholder="Sua resposta..." oninput="salvarAuto('qua-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-a"></div>
+
+    <p>b) Existem mandamentos bíblicos que você conhece, mas evita colocar em prática?</p>
+    <textarea id="qua-b" placeholder="Sua resposta..." oninput="salvarAuto('qua-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-b"></div>
+
+    <p>c) Em quais áreas você tem tentado negociar com a vontade de Deus?</p>
+    <textarea id="qua-c" placeholder="Sua resposta..." oninput="salvarAuto('qua-c')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-c"></div>
+
+    <p>d) Suas escolhas demonstram que você realmente deseja agradar ao Senhor?</p>
+    <textarea id="qua-d" placeholder="Sua resposta..." oninput="salvarAuto('qua-d')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-d"></div>
+
+    <h3>3) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Deuteronômio 6.4-6')">📖 Deuteronômio 6:4-6</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmo 119.9-11')">📖 Salmo 119:9-11</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('João 14.21-24')">📖 João 14:21-24</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Romanos 12.1-2')">📖 Romanos 12:1-2</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 João 2.3-6')">📖 1 João 2:3-6</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 João 5.2-3')">📖 1 João 5:2-3</button>
+
+    <h3>4) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (falta o livro):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “Se vocês me <input class="lacuna larga" data-resp="amam" id="lac-qua-1">, <input class="lacuna larga" data-resp="obedecerão" id="lac-qua-2"> aos meus <input class="lacuna larga" data-resp="mandamentos" id="lac-qua-3">.”
+        <br><br><span style="font-size: 18px; color: #4a5568;">(<input class="lacuna larga" data-resp="João" id="lac-qua-4"> 14:15)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('qua', 4)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('qua')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-qua"></div>
+      <div class="placar" id="placar-qua">Pontos: 0 / 4</div>
+    </div>
+
+    <h3>5) DECIDIR:</h3>
+    <p>Marque as decisões que você quer tomar:</p>
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="qua-check-1" onchange="salvarCheck('qua-check-1')">
+        <span>Decido obedecer à Palavra de Deus mesmo quando isso contrariar meus desejos pessoais.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qua-check-2" onchange="salvarCheck('qua-check-2')">
+        <span>Decido abandonar uma prática que sei que desagrada ao Senhor.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qua-check-3" onchange="salvarCheck('qua-check-3')">
+        <span>Decido parar de justificar comportamentos que a Bíblia claramente condena.</span>
+      </label>
+    </div>
+
+    <p>Minha decisão pessoal:</p>
+    <textarea id="qua-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('qua-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-dec"></div>
+
+    <h3>6) COMPARTILHAR COM DEUS:</h3>
+    <p>Peça que Deus transforme não apenas suas atitudes, mas também suas motivações. Reconheça as áreas em que você tem resistido à sua Palavra. Peça força para obedecer, mesmo quando for difícil, e um coração que encontre prazer em fazer aquilo que agrada ao Senhor.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, eu quero Te obedecer não por medo, mas por amor. Transforma as minhas motivações e o meu coração. Ajuda-me a encontrar prazer em fazer a Tua vontade e a guardar os Teus mandamentos como um tesouro. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ QUINTA ============ -->
+<div class="dia" id="dia-3">
+  <div class="card destaque">
+    <h2>Quinta-feira – Quem Ama a Deus Não Pode Ser Indiferente às Pessoas</h2>
+    <div class="versiculo-chave">
+      “Amados, amemos uns aos outros, pois o amor procede de Deus.” (1 João 4:7a)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> João está combatendo o gnosticismo, uma heresia que dizia que o conhecimento espiritual era superior ao amor prático. Ele mostra que o amor ao próximo é a evidência inevitável do amor a Deus. Não há como separar os dois.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "procede" é <strong><em>ek</em></strong> (ἐκ), que significa "proveniente de, originado em". João está dizendo que o amor não é apenas um sentimento humano; ele tem uma origem divina. Se o amor que você pratica não vem de Deus, ele não é o amor verdadeiro.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>É interessante perceber que, na Bíblia, nosso relacionamento com Deus está profundamente ligado à maneira como tratamos as pessoas. Podemos cantar sobre o amor de Deus, conhecer passagens bíblicas sobre comunhão e participar de atividades na igreja, mas, se não demonstramos amor pelos irmãos, existe algo errado em nossa compreensão da vida cristã.</p>
+    <p>O apóstolo João faz uma afirmação bastante séria: não podemos dizer que amamos a Deus, a quem não vemos, enquanto odiamos nosso irmão, a quem vemos. O amor cristão não é apenas um sentimento agradável. Ele se manifesta em atitudes concretas: ouvir, ajudar, perdoar, visitar, encorajar, repartir e demonstrar consideração.</p>
+    <p>Isso também significa que o amor não deve depender apenas daquilo que recebemos das pessoas. Nem sempre seremos correspondidos, compreendidos ou tratados da maneira que gostaríamos. Ainda assim, somos chamados a amar porque recebemos de Deus um amor que não merecíamos. A igreja não deve ser apenas um lugar onde nos reunimos para adorar a Deus, mas uma comunidade na qual as pessoas experimentam o amor de Cristo por meio de nossas atitudes.</p>
+
+    <div class="ilustracao-box">
+      <strong>💡 Ilustração:</strong> George Müller e sua esposa começaram recebendo trinta crianças órfãs em sua residência. O trabalho cresceu e, com o passar dos anos, foram construídas casas para acolher centenas de crianças. Em maio de 1870, cinco casas mantinham 1.722 crianças. Müller ficou conhecido também por sua confiança em Deus e por buscar sustento para o trabalho por meio da oração, sem recorrer a pedidos públicos de dinheiro.
+    </div>
+
+    <h3>2) CONFRONTANDO:</h3>
+    <p>a) Você tem demonstrado interesse verdadeiro pela vida dos irmãos da igreja?</p>
+    <textarea id="qui-a" placeholder="Sua resposta..." oninput="salvarAuto('qui-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-a"></div>
+
+    <p>b) Existe alguém de quem você se afastou por causa de uma mágoa ou desentendimento?</p>
+    <textarea id="qui-b" placeholder="Sua resposta..." oninput="salvarAuto('qui-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-b"></div>
+
+    <p>c) Você costuma esperar que as pessoas procurem você ou também toma a iniciativa de procurá-las?</p>
+    <textarea id="qui-c" placeholder="Sua resposta..." oninput="salvarAuto('qui-c')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-c"></div>
+
+    <p>d) Suas atitudes têm contribuído para fortalecer ou enfraquecer a comunhão da igreja?</p>
+    <textarea id="qui-d" placeholder="Sua resposta..." oninput="salvarAuto('qui-d')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-d"></div>
+
+    <h3>3) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Mateus 22.36-40')">📖 Mateus 22:36-40</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('João 13.34-35')">📖 João 13:34-35</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Romanos 12.9-18')">📖 Romanos 12:9-18</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Gálatas 6.9-10')">📖 Gálatas 6:9-10</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Efésios 4.31-32')">📖 Efésios 4:31-32</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 João 3.16-18')">📖 1 João 3:16-18</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 João 4.20-21')">📖 1 João 4:20-21</button>
+
+    <h3>4) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (falta o capítulo):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “<input class="lacuna larga" data-resp="Amados" id="lac-qui-1">, amemos uns aos <input class="lacuna larga" data-resp="outros" id="lac-qui-2">, pois o <input class="lacuna larga" data-resp="amor" id="lac-qui-3"> procede de Deus.”
+        <br><br><span style="font-size: 18px; color: #4a5568;">(1 João <input class="lacuna curta" data-resp="4" id="lac-qui-4">:7a)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('qui', 4)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('qui')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-qui"></div>
+      <div class="placar" id="placar-qui">Pontos: 0 / 4</div>
+    </div>
+
+    <h3>5) DECIDIR:</h3>
+    <p>Marque as decisões que você quer tomar:</p>
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="qui-check-1" onchange="salvarCheck('qui-check-1')">
+        <span>Decido procurar alguém da igreja com quem não converso há algum tempo e demonstrar interesse por sua vida.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qui-check-2" onchange="salvarCheck('qui-check-2')">
+        <span>Decido procurar uma pessoa com quem tenho algum desentendimento e tomar a iniciativa de buscar a reconciliação, quando isso for possível e apropriado.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qui-check-3" onchange="salvarCheck('qui-check-3')">
+        <span>Decido realizar uma atitude prática de amor por alguém que esteja precisando de ajuda.</span>
+      </label>
+    </div>
+
+    <p>Minha decisão pessoal:</p>
+    <textarea id="qui-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('qui-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-dec"></div>
+
+    <h3>6) COMPARTILHAR COM DEUS:</h3>
+    <p>Peça a Deus que lhe ensine a amar as pessoas como Cristo o amou. Apresente a Ele seus ressentimentos, dificuldades de relacionamento e atitudes egoístas. Peça oportunidades para demonstrar amor de maneira prática e para contribuir com uma igreja marcada pela comunhão e pelo cuidado mútuo.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, perdoa-me por tantas vezes ter separado o amor por Ti do amor pelas pessoas. Ensina-me a amar como Cristo amou. Dá-me olhos para ver as necessidades ao meu redor e um coração disposto a agir. Que a minha igreja seja um lugar de comunhão e cuidado mútuo. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ SEXTA ============ -->
+<div class="dia" id="dia-4">
+  <div class="card destaque">
+    <h2>Sexta-feira – Sempre é Tempo de Voltar ao Caminho Certo</h2>
+    <div class="versiculo-chave">
+      “Lembre-se de onde caiu! Arrependa-se e pratique as obras que praticava no princípio.” (Apocalipse 2:5a)
+    </div>
+
+    <div class="contexto-box">
+      <strong>📜 Contexto:</strong> Jesus está falando à igreja de Éfeso, uma igreja ativa, trabalhadora e que não tolerava o mal. Mas havia um problema: eles haviam abandonado o primeiro amor. Eles faziam as coisas certas, mas o coração tinha esfriado. Jesus não os condena, mas os chama ao arrependimento e à restauração.
+    </div>
+
+    <div class="exegese-box">
+      <strong>📖 Exegese (Grego):</strong> A palavra "arrependa-se" é <strong><em>metanoeō</em></strong> (μετανοέω), que significa "mudar de mente, mudar de direção". Não é apenas sentir remorso; é uma mudança radical de rumo. Já "pratique" é <strong><em>poieō</em></strong> (ποιέω), que significa "fazer, executar". O arrependimento verdadeiro não fica apenas no sentimento; ele se traduz em ação.
+    </div>
+
+    <h3>1) ENTENDENDO:</h3>
+    <p>Em uma viagem, é possível perceber que estamos seguindo pela estrada errada. Quanto mais demoramos para reconhecer o erro, mais distantes ficamos do destino. Nessa situação, não adianta apenas lamentar o caminho percorrido. É necessário reconhecer o erro, mudar a direção e retornar à rota correta. Foi exatamente isso que Jesus orientou a igreja de Éfeso a fazer.</p>
+    <p>Aquela comunidade havia abandonado seu primeiro amor. Entretanto, Jesus não apresentou apenas uma crítica. Ele também mostrou o caminho da restauração: lembrar, arrepender-se e voltar às primeiras obras. Essas orientações continuam sendo importantes para nós. Primeiro, precisamos reconhecer o que aconteceu. Depois, precisamos nos arrepender. Finalmente, precisamos agir.</p>
+    <p>Não significa tentar reproduzir exatamente o passado, mas voltar a colocar Cristo no centro da nossa vida.</p>
+
+    <div class="ilustracao-box">
+      <strong>💡 Ilustração:</strong> Chuck Colson foi assessor especial do presidente norte-americano Richard Nixon e ficou conhecido por sua atuação durante o escândalo Watergate. Em 1973, tornou-se cristão. No ano seguinte, declarou-se culpado por obstrução da justiça e foi condenado à prisão. Durante o período em que esteve preso, sua perspectiva sobre a vida mudou. Depois de cumprir sua pena, decidiu dedicar-se a pessoas encarceradas e suas famílias. Em 1976, fundou a organização Prison Fellowship, voltada ao trabalho cristão com presos e ex-presidiários.
+    </div>
+
+    <h3>2) CONFRONTANDO:</h3>
+    <p>a) O que mudou em seu relacionamento com Deus nos últimos meses ou anos?</p>
+    <textarea id="sex-a" placeholder="Sua resposta..." oninput="salvarAuto('sex-a')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-a"></div>
+
+    <p>b) Existe alguma prática espiritual que você abandonou e precisa recuperar?</p>
+    <textarea id="sex-b" placeholder="Sua resposta..." oninput="salvarAuto('sex-b')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-b"></div>
+
+    <p>c) Há algum pecado ou comportamento que você precisa reconhecer e abandonar?</p>
+    <textarea id="sex-c" placeholder="Sua resposta..." oninput="salvarAuto('sex-c')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-c"></div>
+
+    <p>d) Que mudança concreta você precisa começar a realizar hoje, sem deixar para depois?</p>
+    <textarea id="sex-d" placeholder="Sua resposta..." oninput="salvarAuto('sex-d')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-d"></div>
+
+    <h3>3) VERSÍCULOS DE APOIO:</h3>
+    <p>Clique para ler na NVI:</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmo 51.10-12')">📖 Salmo 51:10-12</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Provérbios 28.13')">📖 Provérbios 28:13</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Isaías 55.6-7')">📖 Isaías 55:6-7</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Jeremias 3.12-14')">📖 Jeremias 3:12-14</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Lucas 15.11-24')">📖 Lucas 15:11-24</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Atos 3.19')">📖 Atos 3:19</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tiago 4.8-10')">📖 Tiago 4:8-10</button>
+
+    <h3>4) MEMORIZAR:</h3>
+    <p>Complete o versículo e a referência (faltam o livro e o capítulo):</p>
+    <div class="memoriza-area">
+      <div class="memoriza-frase">
+        “<input class="lacuna larga" data-resp="Lembre-se" id="lac-sex-1"> de onde <input class="lacuna larga" data-resp="caiu" id="lac-sex-2">! <input class="lacuna larga" data-resp="Arrependa-se" id="lac-sex-3"> e <input class="lacuna larga" data-resp="pratique" id="lac-sex-4"> as obras que praticava no <input class="lacuna larga" data-resp="princípio" id="lac-sex-5">.”
+        <br><br><span style="font-size: 18px; color: #4a5568;">(<input class="lacuna larga" data-resp="Apocalipse" id="lac-sex-6"> <input class="lacuna curta" data-resp="2" id="lac-sex-7">:5a)</span>
+      </div>
+      <button class="btn btn-verde" onclick="verificarMemorizacao('sex', 7)">✅ Verificar</button>
+      <button class="btn btn-limpar" onclick="limparMemorizacao('sex')">🔄 Limpar</button>
+      <div class="feedback" id="feedback-sex"></div>
+      <div class="placar" id="placar-sex">Pontos: 0 / 7</div>
+    </div>
+
+    <h3>5) DECIDIR:</h3>
+    <p>Marque as decisões que você quer tomar:</p>
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="sex-check-1" onchange="salvarCheck('sex-check-1')">
+        <span>Decido reconhecer diante de Deus as áreas em que me afastei dele.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="sex-check-2" onchange="salvarCheck('sex-check-2')">
+        <span>Decido abandonar uma prática pecaminosa que tem prejudicado minha comunhão com o Senhor.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="sex-check-3" onchange="salvarCheck('sex-check-3')">
+        <span>Decido recuperar o hábito de buscar a Deus diariamente.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="sex-check-4" onchange="salvarCheck('sex-check-4')">
+        <span>Decido voltar a servir, participar e cultivar relacionamentos cristãos com amor e alegria.</span>
+      </label>
+    </div>
+
+    <p>Minha decisão pessoal:</p>
+    <textarea id="sex-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('sex-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-dec"></div>
+
+    <h3>6) COMPARTILHAR COM DEUS:</h3>
+    <p>Confesse ao Senhor as áreas em que sua vida espiritual esfriou. Peça perdão por ter permitido que outras coisas ocupassem o lugar que pertence a Ele. Peça um coração renovado, disposição para mudar e perseverança para viver uma caminhada de comunhão, amor e dedicação a Cristo. Agradeça porque Ele continua chamando seus filhos a uma vida de relacionamento com Ele.</p>
+    
+    <div class="oracao-box">
+      <strong>🙏 Oração Guiada:</strong>
+      "Senhor, eu reconheço que em muitas áreas da minha vida esfriei. Perdoa-me por ter deixado o primeiro amor. Eu me arrependo e decido voltar para Ti. Renova o meu coração, restaura a minha comunhão e dá-me perseverança para viver uma vida que Te agrada. Em nome de Jesus, amém."
+    </div>
+  </div>
+</div>
+
+<!-- ============ ABA DE DECISÕES ============ -->
+<div class="dia" id="dia-5">
+  <div class="card">
+    <h2>📋 Minhas Decisões da Semana</h2>
+    <p>Aqui está o resumo de todas as suas decisões e checkboxes marcados. Você pode revisá-las e orar sobre cada uma.</p>
+    <ul class="lista-decisoes" id="lista-decisoes"></ul>
+    <button class="btn btn-ouro" onclick="exportarDecisoes()">📥 Exportar como texto</button>
+    <button class="btn btn-verde" onclick="exportarTudo()">📤 Exportar TUDO (respostas + decisões)</button>
+  </div>
+</div>
+
+<!-- MODAL DE VERSÍCULOS -->
+<div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="modal-titulo">Versículo</h3>
+    <div class="ref" id="modal-ref"></div>
+    <div class="texto-nvi" id="modal-texto"></div>
+    <button class="btn btn-fechar" onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
+
+<footer>
+  <p>Nova Igreja Batista - Ministério de Meditação</p>
+  <p>Mãos Ocupadas, Coração Distante</p>
+</footer>
+
+<script>
+/* ============ NAVEGAÇÃO ============ */
+function mostrarDia(index, btn) {
+  document.querySelectorAll('.dia').forEach(d => d.classList.remove('ativo'));
+  document.getElementById('dia-' + index).classList.add('ativo');
+  document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
+  btn.classList.add('ativa');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (index === 5) atualizarListaDecisoes();
+}
+
+/* ============ SALVAMENTO ============ */
+function salvarAuto(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  localStorage.setItem('maosocupadas_' + id, el.value);
+  const aviso = document.getElementById('aviso-' + id);
+  if (aviso) {
+    aviso.textContent = '✔ Salvo automaticamente';
+    setTimeout(() => aviso.textContent = '', 1500);
+  }
+}
+
+function salvarCheck(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    localStorage.setItem('maosocupadas_' + id, el.checked ? 'true' : 'false');
+  }
+}
+
+function carregarTudo() {
+  document.querySelectorAll('textarea, input').forEach(el => {
+    if (el.id) {
+      const salvo = localStorage.getItem('maosocupadas_' + el.id);
+      if (salvo !== null) {
+        if (el.type === 'checkbox') {
+          el.checked = salvo === 'true';
+        } else {
+          el.value = salvo;
+        }
+      }
+    }
+  });
+  ['seg','ter','qua','qui','sex'].forEach(dia => {
+    const pontos = localStorage.getItem('maosocupadas_pontos_' + dia);
+    if (pontos) {
+      const placar = document.getElementById('placar-' + dia);
+      if (placar) placar.textContent = 'Pontos: ' + pontos;
+    }
+  });
+}
+
+/* ============ MEMORIZAÇÃO ============ */
+function verificarMemorizacao(dia, total) {
+  const lacunas = document.querySelectorAll('[id^="lac-' + dia + '-"]');
+  let acertos = 0;
+  lacunas.forEach(lac => {
+    const resposta = lac.value.trim().toLowerCase();
+    const correta = lac.dataset.resp.toLowerCase();
+    lac.classList.remove('correta', 'errada');
+    if (resposta === correta) {
+      lac.classList.add('correta');
+      acertos++;
+    } else if (resposta !== '') {
+      lac.classList.add('errada');
+    }
+  });
+  const feedback = document.getElementById('feedback-' + dia);
+  const placar = document.getElementById('placar-' + dia);
+  placar.textContent = 'Pontos: ' + acertos + ' / ' + total;
+  localStorage.setItem('maosocupadas_pontos_' + dia, acertos + ' / ' + total);
+
+  if (acertos === total) {
+    feedback.textContent = '🎉 Parabéns! Você acertou todas as ' + total + ' palavras!';
+    feedback.className = 'feedback ok';
+  } else if (acertos >= total / 2) {
+    feedback.textContent = '👍 Muito bem! Você acertou ' + acertos + ' de ' + total + '. Continue!';
+    feedback.className = 'feedback ok';
+  } else {
+    feedback.textContent = '💪 Você acertou ' + acertos + ' de ' + total + '. Leia o versículo e tente de novo!';
+    feedback.className = 'feedback erro';
+  }
+}
+
+function limparMemorizacao(dia) {
+  const lacunas = document.querySelectorAll('[id^="lac-' + dia + '-"]');
+  lacunas.forEach(lac => {
+    lac.value = '';
+    lac.classList.remove('correta', 'errada');
+  });
+  document.getElementById('feedback-' + dia).textContent = '';
+  document.getElementById('placar-' + dia).textContent = 'Pontos: 0 / ' + lacunas.length;
+  localStorage.removeItem('maosocupadas_pontos_' + dia);
+}
+
+/* ============ VERSÍCULOS NVI ============ */
+const versiculosNVI = {
+  'João 15.4a': 'Permaneçam em mim, e eu permanecerei em vocês.',
+  '1 João 4.19': 'Nós amamos porque ele nos amou primeiro.',
+  'João 14.15': 'Se vocês me amam, obedecerão aos meus mandamentos.',
+  '1 João 4.7a': 'Amados, amemos uns aos outros, pois o amor procede de Deus.',
+  'Apocalipse 2.5a': 'Lembre-se de onde caiu! Arrependa-se e pratique as obras que praticava no princípio.',
+  'Salmo 63.1-4': 'Ó Deus, tu és o meu Deus, eu te busco intensamente. A minha alma tem sede de ti; todo o meu ser anseia por ti, numa terra seca, exausta e sem água. Quero ver-te no santuário, para contemplar a tua força e a tua glória. O teu amor é melhor do que a vida! Por isso os meus lábios te louvarão. Assim eu te bendirei enquanto viver, e em teu nome levantarei as minhas mãos.',
+  'Salmo 27.4': 'Uma coisa pedi ao Senhor e a procuro: que eu possa viver na casa do Senhor todos os dias da minha vida, para contemplar a bondade do Senhor e buscar sua orientação no seu templo.',
+  'Mateus 6.6': 'Mas quando você orar, vá para seu quarto, feche a porta e ore a seu Pai, que está em secreto. Então seu Pai, que vê em secreto, o recompensará.',
+  'Lucas 10.38-42': 'Certo dia, Jesus e seus discípulos estavam a caminho de Jerusalém. Ele entrou num povoado, e uma mulher chamada Marta o recebeu em sua casa. Ela tinha uma irmã chamada Maria, que se assentou aos pés do Senhor, ouvindo o que ele dizia. Marta, porém, estava ocupada com muito serviço. Ela aproximou-se e disse: "Senhor, não te importas que minha irmã tenha me deixado sozinha com o serviço? Dize-lhe que me ajude!" Jesus respondeu: "Marta! Marta! Você está preocupada e inquieta com muitas coisas; todavia apenas uma é necessária. Maria escolheu a boa parte, e esta não lhe será tirada".',
+  'João 15.1-8': 'Eu sou a videira verdadeira, e meu Pai é o agricultor. Todo ramo que, estando em mim, não dá fruto, ele corta; e todo o que dá fruto ele poda, para que dê mais fruto ainda. Vocês já estão limpos, pela palavra que lhes tenho falado. Permaneçam em mim, e eu permanecerei em vocês. Nenhum ramo pode dar fruto por si mesmo, se não permanecer na videira. Assim também vocês não podem dar fruto, se não permanecerem em mim. Eu sou a videira; vocês são os ramos. Se alguém permanecer em mim e eu nele, esse dá muito fruto; pois sem mim vocês não podem fazer coisa alguma. Se alguém não permanecer em mim, será como o ramo que é jogado fora e seca. Tais ramos são apanhados, lançados ao fogo e queimados. Se vocês permanecerem em mim, e as minhas palavras permanecerem em vocês, pedirão o que quiserem, e lhes será concedido. Meu Pai é glorificado pelo fato de vocês darem muito fruto; e assim serão meus discípulos.',
+  'Filipenses 3.8-10': 'Mais do que isso, considero tudo como perda, comparado com a suprema grandeza do conhecimento de Cristo Jesus, meu Senhor, por quem perdi todas as coisas. Eu as considero como esterco para poder ganhar Cristo e ser encontrado nele, não tendo a minha própria justiça que procede da lei, mas a que vem mediante a fé em Cristo, a justiça que procede de Deus e se baseia na fé. Quero conhecer Cristo, o poder da sua ressurreição e a participação nos seus sofrimentos, tornando-me como ele em sua morte.',
+  'Romanos 5.6-8': 'De fato, no devido tempo, quando ainda éramos fracos, Cristo morreu pelos ímpios. Dificilmente alguém morreria por um justo; pelo homem bom talvez alguém tenha coragem de morrer. Mas Deus demonstra seu amor por nós: Cristo morreu em nosso favor quando ainda éramos pecadores.',
+  'João 3.16': 'Porque Deus tanto amou o mundo que deu o seu Filho unigênito, para que todo o que nele crer não pereça, mas tenha a vida eterna.',
+  'Efésios 2.4-10': 'Todavia, Deus, que é rico em misericórdia, pelo grande amor com que nos amou, deu-nos vida juntamente com Cristo, quando ainda estávamos mortos em transgressões — pela graça vocês são salvos. Deus nos ressuscitou com Cristo e com ele nos fez assentar nos lugares celestiais em Cristo Jesus, para mostrar, nas eras que hão de vir, a incomparável riqueza de sua graça, demonstrada em sua bondade para conosco em Cristo Jesus. Pois vocês são salvos pela graça, por meio da fé, e isto não vem de vocês, é dom de Deus; não por obras, para que ninguém se glorie. Porque somos criação de Deus realizada em Cristo Jesus para fazermos boas obras, as quais Deus preparou antes para nós as praticarmos.',
+  '1 João 4.9-10': 'Foi assim que Deus manifestou o seu amor entre nós: enviou o seu Filho unigênito ao mundo, para que pudéssemos viver por meio dele. Nisto consiste o amor: não em que nós tenhamos amado a Deus, mas em que ele nos amou e enviou seu Filho como propiciação pelos nossos pecados.',
+  'Gálatas 2.20': 'Fui crucificado com Cristo. Assim, já não sou eu quem vive, mas Cristo vive em mim. A vida que agora vivo no corpo, vivo-a pela fé no Filho de Deus, que me amou e se entregou por mim.',
+  'Tito 3.3-7': 'Pois também nós éramos outrora insensatos, desobedientes, extraviados. Éramos escravos de todo tipo de paixões e prazeres, vivíamos na maldade e na inveja, éramos detestáveis e nos odiávamos uns aos outros. Mas quando se manifestaram a bondade e o amor pelos homens da parte de Deus, nosso Salvador, ele nos salvou, não por causa de atos de justiça que tivéssemos praticado, mas por causa da sua misericórdia, mediante o lavar regenerador e renovador do Espírito Santo, que ele derramou sobre nós generosamente, por meio de Jesus Cristo, nosso Salvador, a fim de que, justificados por sua graça, nos tornemos herdeiros da esperança da vida eterna.',
+  'Deuteronômio 6.4-6': 'Ouça, ó Israel: O Senhor, o nosso Deus, é o único Senhor. Ame o Senhor, o seu Deus, de todo o seu coração, de toda a sua alma e de todas as suas forças. Que todas estas palavras que hoje lhe ordeno estejam em seu coração.',
+  'Salmo 119.9-11': 'Como pode o jovem manter pura a sua conduta? Vivendo de acordo com a tua palavra. Eu te busco de todo o coração; não permitas que eu me desvie dos teus mandamentos. Guardei no coração a tua palavra para não pecar contra ti.',
+  'João 14.21-24': 'Quem tem os meus mandamentos e lhes obedece, esse é o que me ama. Aquele que me ama será amado por meu Pai, e eu também o amarei e me revelarei a ele. Judas (não o Iscariotes) perguntou: "Senhor, por que te revelarás a nós e não ao mundo?" Respondeu Jesus: "Se alguém me ama, obedecerá à minha palavra. Meu Pai o amará, nós viremos a ele e faremos morada nele. Aquele que não me ama não obedece à minha palavra. A palavra que vocês estão ouvindo não é minha, mas do Pai que me enviou".',
+  'Romanos 12.1-2': 'Portanto, irmãos, rogo-lhes pelas misericórdias de Deus que se ofereçam em sacrifício vivo, santo e agradável a Deus; este é o culto racional de vocês. Não se amoldem ao padrão deste mundo, mas transformem-se pela renovação da sua mente, para que sejam capazes de experimentar e comprovar a boa, agradável e perfeita vontade de Deus.',
+  '1 João 2.3-6': 'Sabemos que o conhecemos se obedecemos aos seus mandamentos. Aquele que diz: "Eu o conheço", mas não obedece aos seus mandamentos, é mentiroso, e a verdade não está nele. Mas se alguém obedece à sua palavra, o amor de Deus é verdadeiramente aperfeiçoado nele. É assim que sabemos que estamos nele: aquele que afirma que permanece nele deve andar como ele andou.',
+  '1 João 5.2-3': 'Nisto conhecemos que amamos os filhos de Deus: quando amamos a Deus e obedecemos aos seus mandamentos. Porque nisto consiste o amor a Deus: em obedecer aos seus mandamentos. E os seus mandamentos não são pesados.',
+  'Mateus 22.36-40': 'Mestre, qual é o maior mandamento da Lei? Respondeu Jesus: "Ame o Senhor, o seu Deus, de todo o seu coração, de toda a sua alma e de todo o seu entendimento. Este é o primeiro e maior mandamento. E o segundo é semelhante a ele: Ame o seu próximo como a si mesmo. Destes dois mandamentos dependem toda a Lei e os Profetas".',
+  'João 13.34-35': 'Um novo mandamento lhes dou: Amem-se uns aos outros. Como eu os amei, vocês devem amar-se uns aos outros. Com isso todos saberão que vocês são meus discípulos, se vocês se amarem uns aos outros.',
+  'Romanos 12.9-18': 'O amor deve ser sincero. Odeiem o que é mau; apeguem-se ao que é bom. Dediquem-se uns aos outros com amor fraternal. Prefiram dar honra aos outros mais do que a si próprios. Nunca faltem com zelo, mas mantenham o fervor espiritual, servindo ao Senhor. Alegrem-se na esperança, sejam pacientes na tribulação, perseverem na oração. Compartilhem o que vocês têm com os santos em necessidade; busquem praticar a hospitalidade. Abençoem aqueles que os perseguem; abençoem, e não os amaldiçoem. Alegrem-se com os que se alegram; chorem com os que choram. Tenham uma mesma atitude uns para com os outros. Não sejam orgulhosos, mas disponham-se a associar-se a pessoas de posição inferior. Não sejam sábios aos seus próprios olhos. Não retribuam a ninguém mal por mal. Procurem fazer o que é correto aos olhos de todos. Façam todo o possível para viver em paz com todos.',
+  'Gálatas 6.9-10': 'E não nos cansemos de fazer o bem, pois no tempo próprio colheremos, se não desanimarmos. Portanto, enquanto temos oportunidade, façamos o bem a todos, especialmente aos da família da fé.',
+  'Efésios 4.31-32': 'Livrem-se de toda amargura, indignação e ira, de gritaria e calúnia, assim como de toda maldade. Antes, sejam bondosos e compassivos uns para com os outros, perdoando-se mutuamente, assim como Deus os perdoou em Cristo.',
+  '1 João 3.16-18': 'Nisto conhecemos o que é o amor: Jesus Cristo deu a sua vida por nós, e devemos dar a nossa vida por nossos irmãos. Se alguém tiver recursos materiais e, vendo seu irmão em necessidade, não se compadecer dele, como pode permanecer nele o amor de Deus? Filhinhos, não amemos de palavra nem de boca, mas com ações e verdade.',
+  '1 João 4.20-21': 'Se alguém afirmar: "Eu amo a Deus", mas odiar seu irmão, é mentiroso, pois quem não ama seu irmão, a quem vê, não pode amar a Deus, a quem não vê. Ele nos deu este mandamento: quem ama a Deus, ame também seu irmão.',
+  'Salmo 51.10-12': 'Cria em mim, ó Deus, um coração puro e renova em mim um espírito inabalável. Não me lances fora da tua presença nem retires de mim o teu Espírito Santo. Torna a dar-me a alegria da tua salvação e sustenta-me com um espírito voluntário.',
+  'Provérbios 28.13': 'Quem esconde os seus pecados não prospera, mas quem os confessa e os abandona encontra misericórdia.',
+  'Isaías 55.6-7': 'Busquem o Senhor enquanto se pode achá-lo; clamem por ele enquanto está perto. Que o ímpio abandone o seu caminho, e o homem mau, os seus pensamentos. Volte-se ele para o Senhor, que terá misericórdia dele, e para o nosso Deus, que de bom grado lhe perdoará.',
+  'Jeremias 3.12-14': 'Vá e proclame esta palavra para o norte: "Volte, ó infiel Israel", declara o Senhor. "Não continuarei irado para sempre, pois sou misericordioso", declara o Senhor. "Apenas reconheça o seu pecado: você se rebelou contra o Senhor, o seu Deus, e se prostituiu com deuses estrangeiros debaixo de toda árvore verdejante, e não me obedeceu", declara o Senhor. "Voltem, ó filhos infiéis", declara o Senhor, "pois eu sou o seu marido. Eu os levarei a Sião, um de cada cidade e dois de cada clã".',
+  'Lucas 15.11-24': 'Jesus continuou: "Um homem tinha dois filhos. O mais jovem disse ao pai: ‘Pai, dá-me a parte da herança que me cabe’. E o pai dividiu os bens entre eles. Poucos dias depois, o filho mais jovem ajuntou tudo o que tinha e partiu para um país distante, e ali desperdiçou os seus bens vivendo de forma desregrada. Depois de ter gasto tudo, houve uma grande fome em todo aquele país, e ele começou a passar necessidade. Então ele foi e se empregou com um dos cidadãos daquela terra, que o mandou para o seu campo a fim de cuidar de porcos. Ele desejava encher o estômago com as alfarrobas que os porcos comiam, mas ninguém lhe dava nada. Caindo em si, disse: ‘Quantos empregados de meu pai têm comida de sobra, e eu aqui morrendo de fome! Vou me levantar, irei a meu pai e lhe direi: Pai, pequei contra o céu e contra ti. Já não sou digno de ser chamado teu filho; trata-me como um dos teus empregados’. E, levantando-se, foi para seu pai. Vinha ele ainda longe, quando seu pai o viu, e, compadecido dele, correndo, o abraçou e beijou. O filho lhe disse: ‘Pai, pequei contra o céu e contra ti. Já não sou digno de ser chamado teu filho’. Mas o pai disse aos seus servos: ‘Depressa! Tragam a melhor capa e vistam-no, coloquem um anel em seu dedo e sandálias nos pés. Tragam o novilho gordo e matem-no. Vamos fazer uma festa e comemorar. Pois este meu filho estava morto e voltou a viver; estava perdido e foi achado’. E começaram a festejar".',
+  'Atos 3.19': 'Arrependam-se, pois, e voltem-se para Deus, para que os seus pecados sejam cancelados.',
+  'Tiago 4.8-10': 'Aproximem-se de Deus, e ele se aproximará de vocês! Pecadores, limpem as mãos, e vocês que têm a mente dividida, purifiquem o coração. Entristeçam-se, lamentem e chorem. Troquem o riso por lamento e a alegria por tristeza. Humilhem-se diante do Senhor, e ele os exaltará.'
+};
+
+function abrirVersiculo(ref) {
+  const modal = document.getElementById('modal-overlay');
+  document.getElementById('modal-titulo').textContent = '📖 ' + ref;
+  document.getElementById('modal-ref').textContent = 'Tradução: Nova Versão Internacional (NVI)';
+  document.getElementById('modal-texto').textContent = versiculosNVI[ref] || 'Texto não disponível offline.';
+  modal.classList.add('aberto');
+}
+
+function fecharModal(event) {
+  if (event && event.target !== event.currentTarget && event.target.className !== 'btn btn-fechar') return;
+  document.getElementById('modal-overlay').classList.remove('aberto');
+}
+
+/* ============ LISTA DE DECISÕES ============ */
+function atualizarListaDecisoes() {
+  const lista = document.getElementById('lista-decisoes');
+  lista.innerHTML = '';
+  
+  const decisoesMap = {
+    'seg-dec': 'Segunda - Não Deixe de Cultivar Seu Relacionamento',
+    'ter-dec': 'Terça - Lembre-se de Quem Amou Você Primeiro',
+    'qua-dec': 'Quarta - Aprenda a Amar o Que Ele Ama',
+    'qui-dec': 'Quinta - Não Seja Indiferente às Pessoas',
+    'sex-dec': 'Sexta - Sempre é Tempo de Voltar'
+  };
+
+  let temAlgo = false;
+  
+  // Textareas de decisão
+  for (const [id, nome] of Object.entries(decisoesMap)) {
+    const valor = localStorage.getItem('maosocupadas_' + id);
+    if (valor && valor.trim() !== '') {
+      temAlgo = true;
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${nome}:</strong><br>${valor.replace(/\n/g, '<br>')}`;
+      lista.appendChild(li);
+    }
+  }
+
+  // Checkboxes
+  const checksMap = {
+    'seg-check-1': 'Segunda - Separar tempo diário com Deus',
+    'seg-check-2': 'Segunda - Cultivar oração e leitura bíblica',
+    'seg-check-3': 'Segunda - Atividades não substituem comunhão',
+    'ter-check-1': 'Terça - Meditar no sacrifício de Jesus',
+    'ter-check-2': 'Terça - Abandonar a ideia de conquistar o amor de Deus',
+    'ter-check-3': 'Terça - Demonstrar gratidão com vida de dedicação',
+    'qua-check-1': 'Quarta - Obedecer mesmo contra desejos pessoais',
+    'qua-check-2': 'Quarta - Abandonar prática que desagrada a Deus',
+    'qua-check-3': 'Quarta - Parar de justificar comportamentos condenados',
+    'qui-check-1': 'Quinta - Procurar alguém da igreja',
+    'qui-check-2': 'Quinta - Buscar reconciliação',
+    'qui-check-3': 'Quinta - Realizar atitude prática de amor',
+    'sex-check-1': 'Sexta - Reconhecer áreas de afastamento',
+    'sex-check-2': 'Sexta - Abandonar prática pecaminosa',
+    'sex-check-3': 'Sexta - Recuperar hábito de buscar a Deus',
+    'sex-check-4': 'Sexta - Voltar a servir e cultivar relacionamentos'
+  };
+
+  for (const [id, nome] of Object.entries(checksMap)) {
+    if (localStorage.getItem('maosocupadas_' + id) === 'true') {
+      temAlgo = true;
+      const li = document.createElement('li');
+      li.innerHTML = `✅ <strong>${nome}</strong>`;
+      lista.appendChild(li);
+    }
+  }
+
+  if (!temAlgo) {
+    lista.innerHTML = '<li>Nenhuma decisão registrada ainda. Comece a meditar e suas decisões aparecerão aqui.</li>';
+  }
+}
+
+function exportarDecisoes() {
+  let texto = 'MINHAS DECISÕES – MÃOS OCUPADAS, CORAÇÃO DISTANTE\n' + '='.repeat(60) + '\n\n';
+  
+  const decisoesMap = {
+    'seg-dec': 'SEGUNDA - Não Deixe de Cultivar Seu Relacionamento',
+    'ter-dec': 'TERÇA - Lembre-se de Quem Amou Você Primeiro',
+    'qua-dec': 'QUARTA - Aprenda a Amar o Que Ele Ama',
+    'qui-dec': 'QUINTA - Não Seja Indiferente às Pessoas',
+    'sex-dec': 'SEXTA - Sempre é Tempo de Voltar'
+  };
+
+  for (const [id, nome] of Object.entries(decisoesMap)) {
+    const valor = localStorage.getItem('maosocupadas_' + id) || '(sem decisão)';
+    texto += nome + '\n' + '-'.repeat(40) + '\n' + valor + '\n\n';
+  }
+
+  texto += '\nCHECKBOXES MARCADOS:\n' + '-'.repeat(40) + '\n';
+  const checksMap = {
+    'seg-check-1': 'Segunda - Separar tempo diário com Deus',
+    'seg-check-2': 'Segunda - Cultivar oração e leitura bíblica',
+    'seg-check-3': 'Segunda - Atividades não substituem comunhão',
+    'ter-check-1': 'Terça - Meditar no sacrifício de Jesus',
+    'ter-check-2': 'Terça - Abandonar a ideia de conquistar o amor de Deus',
+    'ter-check-3': 'Terça - Demonstrar gratidão com vida de dedicação',
+    'qua-check-1': 'Quarta - Obedecer mesmo contra desejos pessoais',
+    'qua-check-2': 'Quarta - Abandonar prática que desagrada a Deus',
+    'qua-check-3': 'Quarta - Parar de justificar comportamentos condenados',
+    'qui-check-1': 'Quinta - Procurar alguém da igreja',
+    'qui-check-2': 'Quinta - Buscar reconciliação',
+    'qui-check-3': 'Quinta - Realizar atitude prática de amor',
+    'sex-check-1': 'Sexta - Reconhecer áreas de afastamento',
+    'sex-check-2': 'Sexta - Abandonar prática pecaminosa',
+    'sex-check-3': 'Sexta - Recuperar hábito de buscar a Deus',
+    'sex-check-4': 'Sexta - Voltar a servir e cultivar relacionamentos'
+  };
+  for (const [id, nome] of Object.entries(checksMap)) {
+    if (localStorage.getItem('maosocupadas_' + id) === 'true') {
+      texto += `[X] ${nome}\n`;
+    }
+  }
+
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'minhas-decisoes-maos-ocupadas.txt';
+  link.click();
+}
+
+function exportarTudo() {
+  let texto = 'MINHA MEDITAÇÃO COMPLETA – MÃOS OCUPADAS, CORAÇÃO DISTANTE\n' + '='.repeat(70) + '\n\n';
+  
+  document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
+    if (el.id && !el.id.startsWith('lac-')) {
+      const valor = localStorage.getItem('maosocupadas_' + el.id);
+      if (valor && valor.trim() !== '') {
+        texto += `[${el.id}]: ${valor}\n`;
+      }
+    }
+  });
+
+  texto += '\nCHECKBOXES:\n' + '-'.repeat(30) + '\n';
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+    if (localStorage.getItem('maosocupadas_' + el.id) === 'true') {
+      const label = el.nextElementSibling ? el.nextElementSibling.textContent : el.id;
+      texto += `[X] ${label}\n`;
+    }
+  });
+
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'meditacao-completa-maos-ocupadas.txt';
+  link.click();
+}
+
+/* ============ INICIALIZAÇÃO ============ */
+window.onload = function() {
+  carregarTudo();
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('modal-overlay').classList.remove('aberto');
+  }
+});
+</script>
+
+</body>
+</html>
