@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meditação Interativa - Crente Cacto ou Crente Bonsai?</title>
+<style>
+  :root {
+    --verde: #3d5a4c;
+    --verde-claro: #5b7a68;
+    --verde-suave: #e8efe9;
+    --grafite: #2e3532;
+    --grafite-claro: #55605b;
+    --areia: #f4f1ea;
+    --areia-escura: #e6e0d4;
+    --terracota: #a2674c;
+    --terracota-suave: #f3e6df;
+    --fundo: #faf9f6;
+    --card: #ffffff;
+    --texto: #2e3532;
+    --borda: #d8d3c8;
+    --sombra: rgba(46, 53, 50, .08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1.7;
+    background: var(--fundo);
+    color: var(--texto);
+    margin: 0;
+    padding: 0 12px 100px;
+  }
+  header {
+    background: linear-gradient(135deg, #3d5a4c 0%, #2e3532 100%);
+    color: #f4f1ea;
+    padding: 30px 16px 26px;
+    text-align: center;
+    border-radius: 0 0 18px 18px;
+    margin: 0 -12px 24px;
+    box-shadow: 0 3px 14px rgba(46,53,50,.18);
+  }
+  header h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: .4px; font-weight: 600; }
+  header p { margin: 4px 0; font-size: 18px; opacity: .9; font-weight: 300; }
+
+  .abas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 22px;
+    position: sticky;
+    top: 0;
+    background: var(--fundo);
+    padding: 10px 0;
+    z-index: 50;
+  }
+  .aba {
+    background: #fff;
+    border: 2px solid var(--borda);
+    color: var(--grafite);
+    padding: 11px 18px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .2s;
+  }
+  .aba:hover { background: var(--verde-suave); border-color: var(--verde-claro); }
+  .aba.ativa { background: var(--verde); color: #fff; border-color: var(--verde); }
+
+  .dia { display: none; animation: fade .3s; }
+  .dia.ativo { display: block; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 26px;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 6px var(--sombra);
+    border: 1px solid var(--areia-escura);
+    border-top: 4px solid var(--verde);
+  }
+  .card.destaque { border-top-color: var(--verde); }
+  .card h2 {
+    font-size: 22px;
+    color: var(--verde);
+    margin: 0 0 16px;
+    border-bottom: 1px solid var(--areia-escura);
+    padding-bottom: 12px;
+    font-weight: 600;
+  }
+  .card h3 {
+    font-size: 20px;
+    color: var(--grafite);
+    margin-top: 28px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    letter-spacing: .2px;
+  }
+
+  .versiculo-chave {
+    font-style: italic;
+    background: var(--verde-suave);
+    border-left: 4px solid var(--verde-claro);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-size: 18px;
+    color: var(--grafite);
+    line-height: 1.65;
+  }
+  .versiculo-chave .rotulo {
+    display: block;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--verde-claro);
+    margin-bottom: 6px;
+  }
+
+  .contexto-box { background: var(--areia); border-left: 4px solid var(--terracota); padding: 16px 18px; border-radius: 8px; margin: 16px 0; font-size: 18px; }
+  .contexto-box strong { color: var(--terracota); }
+  .oracao-box { background: var(--verde-suave); border-left: 4px solid var(--verde-claro); padding: 18px 22px; border-radius: 10px; margin: 16px 0; font-size: 18px; color: var(--grafite); }
+  .oracao-box strong { color: var(--verde); display: block; margin-bottom: 8px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 18px;
+    padding: 12px;
+    border: 1.5px solid var(--borda);
+    border-radius: 8px;
+    background: #fff;
+    resize: vertical;
+    min-height: 60px;
+    margin-top: 6px;
+    transition: border-color .2s;
+  }
+  textarea:focus, input:focus {
+    outline: none;
+    border-color: var(--verde-claro);
+    box-shadow: 0 0 0 3px rgba(91,122,104,.15);
+  }
+  .salvo-aviso {
+    font-size: 14px;
+    color: var(--verde-claro);
+    margin-top: 4px;
+    height: 18px;
+    font-weight: 600;
+  }
+
+  .versiculo-btn {
+    display: block;
+    width: 100%;
+    background: #fff;
+    color: var(--grafite);
+    border: 1.5px solid var(--borda);
+    padding: 12px 18px;
+    margin: 8px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 600;
+    transition: .2s;
+    text-align: left;
+  }
+  .versiculo-btn:hover { background: var(--verde-suave); border-color: var(--verde-claro); color: var(--verde); }
+
+  .btn {
+    background: var(--verde);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 8px 8px 8px 0;
+    transition: .2s;
+  }
+  .btn:hover { background: var(--grafite); }
+  .btn-verde { background: var(--verde-claro); }
+  .btn-verde:hover { background: var(--verde); }
+  .btn-limpar { background: #9ca3a0; }
+  .btn-limpar:hover { background: #7a827e; }
+  .btn-ouro { background: var(--terracota); }
+  .btn-ouro:hover { background: #86533c; }
+
+  .feedback { font-size: 17px; font-weight: 600; margin-top: 10px; min-height: 30px; }
+  .feedback.ok { color: var(--verde); }
+  .feedback.erro { color: var(--terracota); }
+
+  .memoriza-area { background: var(--areia); border: 1.5px dashed var(--verde-claro); border-radius: 10px; padding: 20px; margin: 14px 0; }
+  .memoriza-frase { font-size: 19px; line-height: 2.6; margin-bottom: 14px; color: var(--grafite); }
+  .lacuna {
+    display: inline-block;
+    width: 90px;
+    border: none;
+    border-bottom: 2px solid var(--terracota);
+    background: #fff;
+    font-size: 18px;
+    padding: 4px 6px;
+    margin: 0 4px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--verde);
+    border-radius: 4px 4px 0 0;
+  }
+  .lacuna.larga { width: 150px; }
+  .lacuna.curta { width: 55px; }
+  .lacuna:focus { outline: none; background: #fffef9; box-shadow: 0 2px 6px rgba(162,103,76,.2); }
+  .lacuna.correta { border-bottom-color: var(--verde); background: #e3efe6; color: var(--verde); }
+  .lacuna.errada { border-bottom-color: var(--terracota); background: #f7e7e0; color: var(--terracota); }
+  .placar {
+    background: var(--grafite);
+    color: var(--areia);
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: 600;
+    display: inline-block;
+    margin: 10px 0;
+    letter-spacing: .3px;
+  }
+
+  .check-group { margin: 12px 0; display: flex; flex-direction: column; gap: 10px; }
+  .check-item { display: flex; align-items: flex-start; gap: 12px; background: #fff; padding: 13px 15px; border-radius: 8px; border: 1.5px solid var(--borda); cursor: pointer; transition: .2s; font-size: 18px; }
+  .check-item:hover { border-color: var(--verde-claro); background: var(--verde-suave); }
+  .check-item input[type="checkbox"] { width: 22px; height: 22px; margin-top: 4px; cursor: pointer; accent-color: var(--verde); flex-shrink: 0; }
+
+  .lista-decisoes { list-style: none; padding: 0; }
+  .lista-decisoes li { background: var(--areia); border-left: 4px solid var(--terracota); padding: 14px 18px; margin-bottom: 12px; border-radius: 8px; font-size: 17px; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(46,53,50,.7); z-index: 999; justify-content: center; align-items: center; padding: 16px; }
+  .modal-overlay.aberto { display: flex; }
+  .modal { background: #fff; border-radius: 14px; max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 30px; box-shadow: 0 12px 40px rgba(46,53,50,.3); }
+  .modal h3 { margin-top: 0; color: var(--verde); border-bottom: 2px solid var(--areia-escura); padding-bottom: 12px; font-size: 22px; }
+  .modal .texto-nvi { font-size: 20px; line-height: 1.8; color: var(--grafite); }
+  .modal .ref { font-weight: 600; color: var(--terracota); margin-bottom: 14px; font-size: 15px; text-transform: uppercase; letter-spacing: .5px; }
+  .modal .pergunta { background: var(--verde-suave); border-left: 4px solid var(--verde-claro); padding: 14px 18px; border-radius: 8px; margin: 18px 0; font-size: 18px; font-weight: 600; color: var(--verde); }
+  .modal .btn-fechar { background: var(--grafite); margin-top: 18px; }
+  .modal .btn-fechar:hover { background: #1d2320; }
+
+  footer { text-align: center; color: #8a938e; font-size: 14px; margin-top: 30px; padding: 20px; border-top: 1px solid var(--borda); }
+  footer p { margin: 4px 0; }
+
+  @media (max-width: 600px) {
+    body { font-size: 18px; }
+    .aba { font-size: 14px; padding: 10px 12px; }
+    .lacuna { width: 65px; }
+    .lacuna.larga { width: 110px; }
+    .lacuna.curta { width: 45px; }
+    .card h2 { font-size: 20px; }
+    .card { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌵 Crente Cacto ou Crente Bonsai?</h1>
+  <p>Desenvolvendo uma fé com raízes profundas</p>
+</header>
+
+<div class="abas">
+  <button class="aba ativa" onclick="mostrarDia(0, this)">Segunda</button>
+  <button class="aba" onclick="mostrarDia(1, this)">Terça</button>
+  <button class="aba" onclick="mostrarDia(2, this)">Quarta</button>
+  <button class="aba" onclick="mostrarDia(3, this)">Quinta</button>
+  <button class="aba" onclick="mostrarDia(4, this)">Sexta</button>
+  <button class="aba" onclick="mostrarDia(5, this)">📋 Decisões</button>
+</div>
+
+<!-- ============ SEGUNDA ============ -->
+<div class="dia ativo" id="dia-0">
+  <div class="card destaque">
+    <h2>Segunda-feira – Onde estão as raízes da sua fé?</h2>
+
+    <div class="versiculo-chave">
+      <span class="rotulo">Para memorizar · Salmo 1:1–3</span>
+      “Como é feliz aquele que não segue o conselho dos ímpios, não imita a conduta dos pecadores, nem se assenta na roda dos zombadores! Ao contrário, sua satisfação está na lei do Senhor, e nessa lei medita dia e noite. É como árvore plantada à beira de águas correntes: dá fruto no tempo certo e suas folhas não murcham. Tudo o que ele faz prospera!”
+    </div>
+
+    <h3>Entendendo a Palavra</h3>
+    <p>Uma árvore saudável não depende apenas da aparência de seus galhos. Sua força está, principalmente, naquilo que não vemos: suas raízes. É por meio delas que a árvore encontra água e nutrientes para continuar crescendo.</p>
+    <p>O Salmo 1 apresenta justamente essa comparação. O homem que tem prazer na Palavra de Deus é comparado a uma árvore plantada junto a correntes de águas. Sua vida possui uma fonte de sustento que não depende das circunstâncias ao redor.</p>
+    <p>Isso nos leva a uma pergunta importante: onde estamos buscando alimento para nossa vida espiritual?</p>
+    <p>Podemos frequentar cultos, participar de programações e conhecer muitas pessoas cristãs, mas essas coisas não substituem nossa comunhão pessoal com Deus. A fé precisa desenvolver raízes. E essas raízes são cultivadas quando nos aproximamos do Senhor, meditamos em sua Palavra e aprendemos a viver segundo ela.</p>
+
+    <h3>Minhas observações sobre o texto</h3>
+    <p>Registre suas descobertas, dúvidas, palavras importantes e observações sobre o texto lido.</p>
+    <textarea id="seg-obs" placeholder="Suas observações..." oninput="salvarAuto('seg-obs')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-obs"></div>
+
+    <h3>Para aprender mais</h3>
+    <p>Leia as passagens abaixo e procure responder às perguntas. Observe o que cada texto diz, quais orientações apresenta e como se relaciona com o tema de hoje.</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Josué 1.8', 'O que Deus orienta Josué a fazer com o livro da Lei? Que relação existe entre essa orientação e suas decisões?', 'seg-v1')">📖 Josué 1:8</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmo 119.9-16', 'Quais atitudes o salmista demonstra em relação à Palavra de Deus?', 'seg-v2')">📖 Salmo 119:9-16</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Mateus 4.1-4', 'Como Jesus responde à tentação? O que sua resposta revela sobre a importância da Palavra?', 'seg-v3')">📖 Mateus 4:1-4</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Lucas 10.38-42', 'Qual foi a diferença entre as atitudes de Marta e Maria? O que Jesus destacou naquela situação?', 'seg-v4')">📖 Lucas 10:38-42</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('João 15.4-5', 'O que Jesus ensina sobre a relação entre permanecer nele e produzir frutos?', 'seg-v5')">📖 João 15:4-5</button>
+
+    <h3>Reflita</h3>
+    <p>Em Marcos 1:35, encontramos Jesus levantando-se de madrugada, quando ainda estava escuro, para procurar um lugar deserto e orar.</p>
+    <p>Mesmo com tantas pessoas procurando por ele e com tantas necessidades ao seu redor, Jesus reservava momentos para estar com o Pai.</p>
+    <p>Se o próprio Jesus valorizava esse tempo de comunhão, por que tantas vezes tratamos nossa vida com Deus como algo que pode ser deixado para depois?</p>
+    <p>Não é difícil perceber que damos atenção diária a diversas coisas: mensagens, notícias, trabalho, compromissos e entretenimento. Mas será que temos dedicado à Palavra e à oração a mesma disposição?</p>
+
+    <h3>Olhando no espelho</h3>
+    <p>1. Tenho separado tempo para estar com Deus ou minha comunhão depende de sobrar algum tempo?</p>
+    <textarea id="seg-e1" placeholder="Sua resposta..." oninput="salvarAuto('seg-e1')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-e1"></div>
+
+    <p>2. Minha leitura bíblica tem sido uma busca sincera por conhecer e obedecer ao Senhor ou apenas uma tarefa a cumprir?</p>
+    <textarea id="seg-e2" placeholder="Sua resposta..." oninput="salvarAuto('seg-e2')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-e2"></div>
+
+    <p>3. Quais atividades têm ocupado o espaço que deveria ser dedicado à minha vida espiritual?</p>
+    <textarea id="seg-e3" placeholder="Sua resposta..." oninput="salvarAuto('seg-e3')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-e3"></div>
+
+    <p>4. Se alguém observasse minha rotina, perceberia que a Palavra de Deus é importante para mim?</p>
+    <textarea id="seg-e4" placeholder="Sua resposta..." oninput="salvarAuto('seg-e4')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-e4"></div>
+
+    <h3>Decida</h3>
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="seg-check-1" onchange="salvarCheck('seg-check-1')">
+        <span>Separar um horário específico para ler a Bíblia e orar.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="seg-check-2" onchange="salvarCheck('seg-check-2')">
+        <span>Diminuir alguma distração que tem prejudicado minha comunhão com Deus.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="seg-check-3" onchange="salvarCheck('seg-check-3')">
+        <span>Escolher um versículo da leitura de hoje para memorizar e praticar.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="seg-check-4" onchange="salvarCheck('seg-check-4')">
+        <span>Compartilhar com alguém uma descoberta feita durante minha leitura.</span>
+      </label>
+    </div>
+
+    <p>Minha decisão pessoal:</p>
+    <textarea id="seg-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('seg-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-seg-dec"></div>
+
+    <h3>Ore</h3>
+    <div class="oracao-box">
+      <strong>Oração</strong>
+      Peça a Deus que ajude você a desenvolver uma vida de comunhão verdadeira com ele. Peça disposição para buscar sua Palavra, organizar sua rotina e construir uma fé que tenha raízes profundas, e não apenas uma boa aparência.
+    </div>
+  </div>
+</div>
+
+<!-- ============ TERÇA ============ -->
+<div class="dia" id="dia-1">
+  <div class="card destaque">
+    <h2>Terça-feira – O deserto revela onde está sua confiança</h2>
+
+    <div class="versiculo-chave">
+      <span class="rotulo">Para memorizar · Jeremias 17:7–8</span>
+      “Mas bendito é o homem cuja confiança está no Senhor, cuja confiança nele está. Ele será como uma árvore plantada junto às águas e que estende as suas raízes para o ribeiro. Ela não temerá quando chegar o calor, porque as suas folhas estão sempre verdes; não ficará ansiosa no ano da seca nem deixará de dar fruto.”
+    </div>
+
+    <h3>Entendendo a Palavra</h3>
+    <p>Jeremias apresenta duas imagens contrastantes: um arbusto no deserto e uma árvore plantada junto às águas.</p>
+    <p>A diferença entre elas não está simplesmente no clima. Está na fonte de onde recebem seu sustento.</p>
+    <p>A pessoa que confia no Senhor é comparada à árvore que estende suas raízes para junto das águas. Quando chega o calor, suas folhas permanecem verdes. Mesmo em um ano de seca, ela continua produzindo.</p>
+    <p>Isso não significa que quem confia em Deus nunca enfrentará dificuldades. A própria passagem fala de calor e seca. A diferença é que a confiança no Senhor oferece uma fonte de sustento que não depende de circunstâncias favoráveis.</p>
+    <p>Nossa fé é revelada não apenas quando tudo está bem, mas também quando enfrentamos perdas, frustrações, incertezas e períodos difíceis.</p>
+    <p>É relativamente fácil demonstrar confiança quando as coisas acontecem como esperamos. A pergunta é: o que acontece com nossa fé quando a situação muda?</p>
+
+    <h3>Minhas observações sobre o texto</h3>
+    <p>Registre suas descobertas, dúvidas, palavras importantes e observações sobre o texto lido.</p>
+    <textarea id="ter-obs" placeholder="Suas observações..." oninput="salvarAuto('ter-obs')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-obs"></div>
+
+    <h3>Para aprender mais</h3>
+    <p>Leia as passagens abaixo e procure identificar como a confiança em Deus aparece em diferentes situações.</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Habacuque 3.17-19', 'Qual era a situação descrita pelo profeta? Como ele reage diante dela?', 'ter-v1')">📖 Habacuque 3:17-19</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Salmo 46.1-3', 'Que situações difíceis são mencionadas? Como o salmista descreve Deus?', 'ter-v2')">📖 Salmo 46:1-3</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Daniel 3.16-18', 'O que os três jovens afirmam diante da ameaça do rei? Que aspecto de sua confiança chama sua atenção?', 'ter-v3')">📖 Daniel 3:16-18</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('2 Coríntios 4.8-9, 16-18', 'Quais dificuldades Paulo menciona? Como ele descreve sua maneira de enfrentá-las?', 'ter-v4')">📖 2 Coríntios 4:8-9, 16-18</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tiago 1.2-4', 'O que Tiago ensina sobre as provações? Quais resultados ele relaciona a elas?', 'ter-v5')">📖 Tiago 1:2-4</button>
+
+    <h3>Reflita</h3>
+    <p>Viktor Frankl foi um médico psiquiatra austríaco que sobreviveu aos campos de concentração nazistas durante a Segunda Guerra Mundial. Depois da guerra, escreveu sobre sua experiência e sobre a importância de encontrar sentido mesmo em situações de sofrimento extremo.</p>
+    <p>Sua história não é apresentada como exemplo de fé cristã, mas nos ajuda a refletir sobre uma questão: as circunstâncias difíceis podem colocar à prova aquilo que sustenta nossa vida.</p>
+    <p>Na caminhada cristã, não podemos depender exclusivamente de uma fase boa, de uma resposta positiva ou de uma situação confortável. Nossa confiança precisa estar firmada em Deus.</p>
+
+    <h3>Olhando no espelho</h3>
+    <p>1. Como costumo reagir quando Deus não responde às minhas orações da maneira que espero?</p>
+    <textarea id="ter-e1" placeholder="Sua resposta..." oninput="salvarAuto('ter-e1')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-e1"></div>
+
+    <p>2. Minha confiança no Senhor permanece quando enfrento problemas ou fica condicionada a resultados favoráveis?</p>
+    <textarea id="ter-e2" placeholder="Sua resposta..." oninput="salvarAuto('ter-e2')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-e2"></div>
+
+    <p>3. Tenho permitido que dificuldades me afastem de Deus ou tenho procurado me aproximar ainda mais dele?</p>
+    <textarea id="ter-e3" placeholder="Sua resposta..." oninput="salvarAuto('ter-e3')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-e3"></div>
+
+    <p>4. Existe alguma situação atual em que preciso demonstrar confiança no Senhor, mesmo sem saber como tudo terminará?</p>
+    <textarea id="ter-e4" placeholder="Sua resposta..." oninput="salvarAuto('ter-e4')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-e4"></div>
+
+    <h3>Decida</h3>
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="ter-check-1" onchange="salvarCheck('ter-check-1')">
+        <span>Apresentar a Deus, em oração, uma dificuldade que tenho enfrentado.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="ter-check-2" onchange="salvarCheck('ter-check-2')">
+        <span>Memorizar Jeremias 17:7–8 e recordar essa verdade durante momentos difíceis.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="ter-check-3" onchange="salvarCheck('ter-check-3')">
+        <span>Evitar alimentar pensamentos de desespero e procurar orientação na Palavra.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="ter-check-4" onchange="salvarCheck('ter-check-4')">
+        <span>Conversar com um cristão maduro sobre uma dificuldade que estou enfrentando.</span>
+      </label>
+    </div>
+
+    <p>Minha decisão pessoal:</p>
+    <textarea id="ter-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('ter-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-ter-dec"></div>
+
+    <h3>Ore</h3>
+    <div class="oracao-box">
+      <strong>Oração</strong>
+      Fale com Deus sobre as dificuldades que você está enfrentando. Peça que sua confiança não esteja condicionada às circunstâncias e que, mesmo em períodos de seca, você permaneça firme no Senhor.
+    </div>
+  </div>
+</div>
+
+<!-- ============ QUARTA ============ -->
+<div class="dia" id="dia-2">
+  <div class="card destaque">
+    <h2>Quarta-feira – Não passe a vida toda dependendo do alimento dos outros</h2>
+
+    <div class="versiculo-chave">
+      <span class="rotulo">Para memorizar · Hebreus 5:12–14</span>
+      “Embora a esta altura já devessem ser mestres, vocês precisam de alguém que lhes ensine novamente os princípios elementares da Palavra de Deus. Estão precisando de leite, e não de alimento sólido! Quem se alimenta de leite ainda é criança e não tem experiência no ensino da justiça. Mas o alimento sólido é para os adultos, os quais, pelo exercício constante, tornaram-se capazes de discernir o bem e o mal.”
+    </div>
+
+    <h3>Entendendo a Palavra</h3>
+    <p>O autor de Hebreus demonstra preocupação com seus leitores. Embora já tivessem tempo suficiente de caminhada cristã para ensinar outras pessoas, ainda precisavam receber instruções básicas.</p>
+    <p>Ele utiliza a comparação entre leite e alimento sólido. O leite representa o alimento adequado aos primeiros estágios do desenvolvimento, enquanto o alimento sólido está relacionado à maturidade.</p>
+    <p>O problema não era que os cristãos estivessem começando a fé. O problema era que alguns continuavam vivendo como iniciantes, sem avançar no conhecimento e na prática da Palavra.</p>
+    <p>Na vida cristã, precisamos de ensino, orientação e cuidado. Ninguém amadurece sozinho. Entretanto, não podemos passar a vida inteira dependendo exclusivamente do conhecimento e da experiência espiritual dos outros.</p>
+    <p>Deus deseja que cresçamos. Precisamos aprender a estudar as Escrituras, discernir o que é correto e colocar em prática aquilo que conhecemos.</p>
+
+    <h3>Minhas observações sobre o texto</h3>
+    <p>Registre suas descobertas, dúvidas, palavras importantes e observações sobre o texto lido.</p>
+    <textarea id="qua-obs" placeholder="Suas observações..." oninput="salvarAuto('qua-obs')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-obs"></div>
+
+    <h3>Para aprender mais</h3>
+    <p>Leia as passagens abaixo e procure observar o que elas ensinam sobre crescimento, conhecimento e prática da fé.</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Efésios 4.11-16', 'Quais são os objetivos dos dons e ministérios mencionados por Paulo? Que resultado ele espera na vida da igreja?', 'qua-v1')">📖 Efésios 4:11-16</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('2 Timóteo 3.14-17', 'Qual é a importância das Escrituras na formação do cristão? Para quais finalidades elas são úteis?', 'qua-v2')">📖 2 Timóteo 3:14-17</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tiago 1.22-25', 'Que comparação Tiago utiliza para falar sobre ouvir e praticar a Palavra?', 'qua-v3')">📖 Tiago 1:22-25</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 Coríntios 3.1-3', 'Que comportamento Paulo identifica entre os cristãos de Corinto? O que ele demonstra sobre a condição espiritual deles?', 'qua-v4')">📖 1 Coríntios 3:1-3</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Colossenses 1.9-10', 'Pelo que Paulo ora em favor dos cristãos? Que relação ele estabelece entre conhecimento, comportamento e crescimento?', 'qua-v5')">📖 Colossenses 1:9-10</button>
+
+    <h3>Reflita</h3>
+    <p>Pense em alguém que está aprendendo a dirigir. No início, precisa de alguém ao lado, orientando cada movimento: quando trocar a marcha, como fazer uma curva, como estacionar e como observar o trânsito.</p>
+    <p>Mas seria estranho alguém dirigir há dez anos e ainda precisar que o instrutor segurasse o volante e indicasse cada movimento.</p>
+    <p>Na vida cristã, também precisamos de acompanhamento. Pastores, professores e irmãos mais experientes são importantes. Entretanto, o objetivo do ensino não é criar dependência permanente, mas contribuir para que cada cristão amadureça e aprenda a viver segundo a Palavra.</p>
+
+    <h3>Olhando no espelho</h3>
+    <p>1. Tenho buscado aprender a Palavra por conta própria ou dependo exclusivamente dos ensinamentos que recebo nos cultos?</p>
+    <textarea id="qua-e1" placeholder="Sua resposta..." oninput="salvarAuto('qua-e1')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-e1"></div>
+
+    <p>2. Tenho colocado em prática aquilo que já aprendi ou continuo apenas acumulando conhecimento?</p>
+    <textarea id="qua-e2" placeholder="Sua resposta..." oninput="salvarAuto('qua-e2')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-e2"></div>
+
+    <p>3. Em quais áreas da minha vida cristã percebo que ainda preciso amadurecer?</p>
+    <textarea id="qua-e3" placeholder="Sua resposta..." oninput="salvarAuto('qua-e3')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-e3"></div>
+
+    <p>4. Tenho ajudado outras pessoas a crescer espiritualmente ou minha participação se limita a receber?</p>
+    <textarea id="qua-e4" placeholder="Sua resposta..." oninput="salvarAuto('qua-e4')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-e4"></div>
+
+    <h3>Decida</h3>
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="qua-check-1" onchange="salvarCheck('qua-check-1')">
+        <span>Estudar durante a semana uma passagem bíblica com atenção, observando seu contexto.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qua-check-2" onchange="salvarCheck('qua-check-2')">
+        <span>Escolher um ensinamento bíblico que conheço, mas ainda preciso praticar.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qua-check-3" onchange="salvarCheck('qua-check-3')">
+        <span>Procurar orientação sobre uma área em que preciso amadurecer.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qua-check-4" onchange="salvarCheck('qua-check-4')">
+        <span>Ajudar alguém a compreender ou praticar um ensinamento da Palavra.</span>
+      </label>
+    </div>
+
+    <p>Minha decisão pessoal:</p>
+    <textarea id="qua-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('qua-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-qua-dec"></div>
+
+    <h3>Ore</h3>
+    <div class="oracao-box">
+      <strong>Oração</strong>
+      Peça a Deus que ajude você a crescer espiritualmente. Ore por discernimento para compreender as Escrituras, humildade para reconhecer suas limitações e disposição para colocar em prática aquilo que aprende.
+    </div>
+  </div>
+</div>
+
+<!-- ============ QUINTA ============ -->
+<div class="dia" id="dia-3">
+  <div class="card destaque">
+    <h2>Quinta-feira – Deus não quer apenas que você receba. Ele quer que você produza frutos.</h2>
+
+    <div class="versiculo-chave">
+      <span class="rotulo">Para memorizar · João 15:1–8</span>
+      “Eu sou a videira verdadeira, e meu Pai é o agricultor. Todo ramo que, estando em mim, não dá fruto, ele corta; e todo o que dá fruto ele poda, para que dê mais fruto ainda. Vocês já estão limpos, pela palavra que lhes tenho falado. Permaneçam em mim, e eu permanecerei em vocês. Nenhum ramo pode dar fruto por si mesmo, se não permanecer na videira. Assim também vocês não podem dar fruto, se não permanecerem em mim. Eu sou a videira; vocês são os ramos. Se alguém permanecer em mim e eu nele, esse dá muito fruto; pois sem mim vocês não podem fazer coisa alguma. Se alguém não permanecer em mim, será como o ramo que é jogado fora e seca. Tais ramos são apanhados, lançados ao fogo e queimados. Se vocês permanecerem em mim, e as minhas palavras permanecerem em vocês, pedirão o que quiserem, e lhes será concedido. Meu Pai é glorificado pelo fato de vocês darem muito fruto; e assim serão meus discípulos.”
+    </div>
+
+    <h3>Entendendo a Palavra</h3>
+    <p>Jesus utiliza a figura da videira para ensinar sobre a relação entre ele e seus discípulos. Ele é a videira, e seus seguidores são os ramos.</p>
+    <p>A imagem deixa clara uma verdade: um ramo não consegue produzir frutos se estiver separado da videira. Sua capacidade de frutificar depende de permanecer ligado à fonte de vida.</p>
+    <p>Jesus não apresenta a vida cristã como uma tentativa de produzir resultados por esforço próprio. O fruto nasce de uma relação contínua com ele.</p>
+    <p>Isso nos ajuda a compreender que o crescimento espiritual não deve ser medido apenas pelo número de atividades que realizamos. Podemos estar ocupados com muitas coisas e, ainda assim, não desenvolver o caráter que Deus deseja.</p>
+    <p>O fruto que Deus procura envolve uma vida transformada, marcada por amor, obediência, serviço, fidelidade e atitudes que refletem o caráter de Cristo.</p>
+    <p>A pergunta não é apenas quanto estamos fazendo, mas que tipo de fruto nossa vida está produzindo.</p>
+
+    <h3>Minhas observações sobre o texto</h3>
+    <p>Registre suas descobertas, dúvidas, palavras importantes e observações sobre o texto lido.</p>
+    <textarea id="qui-obs" placeholder="Suas observações..." oninput="salvarAuto('qui-obs')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-obs"></div>
+
+    <h3>Para aprender mais</h3>
+    <p>Leia as passagens abaixo e procure identificar quais frutos e atitudes devem aparecer na vida de quem pertence a Cristo.</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Gálatas 5.16-25', 'Quais comportamentos são apresentados como obras da carne? Quais características compõem o fruto do Espírito?', 'qui-v1')">📖 Gálatas 5:16-25</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Colossenses 1.9-12', 'Que características Paulo deseja ver na vida dos cristãos? Como elas se relacionam com uma vida que agrada a Deus?', 'qui-v2')">📖 Colossenses 1:9-12</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Mateus 7.15-20', 'Que comparação Jesus utiliza para falar sobre o reconhecimento de uma árvore? Como essa imagem se aplica ao discernimento?', 'qui-v3')">📖 Mateus 7:15-20</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Filipenses 1.9-11', 'Pelo que Paulo ora? Que resultados ele deseja encontrar na vida dos cristãos?', 'qui-v4')">📖 Filipenses 1:9-11</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Tito 2.11-14', 'O que a graça de Deus nos ensina a abandonar e a praticar? Que tipo de povo Cristo deseja formar?', 'qui-v5')">📖 Tito 2:11-14</button>
+
+    <h3>Reflita</h3>
+    <p>Uma árvore frutífera não existe apenas para ocupar espaço em um terreno ou oferecer sombra. Quando está saudável e chega o tempo certo, ela produz frutos.</p>
+    <p>Na vida cristã, também precisamos avaliar o que está sendo produzido por nossa caminhada.</p>
+    <p>É possível frequentar a igreja há muitos anos, conhecer a Bíblia, participar de atividades e ainda demonstrar pouca transformação nas atitudes do dia a dia.</p>
+    <p>Como está nosso relacionamento com as pessoas? Como reagimos quando somos contrariados? Somos mais pacientes, generosos, bondosos e fiéis do que éramos antes?</p>
+    <p>A vida ligada a Cristo precisa produzir resultados visíveis.</p>
+
+    <h3>Olhando no espelho</h3>
+    <p>1. Que mudanças concretas as pessoas próximas conseguem perceber em minha vida?</p>
+    <textarea id="qui-e1" placeholder="Sua resposta..." oninput="salvarAuto('qui-e1')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-e1"></div>
+
+    <p>2. Tenho demonstrado o fruto do Espírito dentro de casa, no trabalho e nos relacionamentos?</p>
+    <textarea id="qui-e2" placeholder="Sua resposta..." oninput="salvarAuto('qui-e2')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-e2"></div>
+
+    <p>3. Minha participação na igreja tem sido acompanhada de crescimento no caráter?</p>
+    <textarea id="qui-e3" placeholder="Sua resposta..." oninput="salvarAuto('qui-e3')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-e3"></div>
+
+    <p>4. Existe alguma atitude ou comportamento que precisa ser tratado por Deus para que minha vida produza frutos melhores?</p>
+    <textarea id="qui-e4" placeholder="Sua resposta..." oninput="salvarAuto('qui-e4')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-e4"></div>
+
+    <h3>Decida</h3>
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="qui-check-1" onchange="salvarCheck('qui-check-1')">
+        <span>Escolher uma característica do fruto do Espírito para desenvolver intencionalmente nesta semana.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qui-check-2" onchange="salvarCheck('qui-check-2')">
+        <span>Praticar uma atitude concreta de amor ou bondade com alguém.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qui-check-3" onchange="salvarCheck('qui-check-3')">
+        <span>Pedir perdão a alguém que foi prejudicado por minhas atitudes.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="qui-check-4" onchange="salvarCheck('qui-check-4')">
+        <span>Avaliar minhas atividades e verificar se estou cultivando também meu relacionamento com Cristo.</span>
+      </label>
+    </div>
+
+    <p>Minha decisão pessoal:</p>
+    <textarea id="qui-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('qui-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-qui-dec"></div>
+
+    <h3>Ore</h3>
+    <div class="oracao-box">
+      <strong>Oração</strong>
+      Peça a Jesus que sua vida permaneça ligada a ele. Ore para que o Espírito Santo transforme seu caráter e produza em você frutos que demonstrem, na prática, que Cristo está conduzindo sua vida.
+    </div>
+  </div>
+</div>
+
+<!-- ============ SEXTA ============ -->
+<div class="dia" id="dia-4">
+  <div class="card destaque">
+    <h2>Sexta-feira – Raízes profundas não significam caminhar sozinho</h2>
+
+    <div class="versiculo-chave">
+      <span class="rotulo">Para memorizar · Eclesiastes 4:9–12</span>
+      “É melhor ter companhia do que estar sozinho, porque maior é a recompensa do trabalho de duas pessoas. Se um cair, o amigo pode ajudá-lo a levantar-se. Mas pobre do homem que cai e não tem quem o ajude a levantar-se! E se dois dormirem juntos, vão manter-se aquecidos. Como, porém, manter-se aquecido sozinho? Um homem sozinho pode ser vencido, mas dois conseguem defender-se. Um cordão de três dobras não se rompe com facilidade.”
+    </div>
+
+    <h3>Entendendo a Palavra</h3>
+    <p>Uma árvore precisa de raízes profundas, mas isso não significa que o crescimento espiritual seja uma jornada individualista.</p>
+    <p>A Bíblia ensina que precisamos uns dos outros. Em Eclesiastes, encontramos uma reflexão sobre o valor da companhia, da ajuda mútua e da união. Duas pessoas podem realizar mais do que uma, podem ajudar uma à outra quando enfrentam dificuldades e podem se proteger melhor diante dos desafios.</p>
+    <p>Na igreja, essa verdade também precisa ser vivida. Deus nos chama a crescer em Cristo, mas não nos chama a viver isolados.</p>
+    <p>O cristão maduro não é aquele que acredita não precisar de ninguém. Pelo contrário, compreende a importância de receber ajuda, oferecer apoio, caminhar com outros irmãos e contribuir para o crescimento da comunidade.</p>
+    <p>Precisamos de raízes profundas em Cristo e de relacionamentos saudáveis com o povo de Deus.</p>
+
+    <h3>Minhas observações sobre o texto</h3>
+    <p>Registre suas descobertas, dúvidas, palavras importantes e observações sobre o texto lido.</p>
+    <textarea id="sex-obs" placeholder="Suas observações..." oninput="salvarAuto('sex-obs')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-obs"></div>
+
+    <h3>Para aprender mais</h3>
+    <p>Leia as passagens abaixo e observe como a Bíblia descreve a importância dos relacionamentos entre os cristãos.</p>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Atos 2.42-47', 'Quais práticas faziam parte da vida daquela comunidade? O que chama sua atenção na maneira como viviam?', 'sex-v1')">📖 Atos 2:42-47</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Romanos 12.4-10', 'Que comparação Paulo utiliza para falar da igreja? Quais atitudes ele orienta os cristãos a desenvolverem?', 'sex-v2')">📖 Romanos 12:4-10</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Gálatas 6.1-2', 'Como os cristãos devem agir quando alguém é surpreendido em alguma transgressão? Que responsabilidade é apresentada?', 'sex-v3')">📖 Gálatas 6:1-2</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('Hebreus 10.23-25', 'Quais orientações aparecem sobre perseverança, comunhão e encorajamento?', 'sex-v4')">📖 Hebreus 10:23-25</button>
+    <button class="versiculo-btn" onclick="abrirVersiculo('1 Coríntios 12.12-27', 'Como Paulo descreve a relação entre os membros do corpo? O que isso ensina sobre a participação de cada cristão?', 'sex-v5')">📖 1 Coríntios 12:12-27</button>
+
+    <h3>Reflita</h3>
+    <p>O bambu é conhecido por algumas espécies que passam um período considerável desenvolvendo seu sistema de raízes antes de apresentar um crescimento muito visível acima do solo. O processo varia conforme a espécie e as condições de cultivo, mas a imagem ajuda a ilustrar uma verdade: nem todo crescimento pode ser percebido imediatamente.</p>
+    <p>Na vida cristã, também existem processos que acontecem longe dos olhos dos outros. Mas isso não significa que devemos crescer isolados.</p>
+    <p>Deus utiliza a comunhão da igreja para nos ensinar, corrigir, encorajar e fortalecer. Precisamos de irmãos que caminhem conosco e também precisamos estar disponíveis para ajudar outros.</p>
+    <p>Uma fé madura não se fecha em si mesma. Ela aprende a receber e oferecer cuidado.</p>
+
+    <h3>Olhando no espelho</h3>
+    <p>1. Tenho cultivado relacionamentos verdadeiros com outros cristãos ou minha participação na igreja é apenas formal?</p>
+    <textarea id="sex-e1" placeholder="Sua resposta..." oninput="salvarAuto('sex-e1')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-e1"></div>
+
+    <p>2. Tenho procurado os irmãos somente quando preciso de ajuda ou também estou disponível para ajudá-los?</p>
+    <textarea id="sex-e2" placeholder="Sua resposta..." oninput="salvarAuto('sex-e2')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-e2"></div>
+
+    <p>3. Existe alguém na comunidade que precisa de minha atenção, encorajamento ou apoio?</p>
+    <textarea id="sex-e3" placeholder="Sua resposta..." oninput="salvarAuto('sex-e3')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-e3"></div>
+
+    <p>4. Tenho permitido que outros irmãos me conheçam, me orientem e me ajudem a crescer?</p>
+    <textarea id="sex-e4" placeholder="Sua resposta..." oninput="salvarAuto('sex-e4')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-e4"></div>
+
+    <h3>Decida</h3>
+    <div class="check-group">
+      <label class="check-item">
+        <input type="checkbox" id="sex-check-1" onchange="salvarCheck('sex-check-1')">
+        <span>Procurar alguém da igreja para conversar e fortalecer o relacionamento.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="sex-check-2" onchange="salvarCheck('sex-check-2')">
+        <span>Oferecer ajuda prática a um irmão que esteja enfrentando dificuldades.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="sex-check-3" onchange="salvarCheck('sex-check-3')">
+        <span>Participar de uma oportunidade de comunhão com a igreja durante esta semana.</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" id="sex-check-4" onchange="salvarCheck('sex-check-4')">
+        <span>Procurar alguém maduro na fé para conversar sobre meu crescimento espiritual.</span>
+      </label>
+    </div>
+
+    <p>Minha decisão pessoal:</p>
+    <textarea id="sex-dec" placeholder="Escreva sua decisão..." oninput="salvarAuto('sex-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-sex-dec"></div>
+
+    <h3>Ore</h3>
+    <div class="oracao-box">
+      <strong>Oração</strong>
+      Agradeça a Deus pela igreja e pelas pessoas que ele colocou em sua caminhada. Peça humildade para receber ajuda, disposição para cuidar de outros e amor para construir relacionamentos que fortaleçam a fé de todos.
+    </div>
+  </div>
+</div>
+
+<!-- ============ ABA DE DECISÕES / DESAFIO ============ -->
+<div class="dia" id="dia-5">
+  <div class="card">
+    <h2>🌱 Desafio da Semana</h2>
+    <p>Durante esta semana, não avalie seu crescimento espiritual apenas pelo que você fez ou pelas atividades das quais participou. Observe também suas raízes, sua confiança em Deus, seu amadurecimento na Palavra, os frutos do seu caráter e a maneira como você se relaciona com outros cristãos.</p>
+    <div class="contexto-box">
+      <strong>Pergunta para encerrar a semana:</strong><br>
+      Minha fé está crescendo em profundidade ou estou apenas mantendo uma aparência de crescimento?
+    </div>
+    <p>Minha principal decisão para continuar crescendo:</p>
+    <textarea id="desafio-dec" placeholder="Escreva sua principal decisão..." oninput="salvarAuto('desafio-dec')"></textarea>
+    <div class="salvo-aviso" id="aviso-desafio-dec"></div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Minhas Decisões da Semana</h2>
+    <p>Aqui está o resumo de todas as suas decisões e checkboxes marcados. Você pode revisá-las e orar sobre cada uma.</p>
+    <ul class="lista-decisoes" id="lista-decisoes"></ul>
+    <button class="btn btn-ouro" onclick="exportarDecisoes()">📥 Exportar como texto</button>
+    <button class="btn btn-verde" onclick="exportarTudo()">📤 Exportar TUDO (respostas + decisões)</button>
+  </div>
+</div>
+
+<!-- MODAL DE VERSÍCULOS -->
+<div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="modal-titulo">Versículo</h3>
+    <div class="ref" id="modal-ref"></div>
+    <div class="texto-nvi" id="modal-texto"></div>
+    <div class="pergunta" id="modal-pergunta" style="display:none;"></div>
+    <div id="modal-resposta-area" style="display:none;">
+      <label style="font-weight:700; color:var(--verde); font-size:16px; text-transform:uppercase; letter-spacing:.5px;">Sua resposta</label>
+      <textarea id="modal-resposta" placeholder="Escreva sua resposta aqui..." oninput="salvarRespostaModal()"></textarea>
+      <div class="salvo-aviso" id="aviso-modal-resposta"></div>
+    </div>
+    <button class="btn btn-fechar" onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
+
+<footer>
+  <p>Nova Igreja Batista · Ministério de Meditação</p>
+  <p>Crente Cacto ou Crente Bonsai? — Desenvolvendo uma fé com raízes profundas</p>
+</footer>
+
+<script>
+/* ============ NAVEGAÇÃO ============ */
+function mostrarDia(index, btn) {
+  document.querySelectorAll('.dia').forEach(d => d.classList.remove('ativo'));
+  document.getElementById('dia-' + index).classList.add('ativo');
+  document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
+  btn.classList.add('ativa');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (index === 5) atualizarListaDecisoes();
+}
+
+/* ============ SALVAMENTO ============ */
+function salvarAuto(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  localStorage.setItem('cactobonsai_' + id, el.value);
+  const aviso = document.getElementById('aviso-' + id);
+  if (aviso) {
+    aviso.textContent = '✔ Salvo';
+    setTimeout(() => aviso.textContent = '', 1500);
+  }
+}
+
+function salvarCheck(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    localStorage.setItem('cactobonsai_' + id, el.checked ? 'true' : 'false');
+  }
+}
+
+function carregarTudo() {
+  document.querySelectorAll('textarea, input').forEach(el => {
+    if (el.id && el.id !== 'modal-resposta') {
+      const salvo = localStorage.getItem('cactobonsai_' + el.id);
+      if (salvo !== null) {
+        if (el.type === 'checkbox') {
+          el.checked = salvo === 'true';
+        } else {
+          el.value = salvo;
+        }
+      }
+    }
+  });
+}
+
+/* ============ MODAL COM PERGUNTA E RESPOSTA ============ */
+let chaveRespostaAtual = null;
+
+function abrirVersiculo(ref, pergunta, chaveResposta) {
+  const modal = document.getElementById('modal-overlay');
+  document.getElementById('modal-titulo').textContent = '📖 ' + ref;
+  document.getElementById('modal-ref').textContent = 'Nova Versão Internacional (NVI)';
+  document.getElementById('modal-texto').textContent = versiculosNVI[ref] || 'Texto não disponível offline.';
+
+  const areaPergunta = document.getElementById('modal-pergunta');
+  const areaResposta = document.getElementById('modal-resposta-area');
+  const campoResposta = document.getElementById('modal-resposta');
+
+  if (pergunta) {
+    areaPergunta.style.display = 'block';
+    areaPergunta.textContent = '❓ ' + pergunta;
+    areaResposta.style.display = 'block';
+    chaveRespostaAtual = chaveResposta;
+    campoResposta.value = localStorage.getItem('cactobonsai_' + chaveResposta) || '';
+    document.getElementById('aviso-modal-resposta').textContent = '';
+  } else {
+    areaPergunta.style.display = 'none';
+    areaResposta.style.display = 'none';
+    chaveRespostaAtual = null;
+  }
+
+  modal.classList.add('aberto');
+}
+
+function salvarRespostaModal() {
+  if (!chaveRespostaAtual) return;
+  const campo = document.getElementById('modal-resposta');
+  localStorage.setItem('cactobonsai_' + chaveRespostaAtual, campo.value);
+  const aviso = document.getElementById('aviso-modal-resposta');
+  aviso.textContent = '✔ Salvo';
+  setTimeout(() => aviso.textContent = '', 1500);
+}
+
+function fecharModal(event) {
+  if (event && event.target !== event.currentTarget && event.target.className !== 'btn btn-fechar') return;
+  document.getElementById('modal-overlay').classList.remove('aberto');
+}
+
+/* ============ LISTA DE DECISÕES ============ */
+function atualizarListaDecisoes() {
+  const lista = document.getElementById('lista-decisoes');
+  lista.innerHTML = '';
+
+  const decisoesMap = {
+    'seg-dec': 'Segunda - Onde estão as raízes da sua fé?',
+    'ter-dec': 'Terça - O deserto revela onde está sua confiança',
+    'qua-dec': 'Quarta - Não dependa do alimento dos outros',
+    'qui-dec': 'Quinta - Produza frutos',
+    'sex-dec': 'Sexta - Raízes profundas não significam caminhar sozinho',
+    'desafio-dec': 'Desafio da Semana - Minha principal decisão'
+  };
+
+  let temAlgo = false;
+
+  for (const [id, nome] of Object.entries(decisoesMap)) {
+    const valor = localStorage.getItem('cactobonsai_' + id);
+    if (valor && valor.trim() !== '') {
+      temAlgo = true;
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${nome}:</strong><br>${valor.replace(/\n/g, '<br>')}`;
+      lista.appendChild(li);
+    }
+  }
+
+  const checksMap = {
+    'seg-check-1': 'Segunda - Separar horário para Bíblia e oração',
+    'seg-check-2': 'Segunda - Diminuir distração',
+    'seg-check-3': 'Segunda - Memorizar e praticar versículo',
+    'seg-check-4': 'Segunda - Compartilhar descoberta',
+    'ter-check-1': 'Terça - Apresentar dificuldade em oração',
+    'ter-check-2': 'Terça - Memorizar Jeremias 17:7-8',
+    'ter-check-3': 'Terça - Evitar pensamentos de desespero',
+    'ter-check-4': 'Terça - Conversar com cristão maduro',
+    'qua-check-1': 'Quarta - Estudar passagem com atenção',
+    'qua-check-2': 'Quarta - Praticar ensinamento conhecido',
+    'qua-check-3': 'Quarta - Procurar orientação',
+    'qua-check-4': 'Quarta - Ajudar alguém a compreender a Palavra',
+    'qui-check-1': 'Quinta - Desenvolver fruto do Espírito',
+    'qui-check-2': 'Quinta - Praticar amor ou bondade',
+    'qui-check-3': 'Quinta - Pedir perdão',
+    'qui-check-4': 'Quinta - Avaliar atividades e relacionamento com Cristo',
+    'sex-check-1': 'Sexta - Fortalecer relacionamento na igreja',
+    'sex-check-2': 'Sexta - Oferecer ajuda prática',
+    'sex-check-3': 'Sexta - Participar de comunhão',
+    'sex-check-4': 'Sexta - Conversar com alguém maduro na fé'
+  };
+
+  for (const [id, nome] of Object.entries(checksMap)) {
+    if (localStorage.getItem('cactobonsai_' + id) === 'true') {
+      temAlgo = true;
+      const li = document.createElement('li');
+      li.innerHTML = `✅ <strong>${nome}</strong>`;
+      lista.appendChild(li);
+    }
+  }
+
+  if (!temAlgo) {
+    lista.innerHTML = '<li>Nenhuma decisão registrada ainda. Comece a meditar e suas decisões aparecerão aqui.</li>';
+  }
+}
+
+function exportarDecisoes() {
+  let texto = 'MINHAS DECISÕES – CRENTE CACTO OU CRENTE BONSAI\n' + '='.repeat(60) + '\n\n';
+
+  const decisoesMap = {
+    'seg-dec': 'SEGUNDA - Onde estão as raízes da sua fé?',
+    'ter-dec': 'TERÇA - O deserto revela onde está sua confiança',
+    'qua-dec': 'QUARTA - Não dependa do alimento dos outros',
+    'qui-dec': 'QUINTA - Produza frutos',
+    'sex-dec': 'SEXTA - Raízes profundas não significam caminhar sozinho',
+    'desafio-dec': 'DESAFIO DA SEMANA - Minha principal decisão'
+  };
+
+  for (const [id, nome] of Object.entries(decisoesMap)) {
+    const valor = localStorage.getItem('cactobonsai_' + id) || '(sem decisão)';
+    texto += nome + '\n' + '-'.repeat(40) + '\n' + valor + '\n\n';
+  }
+
+  texto += '\nCHECKBOXES MARCADOS:\n' + '-'.repeat(40) + '\n';
+  const checksMap = {
+    'seg-check-1': 'Segunda - Separar horário para Bíblia e oração',
+    'seg-check-2': 'Segunda - Diminuir distração',
+    'seg-check-3': 'Segunda - Memorizar e praticar versículo',
+    'seg-check-4': 'Segunda - Compartilhar descoberta',
+    'ter-check-1': 'Terça - Apresentar dificuldade em oração',
+    'ter-check-2': 'Terça - Memorizar Jeremias 17:7-8',
+    'ter-check-3': 'Terça - Evitar pensamentos de desespero',
+    'ter-check-4': 'Terça - Conversar com cristão maduro',
+    'qua-check-1': 'Quarta - Estudar passagem com atenção',
+    'qua-check-2': 'Quarta - Praticar ensinamento conhecido',
+    'qua-check-3': 'Quarta - Procurar orientação',
+    'qua-check-4': 'Quarta - Ajudar alguém a compreender a Palavra',
+    'qui-check-1': 'Quinta - Desenvolver fruto do Espírito',
+    'qui-check-2': 'Quinta - Praticar amor ou bondade',
+    'qui-check-3': 'Quinta - Pedir perdão',
+    'qui-check-4': 'Quinta - Avaliar atividades e relacionamento com Cristo',
+    'sex-check-1': 'Sexta - Fortalecer relacionamento na igreja',
+    'sex-check-2': 'Sexta - Oferecer ajuda prática',
+    'sex-check-3': 'Sexta - Participar de comunhão',
+    'sex-check-4': 'Sexta - Conversar com alguém maduro na fé'
+  };
+  for (const [id, nome] of Object.entries(checksMap)) {
+    if (localStorage.getItem('cactobonsai_' + id) === 'true') {
+      texto += `[X] ${nome}\n`;
+    }
+  }
+
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'minhas-decisoes-crente-cacto-bonsai.txt';
+  link.click();
+}
+
+function exportarTudo() {
+  let texto = 'MINHA MEDITAÇÃO COMPLETA – CRENTE CACTO OU CRENTE BONSAI\n' + '='.repeat(70) + '\n\n';
+
+  document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
+    if (el.id) {
+      const valor = localStorage.getItem('cactobonsai_' + el.id);
+      if (valor && valor.trim() !== '') {
+        texto += `[${el.id}]: ${valor}\n`;
+      }
+    }
+  });
+
+  texto += '\nCHECKBOXES:\n' + '-'.repeat(30) + '\n';
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+    if (localStorage.getItem('cactobonsai_' + el.id) === 'true') {
+      const label = el.nextElementSibling ? el.nextElementSibling.textContent : el.id;
+      texto += `[X] ${label}\n`;
+    }
+  });
+
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'meditacao-completa-crente-cacto-bonsai.txt';
+  link.click();
+}
+
+/* ============ TEXTOS BÍBLICOS NVI ============ */
+const versiculosNVI = {
+  'Josué 1.8': 'Não deixe de falar as palavras deste Livro da Lei e de meditar nelas de dia e de noite, para que você cumpra fielmente tudo o que nele está escrito. Só então os seus caminhos prosperarão e você será bem-sucedido.',
+  'Salmo 119.9-16': 'Como pode o jovem manter pura a sua conduta? Vivendo de acordo com a tua palavra. Eu te busco de todo o coração; não permitas que eu me desvie dos teus mandamentos. Guardei no coração a tua palavra para não pecar contra ti. Bendito sejas, ó Senhor; ensina-me os teus decretos. Com os lábios recito todos os decretos da tua boca. Regozijo-me no caminho dos teus estatutos como quem encontra grande despojo. Medito nos teus preceitos e considero os teus caminhos. Tenho prazer nos teus decretos; não me esqueço da tua palavra.',
+  'Mateus 4.1-4': 'Então Jesus foi levado pelo Espírito para o deserto, para ser tentado pelo diabo. Depois de jejuar quarenta dias e quarenta noites, teve fome. O tentador aproximou-se dele e disse: "Se você é o Filho de Deus, mande que estas pedras se transformem em pão". Jesus respondeu: "Está escrito: ‘Nem só de pão viverá o homem, mas de toda palavra que procede da boca de Deus’".',
+  'Lucas 10.38-42': 'Certo dia, Jesus e seus discípulos estavam a caminho de Jerusalém. Ele entrou num povoado, e uma mulher chamada Marta o recebeu em sua casa. Ela tinha uma irmã chamada Maria, que se assentou aos pés do Senhor, ouvindo o que ele dizia. Marta, porém, estava ocupada com muito serviço. Ela aproximou-se e disse: "Senhor, não te importas que minha irmã tenha me deixado sozinha com o serviço? Dize-lhe que me ajude!" Jesus respondeu: "Marta! Marta! Você está preocupada e inquieta com muitas coisas; todavia apenas uma é necessária. Maria escolheu a boa parte, e esta não lhe será tirada".',
+  'João 15.4-5': 'Permaneçam em mim, e eu permanecerei em vocês. Nenhum ramo pode dar fruto por si mesmo, se não permanecer na videira. Assim também vocês não podem dar fruto, se não permanecerem em mim. Eu sou a videira; vocês são os ramos. Se alguém permanecer em mim e eu nele, esse dá muito fruto; pois sem mim vocês não podem fazer coisa alguma.',
+  'Habacuque 3.17-19': 'Ainda que a figueira não floresça, nem haja fruto na vide; o produto da oliveira minta, e os campos não produzam mantimento; as ovelhas sejam arrebatadas do aprisco, e nos currais não haja gado, todavia eu me alegro no Senhor, exulto no Deus da minha salvação. O Senhor Deus é a minha força; ele faz os meus pés como os das cervas e me faz andar sobre as alturas.',
+  'Salmo 46.1-3': 'Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia. Portanto não temeremos, ainda que a terra se mude e ainda que os montes se transportem para o meio dos mares. Ainda que as águas rujam e se perturbem, ainda que os montes se abalem pela sua braveza.',
+  'Daniel 3.16-18': 'Sadraque, Mesaque e Abede-Nego responderam ao rei: "Ó Nabucodonosor, não precisamos defender-nos diante de ti. Se formos atirados na fornalha em chamas, o Deus a quem servimos pode nos livrar dela, e ele nos livrará das tuas mãos, ó rei. Mas, se não, fica sabendo, ó rei, que não serviremos a teus deuses nem adoraremos a imagem de ouro que levantaste".',
+  '2 Coríntios 4.8-9, 16-18': 'De todos os lados somos pressionados, mas não desanimados; ficamos perplexos, mas não desesperados; somos perseguidos, mas não abandonados; abatidos, mas não destruídos. Por isso não desanimamos. Embora exteriormente estejamos a desgastar-nos, interiormente estamos sendo renovados dia após dia, pois os nossos sofrimentos leves e momentâneos estão produzindo para nós uma glória eterna que pesa mais do que todos eles. Assim, fixamos os olhos, não naquilo que se vê, mas no que não se vê, pois o que se vê é transitório, mas o que não se vê é eterno.',
+  'Tiago 1.2-4': 'Meus irmãos, considerem motivo de grande alegria o fato de passarem por diversas provações, pois vocês sabem que a prova da sua fé produz perseverança. E a perseverança deve ter ação completa, a fim de que vocês sejam maduros e íntegros, sem lhes faltar coisa alguma.',
+  'Efésios 4.11-16': 'E ele designou alguns para apóstolos, outros para profetas, outros para evangelistas, e outros para pastores e mestres, com o propósito de aperfeiçoar os santos para a obra do ministério, para que o corpo de Cristo seja edificado, até que todos alcancemos a unidade da fé e do conhecimento do Filho de Deus, e cheguemos à maturidade, atingindo a medida da plenitude de Cristo. O propósito é que não sejamos mais como crianças, levados de um lado para outro pelas ondas, nem jogados para cá e para lá por todo vento de doutrina e pela astúcia e esperteza de homens que induzem ao erro. Antes, seguindo a verdade em amor, cresçamos em tudo naquele que é a cabeça, Cristo. Dele todo o corpo, ajustado e unido pelo auxílio de todas as juntas, cresce e edifica-se a si mesmo em amor, na medida em que cada parte realiza a sua função.',
+  '2 Timóteo 3.14-17': 'Mas você, permaneça naquilo que aprendeu e em que creu, pois você sabe de quem o aprendeu. Você conhece as sagradas letras desde a infância, as quais podem torná-lo sábio para a salvação mediante a fé em Cristo Jesus. Toda a Escritura é inspirada por Deus e útil para o ensino, para a repreensão, para a correção e para a instrução na justiça, para que o homem de Deus seja apto e plenamente preparado para toda boa obra.',
+  'Tiago 1.22-25': 'Sejam praticantes da palavra, e não apenas ouvintes, enganando-se a si mesmos. Porque, se alguém é ouvinte da palavra, e não praticante, é como quem contempla ao espelho o seu rosto natural; pois se contempla a si mesmo, vai-se, e logo se esquece de como era. Mas aquele que atenta bem para a lei perfeita, a lei da liberdade, e nela persevera, não sendo ouvinte esquecido, mas praticante da obra, este será bem-aventurado no que fizer.',
+  '1 Coríntios 3.1-3': 'Eu, porém, irmãos, não pude falar-lhes como a pessoas espirituais, mas como a pessoas carnais, como a crianças em Cristo. Dei-lhes leite, e não alimento sólido, pois vocês ainda não estavam prontos para isso. Na verdade, ainda não estão prontos, porque ainda são carnais. Pois, havendo entre vocês inveja, contendas e dissensões, não é verdade que são carnais e andam como meros homens?',
+  'Colossenses 1.9-10': 'Por essa razão, desde o dia em que soubemos disso, não cessamos de orar por vocês e de pedir que sejam cheios do pleno conhecimento da vontade de Deus, com toda a sabedoria e entendimento espiritual. E isso para que vocês vivam de maneira digna do Senhor e em tudo possam agradá-lo, frutificando em toda boa obra e crescendo no conhecimento de Deus.',
+  'Gálatas 5.16-25': 'Por isso digo: vivam pelo Espírito, e de modo nenhum satisfarão os desejos da carne. Pois a carne deseja o que é contrário ao Espírito, e o Espírito o que é contrário à carne. Eles estão em conflito um com o outro, de modo que vocês não fazem o que desejam. Mas, se vocês são guiados pelo Espírito, não estão debaixo da lei. As obras da carne são manifestas: imoralidade sexual, impureza e libertinagem; idolatria e feitiçaria; ódio, discórdia, ciúmes, ira, egoísmo, dissensões, facções e inveja; embriaguez, orgias e coisas semelhantes. Aviso a vocês, como antes já os adverti: aqueles que praticam essas coisas não herdarão o Reino de Deus. Mas o fruto do Espírito é amor, alegria, paz, paciência, amabilidade, bondade, fidelidade, mansidão e domínio próprio. Contra essas coisas não há lei. Os que pertencem a Cristo Jesus crucificaram a carne, com as suas paixões e os seus desejos. Se vivemos pelo Espírito, andemos também pelo Espírito.',
+  'Colossenses 1.9-12': 'Por essa razão, desde o dia em que soubemos disso, não cessamos de orar por vocês e de pedir que sejam cheios do pleno conhecimento da vontade de Deus, com toda a sabedoria e entendimento espiritual. E isso para que vocês vivam de maneira digna do Senhor e em tudo possam agradá-lo, frutificando em toda boa obra e crescendo no conhecimento de Deus, sendo fortalecidos com todo o poder, segundo a força da sua glória, a fim de que tenham toda a perseverança e paciência com alegria, dando graças ao Pai, que os capacitou a participar da herança dos santos na luz.',
+  'Mateus 7.15-20': 'Cuidado com os falsos profetas. Eles vêm a vocês vestidos de pele de ovelhas, mas por dentro são lobos ferozes. Vocês os conhecerão pelos seus frutos. Podem os homens colher uvas de espinheiros ou figos de ervas daninhas? Assim, toda árvore boa produz bons frutos, mas a árvore má produz frutos maus. Não pode a árvore boa produzir frutos maus, nem a árvore má produzir frutos bons. Toda árvore que não produz bom fruto é cortada e lançada ao fogo. Assim, pois, pelos seus frutos vocês os conhecerão.',
+  'Filipenses 1.9-11': 'E isto é a minha oração: que o amor de vocês aumente cada vez mais em conhecimento e em toda a percepção, para que saibam escolher o melhor e sejam puros e irrepreensíveis até o dia de Cristo, cheios do fruto de justiça que vem por meio de Jesus Cristo, para a glória e o louvor de Deus.',
+  'Tito 2.11-14': 'Porque a graça de Deus se manifestou salvadora a todos os homens. Ela nos ensina a renunciar à impiedade e às paixões mundanas e a viver de maneira sensata, justa e piedosa nesta era presente, enquanto aguardamos a bendita esperança: a gloriosa manifestação de nosso grande Deus e Salvador, Jesus Cristo. Ele se entregou por nós a fim de nos remir de toda a maldade e purificar para si mesmo um povo particularmente seu, dedicado à prática de boas obras.',
+  'Atos 2.42-47': 'Eles se dedicavam ao ensino dos apóstolos e à comunhão, ao partir do pão e às orações. Todos estavam cheios de temor, e muitos sinais e maravilhas eram realizados por meio dos apóstolos. Todos os que criam mantinham-se unidos e tinham tudo em comum. Vendendo suas propriedades e bens, distribuíam a cada um conforme a sua necessidade. Todos os dias, continuavam a reunir-se no pátio do templo. Partiam o pão em suas casas e juntos participavam das refeições, com alegria e sinceridade de coração, louvando a Deus e tendo a simpatia de todo o povo. E o Senhor lhes acrescentava diariamente os que iam sendo salvos.',
+  'Romanos 12.4-10': 'Assim como cada um de nós tem um corpo com muitos membros e esses membros não exercem todos a mesma função, assim também em Cristo nós, que somos muitos, formamos um corpo, e cada membro está ligado a todos os outros. Temos diferentes dons, de acordo com a graça que nos foi dada. Se alguém tem o dom de profetizar, use-o na proporção da sua fé. Se o seu dom é servir, sirva; se é ensinar, ensine; se é dar ânimo, que assim faça; se é contribuir, que contribua generosamente; se é exercer liderança, que a exerça com zelo; se é mostrar misericórdia, que o faça com alegria. O amor deve ser sincero. Odeiem o que é mau; apeguem-se ao que é bom. Dediquem-se uns aos outros com amor fraternal. Prefiram dar honra aos outros mais do que a si próprios.',
+  'Gálatas 6.1-2': 'Irmãos, se alguém for surpreendido em algum pecado, vocês, que são espirituais, deverão restaurá-lo com mansidão. Cuide-se, porém, cada um para que também não seja tentado. Levem as cargas uns dos outros e assim cumpram a lei de Cristo.',
+  'Hebreus 10.23-25': 'Apeguemo-nos com firmeza à esperança que professamos, pois aquele que prometeu é fiel. E consideremos uns aos outros para nos incentivarmos ao amor e às boas obras. Não deixemos de reunir-nos como igreja, segundo o costume de alguns, mas procuremos encorajar-nos uns aos outros, ainda mais quando vocês veem que se aproxima o Dia.',
+  '1 Coríntios 12.12-27': 'Ora, o corpo é um e, embora tenha muitos membros, todos os membros, mesmo sendo muitos, formam um só corpo. Assim é com Cristo. Pois em um só Espírito todos nós fomos batizados em um corpo: quer judeus, quer gregos, quer escravos, quer livres, e a todos nós foi dado beber de um só Espírito. Ora, o corpo não é feito de um só membro, mas de muitos. Se o pé disser: "Porque não sou mão, não pertenço ao corpo", nem por isso deixa de fazer parte do corpo. E se a orelha disser: "Porque não sou olho, não pertenço ao corpo", nem por isso deixa de fazer parte do corpo. Se todo o corpo fosse olho, onde estaria a audição? Se todo fosse audição, onde estaria o olfato? Mas Deus dispôs os membros, cada um deles no corpo, como quis. Se todos fossem um só membro, onde estaria o corpo? Assim, há muitos membros, mas um só corpo. O olho não pode dizer à mão: "Não preciso de você!" Nem a cabeça pode dizer aos pés: "Não preciso de vocês!" Pelo contrário, os membros do corpo que parecem mais fracos são indispensáveis, e os membros que consideramos menos honrosos, a esses damos mais honra, e os que não são apresentáveis são tratados com maior decência. Os membros mais apresentáveis não precisam de tratamento especial. Deus combinou o corpo, dando mais honra aos membros que não a tinham, para que não haja divisão no corpo, mas que os membros tenham igual cuidado uns pelos outros. Se um membro sofre, todos os outros sofrem com ele; se um é honrado, todos os outros se alegram com ele. Ora, vocês são o corpo de Cristo, e cada um de vocês, individualmente, é membro desse corpo.'
+};
+
+/* ============ MINI-JOGO DE MEMORIZAÇÃO ============ */
+const jogosMemorizacao = {
+  seg: {
+    total: 5,
+    html: `“Como é <b>feliz</b> aquele que não segue o conselho dos ímpios, não imita a conduta dos pecadores, nem se assenta na roda dos zombadores! Ao contrário, sua satisfação está na <b>lei</b> do Senhor, e nessa lei medita dia e noite. É como <b>árvore</b> plantada à beira de águas correntes: dá fruto no tempo certo e suas folhas não murcham. Tudo o que ele faz <b>prospera</b>!”<br><br><span style="font-size:17px; color:var(--grafite-claro);">(Salmo <input class="lacuna curta" data-resp="1" id="lac-seg-5">:1–3)</span>`,
+    lacunas: [
+      { id: 'lac-seg-1', resp: 'feliz', larga: true },
+      { id: 'lac-seg-2', resp: 'lei', larga: true },
+      { id: 'lac-seg-3', resp: 'árvore', larga: true },
+      { id: 'lac-seg-4', resp: 'prospera', larga: true },
+      { id: 'lac-seg-5', resp: '1', curta: true }
+    ]
+  },
+  ter: {
+    total: 5,
+    html: `“Mas <b>bendito</b> é o homem cuja confiança está no Senhor, cuja confiança nele está. Ele será como uma árvore plantada junto às <b>águas</b> e que estende as suas raízes para o ribeiro. Ela não temerá quando chegar o <b>calor</b>, porque as suas folhas estão sempre verdes; não ficará ansiosa no ano da <b>seca</b> nem deixará de dar fruto.”<br><br><span style="font-size:17px; color:var(--grafite-claro);">(Jeremias <input class="lacuna curta" data-resp="17" id="lac-ter-5">:7–8)</span>`,
+    lacunas: [
+      { id: 'lac-ter-1', resp: 'bendito', larga: true },
+      { id: 'lac-ter-2', resp: 'águas', larga: true },
+      { id: 'lac-ter-3', resp: 'calor', larga: true },
+      { id: 'lac-ter-4', resp: 'seca', larga: true },
+      { id: 'lac-ter-5', resp: '17', curta: true }
+    ]
+  },
+  qua: {
+    total: 5,
+    html: `“Embora a esta altura já devessem ser <b>mestres</b>, vocês precisam de alguém que lhes ensine novamente os princípios elementares da Palavra de Deus. Estão precisando de <b>leite</b>, e não de alimento sólido! Quem se alimenta de leite ainda é <b>criança</b> e não tem experiência no ensino da justiça. Mas o alimento sólido é para os <b>adultos</b>, os quais, pelo exercício constante, tornaram-se capazes de discernir o bem e o mal.”<br><br><span style="font-size:17px; color:var(--grafite-claro);">(Hebreus <input class="lacuna curta" data-resp="5" id="lac-qua-5">:12–14)</span>`,
+    lacunas: [
+      { id: 'lac-qua-1', resp: 'mestres', larga: true },
+      { id: 'lac-qua-2', resp: 'leite', larga: true },
+      { id: 'lac-qua-3', resp: 'criança', larga: true },
+      { id: 'lac-qua-4', resp: 'adultos', larga: true },
+      { id: 'lac-qua-5', resp: '5', curta: true }
+    ]
+  },
+  qui: {
+    total: 6,
+    html: `“Eu sou a <b>videira</b> verdadeira, e meu Pai é o agricultor. Todo ramo que, estando em mim, não dá fruto, ele <b>corta</b>; e todo o que dá fruto ele <b>poda</b>, para que dê mais fruto ainda. Vocês já estão limpos, pela palavra que lhes tenho falado. Permaneçam em mim, e eu permanecerei em vocês. Nenhum ramo pode dar fruto por si mesmo, se não permanecer na videira. Assim também vocês não podem dar fruto, se não permanecerem em mim. Eu sou a videira; vocês são os <b>ramos</b>. Se alguém permanecer em mim e eu nele, esse dá muito fruto; pois sem mim vocês não podem fazer coisa alguma.”<br><br><span style="font-size:17px; color:var(--grafite-claro);">(João <input class="lacuna curta" data-resp="15" id="lac-qui-5">:<input class="lacuna curta" data-resp="1" id="lac-qui-6">–8)</span>`,
+    lacunas: [
+      { id: 'lac-qui-1', resp: 'videira', larga: true },
+      { id: 'lac-qui-2', resp: 'corta', larga: true },
+      { id: 'lac-qui-3', resp: 'poda', larga: true },
+      { id: 'lac-qui-4', resp: 'ramos', larga: true },
+      { id: 'lac-qui-5', resp: '15', curta: true },
+      { id: 'lac-qui-6', resp: '1', curta: true }
+    ]
+  },
+  sex: {
+    total: 5,
+    html: `“É melhor ter <b>companhia</b> do que estar sozinho, porque maior é a recompensa do trabalho de duas pessoas. Se um cair, o amigo pode ajudá-lo a <b>levantar-se</b>. Mas pobre do homem que cai e não tem quem o ajude a levantar-se! E se dois dormirem juntos, vão manter-se aquecidos. Como, porém, manter-se aquecido sozinho? Um homem sozinho pode ser vencido, mas dois conseguem defender-se. Um cordão de três <b>dobras</b> não se rompe com facilidade.”<br><br><span style="font-size:17px; color:var(--grafite-claro);">(Eclesiastes <input class="lacuna curta" data-resp="4" id="lac-sex-4">:9–12)</span>`,
+    lacunas: [
+      { id: 'lac-sex-1', resp: 'companhia', larga: true },
+      { id: 'lac-sex-2', resp: 'levantar-se', larga: true },
+      { id: 'lac-sex-3', resp: 'dobras', larga: true },
+      { id: 'lac-sex-4', resp: '4', curta: true }
+    ]
+  }
+};
+
+function montarJogo(dia) {
+  const jogo = jogosMemorizacao[dia];
+  const container = document.getElementById('memoriza-' + dia);
+  if (!container) return;
+
+  let html = '<div class="memoriza-frase">' + jogo.html + '</div>';
+  html += '<button class="btn btn-verde" onclick="verificarMemorizacao(\'' + dia + '\', ' + jogo.total + ')">✅ Verificar</button>';
+  html += '<button class="btn btn-limpar" onclick="limparMemorizacao(\'' + dia + '\')">🔄 Limpar</button>';
+  html += '<div class="feedback" id="feedback-' + dia + '"></div>';
+  html += '<div class="placar" id="placar-' + dia + '">Pontos: 0 / ' + jogo.total + '</div>';
+  container.innerHTML = html;
+
+  // Aplica valores salvos e classes
+  jogo.lacunas.forEach(lac => {
+    const el = document.getElementById(lac.id);
+    if (!el) return;
+    const salvo = localStorage.getItem('cactobonsai_' + lac.id);
+    if (salvo !== null) el.value = salvo;
+    el.addEventListener('input', () => {
+      localStorage.setItem('cactobonsai_' + lac.id, el.value);
+    });
+  });
+
+  const pontos = localStorage.getItem('cactobonsai_pontos_' + dia);
+  if (pontos) {
+    document.getElementById('placar-' + dia).textContent = 'Pontos: ' + pontos;
+  }
+}
+
+function verificarMemorizacao(dia, total) {
+  const jogo = jogosMemorizacao[dia];
+  let acertos = 0;
+  jogo.lacunas.forEach(lac => {
+    const el = document.getElementById(lac.id);
+    if (!el) return;
+    const resposta = el.value.trim().toLowerCase();
+    const correta = lac.resp.toLowerCase();
+    el.classList.remove('correta', 'errada');
+    if (resposta === correta) {
+      el.classList.add('correta');
+      acertos++;
+    } else if (resposta !== '') {
+      el.classList.add('errada');
+    }
+  });
+  const feedback = document.getElementById('feedback-' + dia);
+  const placar = document.getElementById('placar-' + dia);
+  placar.textContent = 'Pontos: ' + acertos + ' / ' + total;
+  localStorage.setItem('cactobonsai_pontos_' + dia, acertos + ' / ' + total);
+
+  if (acertos === total) {
+    feedback.textContent = '🎉 Parabéns! Você acertou todas as ' + total + ' lacunas!';
+    feedback.className = 'feedback ok';
+  } else if (acertos >= total / 2) {
+    feedback.textContent = '👍 Muito bem! Você acertou ' + acertos + ' de ' + total + '. Continue!';
+    feedback.className = 'feedback ok';
+  } else {
+    feedback.textContent = '💪 Você acertou ' + acertos + ' de ' + total + '. Leia o versículo e tente de novo!';
+    feedback.className = 'feedback erro';
+  }
+}
+
+function limparMemorizacao(dia) {
+  const jogo = jogosMemorizacao[dia];
+  jogo.lacunas.forEach(lac => {
+    const el = document.getElementById(lac.id);
+    if (!el) return;
+    el.value = '';
+    el.classList.remove('correta', 'errada');
+    localStorage.removeItem('cactobonsai_' + lac.id);
+  });
+  document.getElementById('feedback-' + dia).textContent = '';
+  document.getElementById('placar-' + dia).textContent = 'Pontos: 0 / ' + jogo.total;
+  localStorage.removeItem('cactobonsai_pontos_' + dia);
+}
+
+/* ============ INICIALIZAÇÃO ============ */
+window.onload = function() {
+  carregarTudo();
+  ['seg','ter','qua','qui','sex'].forEach(montarJogo);
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('modal-overlay').classList.remove('aberto');
+  }
+});
+</script>
+
+</body>
+</html>
